@@ -1,12 +1,14 @@
-# AI Agents 연구 후보 30개
+# AI Agents 연구 후보 36개
 
-조사 기준: 2026-10-11. 주제 미선정 · 실험 미실행.
+최초 조사: 2026-10-11. 최근 추가: 2026-10-14. 주제 미선정 · 실험 미실행.
 
-이 문서는 원논문/공식 자료를 탐색해 만든 연구 제안입니다. 모든 논문 전문 정독이나 구현 재현을 했다는 뜻이 아닙니다.
+이 문서는 원논문/공식 자료를 탐색해 만든 연구 제안입니다. 모든 논문 전문 정독이나 구현 재현을 했다는 뜻이 아닙니다. 최근 추가가 기존 논문 전체의 재검증을 뜻하지는 않습니다.
 
 각 후보의 50개는 작성할 평가 사례 구성안이며, 이미 데이터가 존재한다는 뜻이 아닙니다.
 
 D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계획용 추정으로 구축·judge 비용은 별도입니다.
+
+새 주제: [멀티모달 입력·기호/도구 생성 비교 설계와 논문 메모](multimodal_comparison.md)
 
 ## RAG와 검색 기반 문제 해결
 
@@ -478,9 +480,103 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **확장:** 장시간 조사 / 파일 생성 workflow / 정확한 완료 보고
 - **참고:** [P12 ToolSandbox: A Stateful, Conversational, Interactive Evaluation Benchmark for LLM Tool Use Capabilities](https://aclanthology.org/2025.findings-naacl.65/), [P27 SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering](https://arxiv.org/abs/2405.15793), [P18 MemGPT: Towards LLMs as Operating Systems](https://arxiv.org/abs/2310.08560)
 
+## 멀티모달 입력과 기호·도구 기반 생성
+
+이미지 직접 처리, 구조화된 기호 처리, 도구를 통한 생성·검증은 어떤 업무와 제약에서 유리한가?
+
+### MM1. 악보 읽기: 이미지 직접 이해와 기호 변환 경로
+
+- **문제:** 악보를 직접 보는 경로와 OMR로 ABC/MusicXML로 변환해 읽는 경로에서 인식·추론 실패는 어떻게 달라지는가?
+- **업무:** Agent가 짧은 악보의 질문에 답하고 근거 마디·성부를 제시하며, 불확실할 때 허용된 재관찰 도구를 선택한다.
+- **예시:** 2성부 8마디에서 3마디의 최고음과 그 음의 길이를 찾고 근거 위치를 제시한다.
+- **50개 구성:** 음높이·옥타브 10개 / 리듬·쉼표 10개 / 조표·임시표 10개 / 동시음·성부 10개 / 반복·마디 참조 10개
+- **정답 정보:** 직접 작성한 50개 독립 악보/질문에 정답·근거 event ID·마디·성부·원본 기호 구조를 둔다. 정답 기호는 evaluator 전용이며 자동 파싱 경로에 주지 않는다.
+- **비교 조건:** 같은 VLM + 악보 이미지 → 답 / 같은 VLM + 고정 OMR의 기호 출력 → 답 / 선택적 진단: 같은 VLM + 사람이 확인한 정답 기호 → 답 (oracle 상한)
+- **주요 지표:** 답+근거 위치 동시 정확도 / 음높이·길이 추출 오류율 / 파싱 오류와 추론 오류 분리 / OMR 포함 end-to-end 지연·GPU 시간·입출력 token
+- **구현 부담:** D3
+- **호출 추정:** 사례당·조건당 1–3회. 주 비교는 앞의 2조건으로 시작할 수 있다. OMR 모델 추론은 별도 연산비로 기록하고 LLM parser를 쓰면 그 호출도 더한다. 재관찰은 사전 승인된 budget 안에서만.
+- **주의:** 직접 제공한 깨끗한 ABC와 원본 이미지를 비교하면 파싱을 생략한 진단 조건이다. 이를 실제 이미지 파이프라인의 비용·정확도와 동일하게 취급하지 않는다. 저작권 있는 악보 스캔을 공개하지 않는다.
+- **확장:** 스캔 왜곡·저해상도에 대한 강건성 / 한 성부에서 두 성부로 난도 확장 / 불확실성 기반 확대·재파싱 선택
+- **참고:** [P39 NOTA: Multimodal Music Notation Understanding for Visual Large Language Model](https://aclanthology.org/2025.findings-naacl.399/), [P40 ChatMusician: Understanding and Generating Music Intrinsically with LLM](https://aclanthology.org/2024.findings-acl.373/), [P41 ABC-Eval: Benchmarking Large Language Models on Symbolic Music Understanding and Instruction Following](https://arxiv.org/abs/2509.23350), [P45 Musical Score Understanding Benchmark: Evaluating Large Language Models’ Comprehension of Complete Musical Scores](https://aclanthology.org/2026.acl-long.493/)
+
+### MM2. 악보 생성: 직접 이미지 출력과 기호 코드·렌더러
+
+- **문제:** 같은 음악 제약을 만족하는 인쇄용 악보를 직접 생성하는 방식과 기호 코드를 생성해 렌더링하는 방식은 무엇에서 차이가 나는가?
+- **업무:** Agent가 자연어 음악 명세를 해석해 짧은 악보를 생성하고 요청된 음높이·박자·길이 제약을 검증한다.
+- **예시:** C장조 4/4의 4마디를 만들고, 첫 음 C4·마지막 음 C5·마디당 4박·지정 리듬을 지켜라.
+- **50개 구성:** 음역·시작/종료음 10개 / 박자·마디 길이 10개 / 쉼표·지정 리듬 10개 / 조성·임시표 조건 10개 / 복합 제약·짧은 2성부 10개
+- **정답 정보:** 50개의 독립 명세별 필수 제약과 허용되는 여러 해를 작성한다. 렌더링된 이미지의 기보 정확성을 블라인드로 확인하며, 기호 출력에는 파서 기반 제약 검사도 추가한다.
+- **비교 조건:** 이미지 출력 지원 모델 + 자연어 명세 → 악보 이미지 (자격 조건 충족 시만) / 텍스트 모델 + 같은 명세 → ABC/MusicXML → 고정 렌더러 / 시각 입력 지원 모델 + 같은 명세 → 같은 기호 형식 → 같은 렌더러 (확장)
+- **주요 지표:** 공통 최종 이미지의 모든 음악 제약 충족률 / 기보 판독 가능성·음표/리듬 정확도 / 기호 유효성·편집 가능성 (별도 능력 지표) / 전체 생성·검증 비용
+- **구현 부담:** D3
+- **호출 추정:** 사례당·조건당 1–3회. native 이미지 출력이 가능한 수업 허용 local/free 모델을 먼저 확인해야 한다. 없으면 해당 대조군은 미실행으로 남긴다. 이미지 생성 GPU 시간·수동 검수 시간이 크며 비교 모델은 미선정.
+- **주의:** VLM의 이미지 입력 지원은 이미지 출력 지원과 다르다. PDF 저장과 픽셀 생성도 다르다. 서로 다른 모델 비교는 전체 시스템 비교이며 modality의 순수 효과가 아니다. raster에만 불리한 editable-score 요구를 공통 승패 기준으로 넣지 않는다.
+- **확장:** 정확한 조옮김 요청과 불변 리듬 검사 / 의미가 같은 자연어 명세·형식 명세 비교 / 이미지 생성 후 OMR을 추가한 왕복 변환 오류
+- **참고:** [P39 NOTA: Multimodal Music Notation Understanding for Visual Large Language Model](https://aclanthology.org/2025.findings-naacl.399/), [P40 ChatMusician: Understanding and Generating Music Intrinsically with LLM](https://aclanthology.org/2024.findings-acl.373/), [P41 ABC-Eval: Benchmarking Large Language Models on Symbolic Music Understanding and Instruction Following](https://arxiv.org/abs/2509.23350), [P42 VGBench: Evaluating Large Language Models on Vector Graphics Understanding and Generation](https://aclanthology.org/2024.emnlp-main.213/)
+
+### MM3. 스프레드시트 이해: 시각 레이아웃과 구조 보존 텍스트
+
+- **문제:** 같은 표의 값·헤더·단위를 보존할 때 이미지, 직렬화 텍스트, 결합 표현의 장단점은 어떻게 달라지는가?
+- **업무:** Agent가 자연어 질문을 해석하고 필요한 셀 범위를 찾아 허용된 동일 계산 도구로 집계한 뒤 근거 셀과 답을 제출한다.
+- **예시:** 분기별 표에서 환불 제외 매출을 합산하고, 천원 단위를 원 단위로 바꿔 부서별 차이를 설명한다.
+- **50개 구성:** 단순 표·조회 10개 / 계층형 헤더·병합 셀 10개 / 단위·서식 단서 10개 / 멀티 표·시트 연결 10개 / 정답 없는 정보 부족 10개
+- **정답 정보:** 직접 만든 workbook 50개와 질문·정답·근거 셀·헤더 계층·단위를 작성한다. 동일 정보로 이미지와 좌표 포함 구조 표현을 생성하고 사람이 동등성을 확인한다.
+- **비교 조건:** 같은 VLM + 표 이미지 + 고정 계산 도구 / 같은 VLM + 구조화 텍스트 + 같은 계산 도구 / 같은 VLM + 이미지·구조화 텍스트 결합 + 같은 계산 도구
+- **주요 지표:** 정답+근거 셀 동시 정확도 / 정보 부족 F1 / 헤더 연결·좌표·단위 오류율 / 입력 token·이미지 해상도·전체 latency·비용
+- **구현 부담:** D2
+- **호출 추정:** 사례당·조건당 1–4회. 계산 함수 자체는 LLM 호출이 아니다. native workbook 직렬화와 screenshot-only OCR은 별도 실험 블록으로 둔다. Colab 실행 가능성은 후보 모델의 메모리 실측 뒤 판단한다.
+- **주의:** 이미지에 보이지 않는 수식·숨김 시트를 텍스트 조건에만 주면 정보량이 다르다. 필요한 값이 잘린 이미지도 별도 품질 조건으로 분리한다. 텍스트 전용 LLM까지 바꾸는 비교는 후속 시스템 비교다.
+- **확장:** 표 크기별 성능·비용 곡선 / 레이아웃 변형과 미지의 템플릿 일반화 / 표 특징 기반 표현 선택 router
+- **참고:** [P35 Texts or Images? A Fine-grained Analysis on the Effectiveness of Input Representations and Models for Table Question Answering](https://aclanthology.org/2025.findings-acl.117/), [P36 Encoding Spreadsheets for Large Language Models](https://aclanthology.org/2024.emnlp-main.1154/), [P38 SpreadsheetBench: Towards Challenging Real World Spreadsheet Manipulation](https://proceedings.neurips.cc/paper_files/paper/2024/hash/ac840df270ac537dd74530a15c332684-Abstract.html), [P46 TabVerse: Benchmarking Cross-Format Table Understanding in LLMs and VLMs](https://arxiv.org/abs/2606.09578)
+
+### MM4. 스프레드시트 생성·수정: 화면 조작과 구조적 도구
+
+- **문제:** 자연어로 지정한 표·수식을 실제 파일에 반영할 때 화면 기반 조작과 구조적 명령 실행 중 어떤 경로가 더 정확하고 경제적인가?
+- **업무:** Agent가 합성 workbook을 생성/수정하고 재계산 결과와 수정 금지 셀 보존 여부를 검사해 xlsx를 제출한다.
+- **예시:** 원본 거래 시트는 바꾸지 말고 새 요약 시트에 부서별 합계 수식과 월별 비교표를 만들어라.
+- **50개 구성:** 표 생성·단위 10개 / 조건별 집계 수식 10개 / 교차 시트 참조 10개 / 오류 수식의 제한 수정 10개 / 서식·변경 금지 영역 10개
+- **정답 정보:** 50개 독립 요청에 입력 workbook·기대 계산 결과·허용 변경 영역·의미가 같은 수식 허용 규칙을 작성한다. 각 요청에는 값을 바꾼 숨겨진 실행 테스트도 둔다.
+- **비교 조건:** 같은 VLM + 화면 관찰·제한된 UI 행동 → xlsx / 같은 VLM + 셀/수식 구조 관찰·제한된 코드/파일 API → xlsx / 선택적 기준선: 명세가 정형화된 하위집합의 결정론적 템플릿
+- **주요 지표:** 숨겨진 실행 테스트를 모두 통과한 task success / 정답 셀·수식 참조 정확도 / 비허용 변경 셀 비율 / 도구 호출 수·wall time·false completion rate
+- **구현 부담:** D3
+- **호출 추정:** 사례당·조건당 2–8회. UI와 파일 API는 관찰·행동 인터페이스를 함께 바꾸는 시스템 조건이다. 별도 Excel/LibreOffice 계산 엔진 및 격리 환경이 필요할 수 있다. 코드 경로만 다루면 범위를 줄일 수 있다.
+- **주의:** xlsx는 그림이 아니다. PNG 출력 모델과 수식이 작동하는 파일을 같은 기능 기준으로 채점하지 않는다. openpyxl의 수식 저장만으로 재계산 성공을 주장하지 않는다. 전체 파일 byte 일치 대신 의미와 비허용 변경을 검사한다.
+- **확장:** 수식 의존 그래프를 통한 오류 위치 탐색 / GUI/구조 관찰은 같게 두고 실행 도구만 바꾸는 ablation / 최소 수정과 실패 후 재개
+- **참고:** [P36 Encoding Spreadsheets for Large Language Models](https://aclanthology.org/2024.emnlp-main.1154/), [P37 SheetCopilot: Bringing Software Productivity to the Next Level through Large Language Models](https://proceedings.neurips.cc/paper_files/paper/2023/hash/0ff30c4bf31db0119a6219e0d250e037-Abstract-Conference.html), [P38 SpreadsheetBench: Towards Challenging Real World Spreadsheet Manipulation](https://proceedings.neurips.cc/paper_files/paper/2024/hash/ac840df270ac537dd74530a15c332684-Abstract.html)
+
+### MM5. 도식 생성: 픽셀 직접 생성과 SVG·Graphviz 렌더링
+
+- **문제:** 노드·연결·라벨이 정확해야 하는 시각 산출물에서 직접 이미지 생성과 실행 가능한 코드 생성의 장단점은 무엇인가?
+- **업무:** Agent가 자연어 업무 흐름을 해석해 도식을 만들고 모든 노드·엣지·라벨·배치 제약을 확인한다.
+- **예시:** 접수 → 검사 → 승인/반려 분기를 그리고, 반려는 접수로 돌아가며 각 화살표 방향과 한글 라벨을 유지하라.
+- **50개 구성:** 노드·라벨 일치 10개 / 방향·분기·루프 10개 / 위치·정렬 제약 10개 / 표·수치가 포함된 도식 10개 / 복합 관계·겹침 방지 10개
+- **정답 정보:** 50개의 독립 자연어 명세에 정답 관계 그래프·라벨·레이아웃 제약을 작성한다. 같은 최종 이미지 해상도에서 블라인드 관계 판정을 하고 코드가 있으면 구조 검사를 추가한다.
+- **비교 조건:** 출력 이미지 지원 모델 → raster 도식 (자격 조건 충족 시만) / 언어 모델 → 제한된 SVG/Graphviz → 고정 렌더러 / 멀티모달 모델 → 같은 코드/렌더러 (확장; 이미지 참고 조건은 분리)
+- **주요 지표:** 공통 최종 이미지의 필수 관계·라벨 동시 충족률 / 엣지/방향/라벨 정확도·겹침률 / 구문·렌더 성공률과 편집 가능성 (별도) / 시간·비용
+- **구현 부담:** D2
+- **호출 추정:** 사례당·조건당 1–3회. 제한된 Graphviz 문법과 코드 경로는 비교적 작게 구현할 수 있다. native 이미지 모델까지 넣으면 GPU·검수 부담이 커져 D3가 될 수 있다. 렌더러 설치·폰트·라이선스는 실행 전 확인.
+- **주의:** VGBench·StarVector는 직접 이미지 생성이 항상 나쁘다는 증거가 아니다. 코드에서만 읽은 edge gold와 raster OCR 결과를 그대로 맞비교하지 않는다. 픽셀 유사도는 관계 정확성의 대체 지표가 아니다.
+- **확장:** 다이어그램 이미지 재구성과 자연어 신규 생성 분리 / 한글·영문 라벨과 해상도 강건성 / 후속 편집 요청의 정확성·비용
+- **참고:** [P42 VGBench: Evaluating Large Language Models on Vector Graphics Understanding and Generation](https://aclanthology.org/2024.emnlp-main.213/), [P43 StarVector: Generating Scalable Vector Graphics Code from Images and Text](https://openaccess.thecvf.com/content/CVPR2025/html/Rodriguez_StarVector_Generating_Scalable_Vector_Graphics_Code_from_Images_and_Text_CVPR_2025_paper.html), [P44 Evaluating Constrained Iterative Refinement for Scalable Vector Graphics Generation with Off-the-Shelf VLMs](https://arxiv.org/abs/2608.28678)
+
+### MM6. 생성 후 검증: 구조 검사와 시각 피드백의 추가 가치
+
+- **문제:** 같은 코드 생성 경로에서 구조적 오류 메시지만으로 충분한가, 렌더링을 다시 보는 것이 실제로 추가 도움이 되는가?
+- **업무:** Agent가 초안 파일을 생성한 뒤 주어진 피드백 조건 안에서 한 번 수정하고 완료·보류를 판정한다. 악보·표·도식 중 한 도메인만 골라 시행한다.
+- **예시:** 도식의 문법은 맞지만 라벨이 겹친다. 구조 검사 결과와 렌더링 화면이 각각 수정 정확성에 어떤 도움을 주는지 비교한다.
+- **50개 구성:** 구문·렌더 오류 10개 / 구조·참조 오류 10개 / 시각 겹침·잘림 10개 / 의미·제약 오류 10개 / 수정 불필요·정상 보존 10개
+- **정답 정보:** 직접 작성한 50개 명세와 사람이 오류 유형을 확인한 공통 초안을 둔다. 조건별 동일 초안·허용 수정·정답 제약을 유지하며 최종 테스트 정답은 feedback에 노출하지 않는다.
+- **비교 조건:** 고정 초안 → 추가 정보 없는 자기 검토 1회 / 같은 초안 → 구조/실행 검사 피드백 → 수정 1회 / 같은 초안 → 같은 검사 피드백+렌더 이미지 → 수정 1회
+- **주요 지표:** 동일 초안 대비 수정 후 task success 증감 / 잘못 고친 비율·정상 사례 손상률·false completion / 수정 1건당 token·GPU 시간·latency / 개선 1건당 추가 비용
+- **구현 부담:** D2
+- **호출 추정:** 사례당·조건당 1–2회. 주 비교는 동일 모델의 동일 수정 호출 1회로 맞춘다. 공통 초안을 모델로 만들면 초안 생성 호출은 별도 기록하고 모든 조건에서 재사용한다. 무검토 초안은 비용 0의 참고 기준선이다.
+- **주의:** 검사 결과와 이미지가 제공하는 정보 차이는 의도한 독립 변수다. VLM 대신 다른 LLM을 쓰면 순수 시각 피드백 효과로 해석하지 않는다. 좋아질 때까지 반복하거나 숨겨진 정답 검사 결과를 feedback으로 돌려주지 않는다.
+- **확장:** 렌더링 재관찰을 선택하는 비용 제한 router / 구조화된 피드백 길이·오류 위치 정보 비교 / 도메인 하나에서 검증 후 다른 기호 체계로 전이
+- **참고:** [P38 SpreadsheetBench: Towards Challenging Real World Spreadsheet Manipulation](https://proceedings.neurips.cc/paper_files/paper/2024/hash/ac840df270ac537dd74530a15c332684-Abstract.html), [P41 ABC-Eval: Benchmarking Large Language Models on Symbolic Music Understanding and Instruction Following](https://arxiv.org/abs/2509.23350), [P43 StarVector: Generating Scalable Vector Graphics Code from Images and Text](https://openaccess.thecvf.com/content/CVPR2025/html/Rodriguez_StarVector_Generating_Scalable_Vector_Graphics_Code_from_Images_and_Text_CVPR_2025_paper.html), [P44 Evaluating Constrained Iterative Refinement for Scalable Vector Graphics Generation with Off-the-Shelf VLMs](https://arxiv.org/abs/2608.28678)
+
 ## 참고자료의 확인 수준
 
-아래에는 34편의 논문과 LLM Wiki 아이디어 자료 1건이 포함됩니다. 학회/저널, 워크숍, preprint, 실무 아이디어를 구분합니다.
+아래에는 논문 46편과 아이디어 자료 1건이 포함됩니다. 학회/저널, 워크숍/포스터, preprint, 실무 아이디어를 구분합니다.
 
 ### P01. Operational Advice for Dense and Sparse Retrievers: HNSW, Flat, or Inverted Indexes?
 
@@ -726,3 +822,135 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - [원문](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
 - 연결 아이디어: 원본과 별도로 LLM이 연결된 Wiki를 정리·갱신하는 운영 패턴이다.
 - 주의: 논문이 아니라 실무 아이디어. Wiki 생성 비용·왜곡·출처와 갱신 비용까지 연구 대상으로 삼는다.
+
+### P35. Texts or Images? A Fine-grained Analysis on the Effectiveness of Input Representations and Models for Table Question Answering
+
+- Findings of ACL 2025
+- [원문](https://aclanthology.org/2025.findings-acl.117/)
+- 연결 아이디어: 표의 크기·질문 복잡도에 따라 이미지/텍스트 및 LLM/MLLM 조합을 비교하고 표현 선택 FRES를 제안한다.
+- 주의: 공식 초록·원문 검색 발췌 확인. 입력 표현 연구이며 파일 생성이나 도구 실행의 우열을 직접 검증한 논문은 아니다.
+
+- 저자: Wei Zhou, Mohsen Mesgar, Heike Adel, Annemarie Friedrich
+- 확인일: 2026-10-14
+- 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
+
+### P36. Encoding Spreadsheets for Large Language Models
+
+- EMNLP 2024; SpreadsheetLLM 계열
+- [원문](https://aclanthology.org/2024.emnlp-main.1154/)
+- 연결 아이디어: 셀 주소·값·서식을 직렬화하고 구조 기반 압축으로 토큰 부담을 줄이는 SheetEncoder를 제안한다.
+- 주의: 공식 초록 확인. arXiv의 SheetCompressor와 출판본 명칭을 구분한다. 압축·표 탐지 결과가 모든 수식 업무의 정확성을 보장하지 않는다.
+
+- 저자: Haoyu Dong et al.
+- 확인일: 2026-10-14
+- 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
+
+### P37. SheetCopilot: Bringing Software Productivity to the Next Level through Large Language Models
+
+- NeurIPS 2023
+- [원문](https://proceedings.neurips.cc/paper_files/paper/2023/hash/0ff30c4bf31db0119a6219e0d250e037-Abstract-Conference.html)
+- 연결 아이디어: 자연어 요청을 원자적 스프레드시트 동작과 상태 기반 계획으로 연결하고 자동 평가한다.
+- 주의: 공식 초록 확인. 범용 GUI 조작 모델 또는 이미지 생성 모델 자체의 논문으로 해석하지 않는다. 로컬 구현·환경 호환성은 미검증.
+
+- 저자: Hongxin Li, Jingran Su, Yuntao Chen, Qing Li, Zhaoxiang Zhang
+- 확인일: 2026-10-14
+- 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
+
+### P38. SpreadsheetBench: Towards Challenging Real World Spreadsheet Manipulation
+
+- NeurIPS Datasets and Benchmarks 2024
+- [원문](https://proceedings.neurips.cc/paper_files/paper/2024/hash/ac840df270ac537dd74530a15c332684-Abstract.html)
+- 연결 아이디어: 실제 Excel 질문을 바탕으로 복잡한 표 조작을 평가하고 한 지시에 여러 입력·출력 테스트를 둔다.
+- 주의: 공식 초록·원문 도입부 확인. 공개 benchmark 사례를 그대로 가져오는 것은 직접 작성 50개를 대체하지 않는다. 실행 결과 일치와 일반적인 수식 동치 증명은 다르다.
+
+- 저자: Zeyao Ma et al.
+- 확인일: 2026-10-14
+- 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
+
+### P39. NOTA: Multimodal Music Notation Understanding for Visual Large Language Model
+
+- Findings of NAACL 2025
+- [원문](https://aclanthology.org/2025.findings-naacl.399/)
+- 연결 아이디어: 악보 이미지와 ABC 기호의 정렬 및 음악 정보 추출·분석을 위한 데이터와 NotaGPT를 제시한다.
+- 주의: 공식 초록 확인. 음악 기호 이해 연구를 직접 악보 픽셀 생성 또는 범용 악보 편집의 성능 증거로 확대하지 않는다.
+
+- 저자: Mingni Tang et al.
+- 확인일: 2026-10-14
+- 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
+
+### P40. ChatMusician: Understanding and Generating Music Intrinsically with LLM
+
+- Findings of ACL 2024
+- [원문](https://aclanthology.org/2024.findings-acl.373/)
+- 연결 아이디어: ABC 기보법을 텍스트 호환 표현으로 다루어 음악 이해와 생성을 학습한다.
+- 주의: 공식 초록 확인. 음악 특화 학습 모델과 범용 VLM의 차이는 모달리티뿐 아니라 학습 데이터 차이도 포함한다. ABC는 자연어 문장이 아니라 형식 기호다.
+
+- 저자: Ruibin Yuan et al.
+- 확인일: 2026-10-14
+- 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
+
+### P41. ABC-Eval: Benchmarking Large Language Models on Symbolic Music Understanding and Instruction Following
+
+- arXiv preprint, 2025-09-27
+- [원문](https://arxiv.org/abs/2509.23350)
+- 연결 아이디어: ABC 악보의 이해·지시 준수 태스크를 나누어 평가하는 틀을 제시한다.
+- 주의: arXiv 초록·서지 확인. 이번 확인 범위에서 학회 게재 여부를 별도로 확정하지 않았다. 자체 데이터에 동일 성능을 기대하거나 음악적 미감을 객관 점수로 대체하지 않는다.
+
+- 저자: Jiahao Zhao, Yunjia Li, Wei Li, Kazuyoshi Yoshii
+- 확인일: 2026-10-14
+- 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
+
+### P42. VGBench: Evaluating Large Language Models on Vector Graphics Understanding and Generation
+
+- EMNLP 2024
+- [원문](https://aclanthology.org/2024.emnlp-main.213/)
+- 연결 아이디어: SVG·TikZ·Graphviz 등의 텍스트 기반 벡터 표현으로 이해·생성을 평가하며 raster 입력 VLM과 연결해 비교한다.
+- 주의: 공식 초록·원문 검색 발췌 확인. 텍스트로 표현 가능한 시각 작업의 근거이지, raster 생성 대 코드 생성에서 어느 쪽이 보편적으로 우세하다는 증거는 아니다.
+
+- 저자: Bocheng Zou, Mu Cai, Jianrui Zhang, Yong Jae Lee
+- 확인일: 2026-10-14
+- 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
+
+### P43. StarVector: Generating Scalable Vector Graphics Code from Images and Text
+
+- CVPR 2025; 이 항목은 CVPR 출판본 기준
+- [원문](https://openaccess.thecvf.com/content/CVPR2025/html/Rodriguez_StarVector_Generating_Scalable_Vector_Graphics_Code_from_Images_and_Text_CVPR_2025_paper.html)
+- 연결 아이디어: 멀티모달 모델이 이미지·텍스트를 받아 SVG 코드를 출력한다. 멀티모달과 코드 생성은 양자택일이 아니다.
+- 주의: 공식 초록 확인. 픽셀 지표만으로 벡터 구조를 충분히 평가하기 어렵다. 체크포인트·의존성·현재 GPU 실행 가능성은 확인하지 않았다.
+
+- 저자: Juan A. Rodriguez et al.
+- 확인일: 2026-10-14
+- 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
+
+### P44. Evaluating Constrained Iterative Refinement for Scalable Vector Graphics Generation with Off-the-Shelf VLMs
+
+- arXiv 2026-08-26; arXiv Comments에 Pacific Graphics 2026 Poster Track 채택 표기
+- [원문](https://arxiv.org/abs/2608.28678)
+- 연결 아이디어: 렌더링·시각 피드백·구조적 편집·제약 디코딩을 결합한 SVG 생성 harness의 효과와 한계를 연구한다.
+- 주의: arXiv 초록·Comments 확인. 2쪽 포스터이며 본회의 장문 논문으로 부르지 않는다. 시각 피드백 반복이 항상 개선한다는 가설을 경계하는 자료다.
+
+- 저자: Matthew Perlman, James Beetham, Niels Da Vitoria Lobo, Amrit Singh Bedi, Mubarak Shah
+- 확인일: 2026-10-14
+- 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
+
+### P45. Musical Score Understanding Benchmark: Evaluating Large Language Models’ Comprehension of Complete Musical Scores
+
+- ACL 2026
+- [원문](https://aclanthology.org/2026.acl-long.493/)
+- 연결 아이디어: 완곡 악보를 ABC 텍스트와 PDF 시각 표현으로 제공하고 음높이·리듬·화성·구조 이해를 평가한다.
+- 주의: 공식 초록 확인. 1,800 QA의 저자 benchmark이며 우리 50개 단편 사례와 난도가 같지 않다. 이해 평가이지 native 악보 이미지 생성 평가가 아니다.
+
+- 저자: Congren Dai et al.
+- 확인일: 2026-10-14
+- 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
+
+### P46. TabVerse: Benchmarking Cross-Format Table Understanding in LLMs and VLMs
+
+- arXiv preprint, 2026-06
+- [원문](https://arxiv.org/abs/2606.09578)
+- 연결 아이디어: 같은 표 내용을 HTML·Markdown·LaTeX 및 렌더링 이미지로 정렬하여 QA·구조 이해·재구성을 비교한다.
+- 주의: arXiv 초록·도입부·검색 발췌 확인. 내용 고정 비교의 참고 자료이며 최신 preprint의 결과를 모든 모델에 일반화하지 않는다.
+
+- 저자: Momina Ahsan, Sarfraz Ahmad, Ming Shan Hee, Roy Ka-Wei Lee, Preslav Nakov
+- 확인일: 2026-10-14
+- 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
