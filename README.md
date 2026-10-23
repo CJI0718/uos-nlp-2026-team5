@@ -8,7 +8,7 @@
 ## 처음 오셨다면
 
 1. [협업 안내](CONTRIBUTING.md)를 읽습니다. Git 명령어를 몰라도 웹에서 시작할 수 있습니다.
-2. [36개 연구 후보](docs/research/candidates.md)를 읽고 관심 있는 후보 ID와 이유를 Issues에 남깁니다.
+2. [49개 연구 후보](docs/research/candidates.md) 또는 [통합 HTML Research Atlas](docs/research/research_catalog.html)를 읽고 관심 있는 후보 ID와 이유를 Issues에 남깁니다.
 3. 새 작업은 Issue로 목적과 완료 기준을 정한 뒤, 작업용 branch에서 진행합니다.
 4. 변경은 PR로 제안하고 다른 팀원이 확인한 뒤 main에 합칩니다.
 
@@ -29,14 +29,25 @@
 
 ## 현재 조사 범위
 
-RAG, ReAct, 메모리, LLM/Agent alignment, Harness, 멀티모달 입력·기호/도구 생성을 각각 6개 후보로 정리했습니다.
+RAG, ReAct, 메모리, LLM/Agent alignment, Harness, 멀티모달 입력·기호/도구 생성의 기존 36개에 **적응적 업무 X1–X7**과 **강화학습·멀티모달 RL1–RL6**을 더해 **8개 주제군·49개 후보**를 정리했습니다.
+
+2026-10-23 추가: [Agent의 필요성을 검증하는 업무 7가지](docs/research/agent_tasks_20261023.md), [강화학습·멀티모달 연계 6가지](docs/research/rl_multimodal_20261023.md). 참고자료는 논문 58편·아이디어 1건·공식 문서 1건입니다. 모두 연구 제안이며 모델·예산·최종 주제는 미확정입니다.
+
+### 팀 논의용 HTML 사용법
+
+1. [Research Atlas 파일](docs/research/research_catalog.html)을 열고 **Download raw file**로 내려받아 브라우저에서 엽니다. GitHub 파일 화면은 HTML을 실행하지 않습니다.
+2. 배경 이론과 후보·논문을 검색하고, 관심 후보를 최대 4개 **비교에 담기**로 나란히 봅니다.
+3. 후보별 의견을 적고 **Markdown 내보내기**로 받은 파일을 PR·Issue에 공유합니다.
+
+HTML 한 파일에 CSS·JavaScript·데이터·상세 리서치가 들어 있어 오프라인으로 읽을 수 있습니다. 논문 원문 링크는 인터넷이 필요합니다. 메모는 현재 브라우저에만 저장되며 팀원과 자동 동기화되지 않습니다. GitHub Pages·외부 호스팅은 설정하지 않았습니다.
 
 2026-10-14 추가: 악보·스프레드시트·도식에서 **직접 시각 처리와 구조화된 기호·도구 경로를 어떻게 공정하게 비교할지** 조사했습니다. [새 비교 설계와 논문 12편 메모](docs/research/multimodal_comparison.md)를 먼저 읽고 MM1–MM6 후보를 살펴볼 수 있습니다. 주제·모델·예산을 확정하거나 실험을 실행한 것은 아닙니다.
 
 - [GitHub에서 바로 읽는 후보집](docs/research/candidates.md)
 - [구조화된 후보 원자료](docs/research/candidates.json)
-- [HTML 후보집](docs/research/research_catalog.html) — 파일을 내려받아 브라우저에서 열면 상세 내용을 볼 수 있습니다.
-- 최초 조사: 2026-10-11. 멀티모달 추가 조사: 2026-10-14. 기존 자료 전체를 재검증한 것은 아니며, 논문 사실·제안·실험 결과를 구분합니다.
+- [HTML Research Atlas](docs/research/research_catalog.html) — 전체 지도·배경 이론·49개 후보·60개 자료·비교·논의 노트
+- [추가 조사·통합 변경 기록](docs/research/update_20261023.md)
+- 최초 조사: 2026-10-11. 멀티모달 추가: 2026-10-14. 적응 업무·RL 연계 추가: 2026-10-23. 기존 자료 전체를 재검증한 것은 아니며, 논문 사실·제안·실험 결과를 구분합니다.
 
 ## 연구 진행 순서
 

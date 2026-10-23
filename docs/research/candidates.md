@@ -1,14 +1,14 @@
-# AI Agents 연구 후보 36개
+# AI Agents 연구 후보 49개
 
-최초 조사: 2026-10-11. 최근 추가: 2026-10-14. 주제 미선정 · 실험 미실행.
+최초 조사: 2026-10-11. 최근 추가: 2026-10-23. 주제 미선정 · 실험 미실행.
 
 이 문서는 원논문/공식 자료를 탐색해 만든 연구 제안입니다. 모든 논문 전문 정독이나 구현 재현을 했다는 뜻이 아닙니다. 최근 추가가 기존 논문 전체의 재검증을 뜻하지는 않습니다.
 
 각 후보의 50개는 작성할 평가 사례 구성안이며, 이미 데이터가 존재한다는 뜻이 아닙니다.
 
-D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계획용 추정으로 구축·judge 비용은 별도입니다.
+D1=비교적 낮음, D2=중간, D3=높음. 호출량은 각 카드의 평가 단위당·조건당 계획용 추정으로 구축·학습·judge 비용은 별도입니다. X4는 선택 라운드당이며 평가 문장 50개를 실행 50회로 계산하지 않습니다.
 
-새 주제: [멀티모달 입력·기호/도구 생성 비교 설계와 논문 메모](multimodal_comparison.md)
+[통합 HTML](research_catalog.html) · [멀티모달 비교](multimodal_comparison.md) · [X1–X7 상세](agent_tasks_20261023.md) · [RL1–RL6 상세](rl_multimodal_20261023.md)
 
 ## RAG와 검색 기반 문제 해결
 
@@ -24,7 +24,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** Kiwi+BM25 / 고정 embedding dense / BM25+dense hybrid
 - **주요 지표:** Recall@5·nDCG@10 / 답 정확도·인용 정확성 / 구축 시간·검색 p50/p95·인덱스 크기
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 1–3회. BM25-only 검색 실험은 생성 호출 0회. 임베딩 계산·인덱스 구축은 별도.
+- **호출 추정:** 평가 사례당·조건당 1–3회. BM25-only 검색 실험은 생성 호출 0회. 임베딩 계산·인덱스 구축은 별도.
 - **주의:** 규모·청킹·모델을 동시에 바꾸지 않는다. BM25와 DB 제품 자체를 같은 층의 대안으로 비교하지 않는다.
 - **확장:** 한국어/영어 도메인 전이 / Flat/HNSW 규모 비교 / 질문 유형별 검색 router
 - **참고:** [P01 Operational Advice for Dense and Sparse Retrievers: HNSW, Flat, or Inverted Indexes?](https://aclanthology.org/2025.acl-industry.61/), [P02 BEIR: A Heterogeneous Benchmark for Zero-shot Evaluation of Information Retrieval Models](https://datasets-benchmarks-proceedings.neurips.cc/paper/2021/hash/65b9eea6e1cc6bb9f0cd2a47751a186f-Abstract-round2.html), [P09 Balancing the Blend: An Experimental Analysis of Trade-Offs in Hybrid Search](https://dl.acm.org/doi/abs/10.14778/3811243.3811246), [P10 BM25 Wins at Scale: A Scaling Study of Retrieval-Augmented Generation Paradigms](https://arxiv.org/abs/2607.26497)
@@ -39,7 +39,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 한 번 검색 후 판정 / 질문 분해 후 재검색 / 판정·근거 검증 후 한 번 보완
 - **주요 지표:** Macro-F1 / 판정+충분한 근거 동시 성공률 / 정보 부족 F1·불필요 재검색 수
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 2–6회. 판정은 코드로, 근거의 충분성은 작성자·검토자가 확인할 수 있어 별도 Judge 호출이 필수는 아니다.
+- **호출 추정:** 평가 사례당·조건당 2–6회. 판정은 코드로, 근거의 충분성은 작성자·검토자가 확인할 수 있어 별도 Judge 호출이 필수는 아니다.
 - **주의:** 같은 사건명이나 단어 겹침을 증거의 참·거짓 정답으로 대신하지 않는다.
 - **확장:** 조건·예외가 있는 규정 / 상반된 출처 비교 / 수치 주장 검증
 - **참고:** [P03 FEVER: a Large-scale Dataset for Fact Extraction and VERification](https://aclanthology.org/N18-1074/), [P04 Enabling Large Language Models to Generate Text with Citations (ALCE)](https://aclanthology.org/2023.emnlp-main.398/), [P11 ReAct: Synergizing Reasoning and Acting in Language Models](https://react-lm.github.io/)
@@ -54,7 +54,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 원문 청크 RAG / 계층 요약 RAG / GraphRAG 또는 Wiki 보조 검색
 - **주요 지표:** 필수 사실 포함률 / 주장별 근거 일치율 / 누락·모순률·구축/질의 토큰
 - **구현 부담:** D3
-- **호출 추정:** 사례당·조건당 3–10회. 그래프·트리·Wiki 구축과 갱신에 문서 수 비례 추가 호출. 질의 비용만으로 비교하지 않는다.
+- **호출 추정:** 평가 사례당·조건당 3–10회. 그래프·트리·Wiki 구축과 갱신에 문서 수 비례 추가 호출. 질의 비용만으로 비교하지 않는다.
 - **주의:** 평가 질문·정답을 요약 구조 생성에 제공하면 누설된다. 두-hop과 전체 경향 질문은 구분한다.
 - **확장:** RAPTOR/GraphRAG/LightRAG / 원문+Wiki 교차 검증 / 구조 갱신 비용
 - **참고:** [P06 RAPTOR: Recursive Abstractive Processing for Tree-Organized Retrieval](https://arxiv.org/abs/2401.18059), [P07 From Local to Global: A GraphRAG Approach to Query-Focused Summarization](https://arxiv.org/abs/2404.16130), [P08 LightRAG: Simple and Fast Retrieval-Augmented Generation](https://aclanthology.org/2025.findings-emnlp.568/), [I01 LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
@@ -69,7 +69,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 단순 텍스트 추출 / 표·제목 구조 보존 / 구조 보존+계산 도구
 - **주요 지표:** 핵심 필드 추출 정확도 / 수치·단위 동시 정답률 / 근거 회수율·파싱 시간
 - **구현 부담:** D3
-- **호출 추정:** 사례당·조건당 2–6회. 텍스트 PDF는 로컬 처리 가능. OCR·비전 모델을 쓰면 페이지 단위 비용이 별도 발생한다.
+- **호출 추정:** 평가 사례당·조건당 2–6회. 텍스트 PDF는 로컬 처리 가능. OCR·비전 모델을 쓰면 페이지 단위 비용이 별도 발생한다.
 - **주의:** 파서 비교에서는 후속 retriever를 고정한다. 일부러 만든 깨끗한 문서만으로 실제 PDF 전체에 일반화하지 않는다.
 - **확장:** 재무 공시·규정·제품 규격서 / OCR 유무 / 청킹과 표 행 분리
 - **참고:** [P33 OmniDocBench: Benchmarking Diverse PDF Document Parsing with Comprehensive Annotations](https://openaccess.thecvf.com/content/CVPR2025/html/Ouyang_OmniDocBench_Benchmarking_Diverse_PDF_Document_Parsing_with_Comprehensive_Annotations_CVPR_2025_paper.html), [P34 TAT-QA: A Question Answering Benchmark on a Hybrid of Tabular and Textual Content in Finance](https://aclanthology.org/2021.acl-long.254/), [P04 Enabling Large Language Models to Generate Text with Citations (ALCE)](https://aclanthology.org/2023.emnlp-main.398/)
@@ -84,7 +84,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 날짜 무시 검색 / 시간·버전 필터 검색 / 원문+갱신 Wiki/graph
 - **주요 지표:** 시점별 답 정확도 / 구버전 오인용률 / 갱신 시간·추가 토큰·누락률
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 2–5회. Wiki·graph 갱신비는 독립 기록. 라이브 웹 대신 날짜가 고정된 문서 묶음으로 시작할 수 있다.
+- **호출 추정:** 평가 사례당·조건당 2–5회. Wiki·graph 갱신비는 독립 기록. 라이브 웹 대신 날짜가 고정된 문서 묶음으로 시작할 수 있다.
 - **주의:** 게시일과 효력 발생일을 구분한다. 검색일이 달라져 자료가 바뀌는 실험은 비교가 흔들린다.
 - **확장:** 증분 색인 / 철회·수정 반영 / 출처 우선순위 판단
 - **참고:** [P08 LightRAG: Simple and Fast Retrieval-Augmented Generation](https://aclanthology.org/2025.findings-emnlp.568/), [P16 LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory](https://proceedings.iclr.cc/paper_files/paper/2025/hash/d813d324dbf0598bbdc9c8e79740ed01-Abstract-Conference.html), [I01 LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
@@ -99,7 +99,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 고정 1회 검색 / 고정 다회 검색 / 예산 내 적응형 검색
 - **주요 지표:** 성공률-토큰 곡선 / 보류 precision/recall / 성공 한 건당 비용·한도 초과율
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 2–8회. router도 모델을 쓰면 그 호출을 포함한다. 무료 API의 rate limit도 실패 원인으로 기록한다.
+- **호출 추정:** 평가 사례당·조건당 2–8회. router도 모델을 쓰면 그 호출을 포함한다. 무료 API의 rate limit도 실패 원인으로 기록한다.
 - **주의:** 검색을 줄인 대신 추측해서 맞힌 답과 근거를 갖춘 답을 구분한다.
 - **확장:** confidence 기반 중단 / 오류 유형별 재검색 / 품질 하한을 둔 비용 최적화
 - **참고:** [P05 Adaptive-RAG: Learning to Adapt Retrieval-Augmented Large Language Models through Question Complexity](https://aclanthology.org/2024.naacl-long.389/), [P04 Enabling Large Language Models to Generate Text with Citations (ALCE)](https://aclanthology.org/2023.emnlp-main.398/), [P10 BM25 Wins at Scale: A Scaling Study of Retrieval-Augmented Generation Paradigms](https://arxiv.org/abs/2607.26497)
@@ -118,7 +118,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 고정 workflow / Act-only 도구 선택 / 계획·관찰 갱신을 포함한 ReAct
 - **주요 지표:** 목표 상태 달성률 / 필수 선행조건 준수율 / 불필요 호출 수·종료 시간
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 3–8회. 모든 API는 로컬 모의 도구로 만들 수 있다. 자연어 사용자 simulator는 별도 호출 없이 고정 응답으로 대체 가능하다.
+- **호출 추정:** 평가 사례당·조건당 3–8회. 모든 API는 로컬 모의 도구로 만들 수 있다. 자연어 사용자 simulator는 별도 호출 없이 고정 응답으로 대체 가능하다.
 - **주의:** 계획 설명이 좋아도 실제 상태가 바뀌지 않으면 성공이 아니다.
 - **확장:** 일정·재고·반품 / 병렬 가능한 행동 식별 / 권한 조건 포함
 - **참고:** [P11 ReAct: Synergizing Reasoning and Acting in Language Models](https://react-lm.github.io/), [P12 ToolSandbox: A Stateful, Conversational, Interactive Evaluation Benchmark for LLM Tool Use Capabilities](https://aclanthology.org/2025.findings-naacl.65/), [P13 tau-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains](https://proceedings.iclr.cc/paper_files/paper/2025/hash/1b126cc38b8638e07bef37e7b2bb72bf-Abstract-Conference.html)
@@ -133,7 +133,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 한 번에 계획 / 단계별 관찰·계산 / 명시적 제약 체크리스트
 - **주요 지표:** 모든 제약 충족률 / 수치 정확도 / 최적해 대비 비용 차이·도구 호출
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 3–7회. 정답을 작은 열거 프로그램으로 확인할 수 있다. 실제 결제·예약은 필요 없다.
+- **호출 추정:** 평가 사례당·조건당 3–7회. 정답을 작은 열거 프로그램으로 확인할 수 있다. 실제 결제·예약은 필요 없다.
 - **주의:** 추천 문장의 설득력보다 하드 제약 만족을 먼저 채점한다.
 - **확장:** 구독료 비교 / 장비 대여 / 여행 일정의 시간 제약
 - **참고:** [P11 ReAct: Synergizing Reasoning and Acting in Language Models](https://react-lm.github.io/), [P12 ToolSandbox: A Stateful, Conversational, Interactive Evaluation Benchmark for LLM Tool Use Capabilities](https://aclanthology.org/2025.findings-naacl.65/), [P13 tau-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains](https://proceedings.iclr.cc/paper_files/paper/2025/hash/1b126cc38b8638e07bef37e7b2bb72bf-Abstract-Conference.html), [P34 TAT-QA: A Question Answering Benchmark on a Hybrid of Tabular and Textual Content in Finance](https://aclanthology.org/2021.acl-long.254/)
@@ -148,7 +148,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 재시도 없음 / 고정 재시도 상한 / 오류 분류+상태 확인
 - **주요 지표:** 복구 성공률 / 중복·손상률 / 추가 호출·안전 중단률
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 4–10회. 이후 승인된 실험에서만 재시도 조건을 실행한다. 장애 주입은 모의 도구에서 고정한다.
+- **호출 추정:** 평가 사례당·조건당 4–10회. 이후 승인된 실험에서만 재시도 조건을 실행한다. 장애 주입은 모의 도구에서 고정한다.
 - **주의:** 시스템에 넣은 timeout과 실제 공급자 장애를 섞어 원인을 해석하지 않는다.
 - **확장:** 장기 작업 재개 / idempotency / 재시도 예산 배분
 - **참고:** [P12 ToolSandbox: A Stateful, Conversational, Interactive Evaluation Benchmark for LLM Tool Use Capabilities](https://aclanthology.org/2025.findings-naacl.65/), [P13 tau-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains](https://proceedings.iclr.cc/paper_files/paper/2025/hash/1b126cc38b8638e07bef37e7b2bb72bf-Abstract-Conference.html), [P15 Reflexion: Language Agents with Verbal Reinforcement Learning](https://proceedings.neurips.cc/paper_files/paper/2023/hash/1b44b878bb782e6954cd888628510e90-Abstract.html), [P27 SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering](https://arxiv.org/abs/2405.15793)
@@ -163,7 +163,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 항상 질문 / 질문 없이 수행 / 불확실성별 선택 질문
 - **주요 지표:** 최종 성공률 / 필수 확인 누락률 / 불필요 질문률·대화 턴 수
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 2–6회. 사용자 응답을 사람이 미리 작성하면 simulator 비용과 변동을 줄일 수 있다.
+- **호출 추정:** 평가 사례당·조건당 2–6회. 사용자 응답을 사람이 미리 작성하면 simulator 비용과 변동을 줄일 수 있다.
 - **주의:** 질문 횟수만 최소화하면 무단 추측이 늘 수 있어 안전·성공 지표를 함께 본다.
 - **확장:** 수신자 확인 / 조건 협상 / 불가능한 요청 설명
 - **참고:** [P12 ToolSandbox: A Stateful, Conversational, Interactive Evaluation Benchmark for LLM Tool Use Capabilities](https://aclanthology.org/2025.findings-naacl.65/), [P13 tau-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains](https://proceedings.iclr.cc/paper_files/paper/2025/hash/1b126cc38b8638e07bef37e7b2bb72bf-Abstract-Conference.html)
@@ -178,7 +178,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 전체 도구 노출 / 도구 설명 정돈 / 과제별 후보 도구 필터
 - **주요 지표:** 도구 선택 정확도 / 인자 유효율 / 위험 오호출률·성공률
 - **구현 부담:** D1
-- **호출 추정:** 사례당·조건당 2–6회. 모의 함수와 JSON schema로 평가 가능하다. 도구 설명의 입력 토큰 비용이 증가할 수 있다.
+- **호출 추정:** 평가 사례당·조건당 2–6회. 모의 함수와 JSON schema로 평가 가능하다. 도구 설명의 입력 토큰 비용이 증가할 수 있다.
 - **주의:** 후보 필터가 정답 도구를 정답지에서 알려주는 oracle이 되지 않도록 한다.
 - **확장:** 한국어·영어 도구 설명 / 도구 검색 / API 명칭의 모호성
 - **참고:** [P12 ToolSandbox: A Stateful, Conversational, Interactive Evaluation Benchmark for LLM Tool Use Capabilities](https://aclanthology.org/2025.findings-naacl.65/), [P29 AgentIF: Benchmarking Instruction Following of Large Language Models in Agentic Scenarios](https://proceedings.neurips.cc/paper_files/paper/2025/hash/51bb3a8a33610a25aae074bfc51b1b1f-Abstract-Datasets_and_Benchmarks_Track.html), [P27 SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering](https://arxiv.org/abs/2405.15793)
@@ -193,7 +193,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 직접 API / DOM 기반 조작 / 시각 기반 조작 또는 DOM+검증
 - **주요 지표:** 최종 상태 성공률 / 오조작·부작용률 / 행동 수·지연·이미지 입력 비용
 - **구현 부담:** D3
-- **호출 추정:** 사례당·조건당 5–15회. 브라우저 환경 구축·reset·시각 모델 입력이 추가 부담. 기존 서비스의 실제 계정은 사용하지 않는다.
+- **호출 추정:** 평가 사례당·조건당 5–15회. 브라우저 환경 구축·reset·시각 모델 입력이 추가 부담. 기존 서비스의 실제 계정은 사용하지 않는다.
 - **주의:** API와 UI의 기능·권한 차이를 모델 성능 차이로 단정하지 않는다.
 - **확장:** 접근성 / 레이아웃 변화 / 복구 가능한 UI 자동화
 - **참고:** [P14 WebArena: A Realistic Web Environment for Building Autonomous Agents](https://arxiv.org/abs/2307.13854), [P12 ToolSandbox: A Stateful, Conversational, Interactive Evaluation Benchmark for LLM Tool Use Capabilities](https://aclanthology.org/2025.findings-naacl.65/), [P27 SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering](https://arxiv.org/abs/2405.15793)
@@ -212,7 +212,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 최근 대화만 / 누적 요약 / 검색 가능한 구조화 사실 기억
 - **주요 지표:** 현재 조건 충족률 / 오래된 기억 사용률 / 미상 정보 보류 정확도·입력 토큰
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 2–6회. 초기 이력의 기억 추출·요약 비용이 별도. 실제 사용자의 민감 대화 없이 합성 기록으로 평가한다.
+- **호출 추정:** 평가 사례당·조건당 2–6회. 초기 이력의 기억 추출·요약 비용이 별도. 실제 사용자의 민감 대화 없이 합성 기록으로 평가한다.
 - **주의:** Agent가 사용자 특성을 임의 추론한 것을 기억 성공으로 세지 않는다.
 - **확장:** 여행·학습·작업 스타일 / 예외 우선순위 / 개인화와 과잉 추측
 - **참고:** [P16 LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory](https://proceedings.iclr.cc/paper_files/paper/2025/hash/d813d324dbf0598bbdc9c8e79740ed01-Abstract-Conference.html), [P17 Evaluating Very Long-Term Conversational Memory of LLM Agents (LoCoMo)](https://aclanthology.org/2024.acl-long.747/), [P19 MemoryBank: Enhancing Large Language Models with Long-Term Memory](https://ojs.aaai.org/index.php/AAAI/article/view/29946)
@@ -227,7 +227,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 전체 로그 제공 / 서술 요약 / 시간·상태가 있는 이벤트 기억
 - **주요 지표:** 현재 상태 필드 정확도 / 시간 순서 정확도 / 누락·취소 업무 부활률
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 2–7회. 긴 로그를 매번 입력하는 비용과 미리 상태를 만드는 비용을 분리한다.
+- **호출 추정:** 평가 사례당·조건당 2–7회. 긴 로그를 매번 입력하는 비용과 미리 상태를 만드는 비용을 분리한다.
 - **주의:** 미래 세션이나 정답 timeline을 메모리 입력에 노출하지 않는다.
 - **확장:** 연구노트 / 인수인계 / 문서 버전 관리
 - **참고:** [P16 LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory](https://proceedings.iclr.cc/paper_files/paper/2025/hash/d813d324dbf0598bbdc9c8e79740ed01-Abstract-Conference.html), [P17 Evaluating Very Long-Term Conversational Memory of LLM Agents (LoCoMo)](https://aclanthology.org/2024.acl-long.747/), [P18 MemGPT: Towards LLMs as Operating Systems](https://arxiv.org/abs/2310.08560)
@@ -242,7 +242,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 경험 저장 없음 / 원시 실패 로그 검색 / 정리된 교훈 기억
 - **주요 지표:** 동일 오류 재발률 / 새 업무 성공률 / 잘못된 교훈 적용률·비용
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 3–9회. 교훈 생성·재시도 횟수도 비용에 포함. 비교군에도 같은 총 시도 예산을 준다.
+- **호출 추정:** 평가 사례당·조건당 3–9회. 교훈 생성·재시도 횟수도 비용에 포함. 비교군에도 같은 총 시도 예산을 준다.
 - **주의:** 평가 문제의 정답이나 패치를 기억에 넣고 성공한 것을 일반화로 주장하지 않는다.
 - **확장:** 절차 기억 / 팀의 실패 기록 / 교훈의 신뢰도·폐기
 - **참고:** [P15 Reflexion: Language Agents with Verbal Reinforcement Learning](https://proceedings.neurips.cc/paper_files/paper/2023/hash/1b44b878bb782e6954cd888628510e90-Abstract.html), [P20 A-Mem: Agentic Memory for LLM Agents](https://proceedings.neurips.cc/paper_files/paper/2025/hash/19909c36f51abc4856b4560aff3d36d6-Abstract-Conference.html), [P12 ToolSandbox: A Stateful, Conversational, Interactive Evaluation Benchmark for LLM Tool Use Capabilities](https://aclanthology.org/2025.findings-naacl.65/)
@@ -257,7 +257,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 최근 구간 보존 / 고정 길이 요약 / 사실·관계 중심 검색 기억
 - **주요 지표:** 사실 회상 정확도 / 최종 업무 성공률 / 기억 토큰·쓰기/읽기 비용
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 2–7회. 메모리 추출·재요약·검색 비용을 합산한다. 학습 없이 로컬 저장소로 축소 가능하다.
+- **호출 추정:** 평가 사례당·조건당 2–7회. 메모리 추출·재요약·검색 비용을 합산한다. 학습 없이 로컬 저장소로 축소 가능하다.
 - **주의:** 요약 방식에만 더 긴 토큰 예산이나 더 강한 모델을 제공하지 않는다.
 - **확장:** 요약 주기 / 중요도 기반 압축 / 연결된 메모리와 벡터 검색
 - **참고:** [P18 MemGPT: Towards LLMs as Operating Systems](https://arxiv.org/abs/2310.08560), [P20 A-Mem: Agentic Memory for LLM Agents](https://proceedings.neurips.cc/paper_files/paper/2025/hash/19909c36f51abc4856b4560aff3d36d6-Abstract-Conference.html), [P21 Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory](https://arxiv.org/abs/2504.19413), [P31 Lost in the Middle: How Language Models Use Long Contexts](https://aclanthology.org/2024.tacl-1.9/)
@@ -272,7 +272,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 단일 누적 기억 / 소유자·시간 필터 / 필터+삭제 전파 검사
 - **주요 지표:** 금지 기억 반환률 / 갱신·삭제 반영률 / 정상 업무 성공률
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 2–6회. 검색 인덱스와 요약 사본까지 검사하는 구현 비용이 든다. 모델 재학습은 필요하지 않다.
+- **호출 추정:** 평가 사례당·조건당 2–6회. 검색 인덱스와 요약 사본까지 검사하는 구현 비용이 든다. 모델 재학습은 필요하지 않다.
 - **주의:** 검색에서 삭제되었다고 모델 파라미터에서 완전히 잊었다고 주장하면 안 된다.
 - **확장:** 메모리 provenance / 동의 철회 / 삭제와 요약 캐시의 일관성
 - **참고:** [P16 LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory](https://proceedings.iclr.cc/paper_files/paper/2025/hash/d813d324dbf0598bbdc9c8e79740ed01-Abstract-Conference.html), [P19 MemoryBank: Enhancing Large Language Models with Long-Term Memory](https://ojs.aaai.org/index.php/AAAI/article/view/29946), [P25 Defeating Prompt Injections by Design (CaMeL)](https://arxiv.org/abs/2503.18813)
@@ -287,7 +287,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 단일 Agent 내 메모리 / 일반 메모리 함수 / 별도 메모리 역할 호출
 - **주요 지표:** 업무 성공률 / 기억 전달 누락률 / 총 토큰·호출·지연
 - **구현 부담:** D3
-- **호출 추정:** 사례당·조건당 4–12회. 추가 역할 호출과 원문 재전달이 비용을 키울 수 있다. 실제 다중 프로세스가 아닌 순차 호출로도 비교 가능하다.
+- **호출 추정:** 평가 사례당·조건당 4–12회. 추가 역할 호출과 원문 재전달이 비용을 키울 수 있다. 실제 다중 프로세스가 아닌 순차 호출로도 비교 가능하다.
 - **주의:** 역할 분리와 모델 강도·추가 예산의 효과를 혼동하지 않는다.
 - **확장:** 독립 검증 역할 / 질문 압축 / 동일 예산에서 멀티 역할의 가치
 - **참고:** [P18 MemGPT: Towards LLMs as Operating Systems](https://arxiv.org/abs/2310.08560), [P20 A-Mem: Agentic Memory for LLM Agents](https://proceedings.neurips.cc/paper_files/paper/2025/hash/19909c36f51abc4856b4560aff3d36d6-Abstract-Conference.html), [P21 Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory](https://arxiv.org/abs/2504.19413)
@@ -306,7 +306,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 방어 없음 / 비신뢰 입력 표기 / 출처 분리+실행 권한 검사
 - **주요 지표:** 공격 성공률 ASR / 공격 중 정상 업무 성공률 / clean 성공률·오탐 차단률
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 3–8회. clean/교란 쌍 때문에 실행 수는 기본 예산의 2배. 모의 자료·도구 외 실제 서비스를 사용하지 않는다.
+- **호출 추정:** 평가 사례당·조건당 3–8회. clean/교란 쌍 때문에 실행 수는 기본 예산의 2배. 모의 자료·도구 외 실제 서비스를 사용하지 않는다.
 - **주의:** 원래 못 푸는 업무를 안전해서 막은 것으로 세지 않는다. 공격 성공 분모를 명시한다.
 - **확장:** 검색 순위와 노출 위치 / 다중 도구 경유 / 방어 비용
 - **참고:** [P22 AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents](https://arxiv.org/abs/2406.13352), [P23 InjecAgent: Benchmarking Indirect Prompt Injections in Tool-Integrated Large Language Model Agents](https://aclanthology.org/2024.findings-acl.624/), [P25 Defeating Prompt Injections by Design (CaMeL)](https://arxiv.org/abs/2503.18813)
@@ -321,7 +321,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 넓은 도구 노출 / 최소 권한 노출 / 최소 권한+승인 gate
 - **주요 지표:** 권한 위반 시도율 / 실제 위반 차단률 / 정상 완료율·사용자 개입 수
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 2–7회. 정책 검사기는 코드로 구현 가능하다. gate가 차단한 것과 모델이 스스로 지킨 것을 분리 집계한다.
+- **호출 추정:** 평가 사례당·조건당 2–7회. 정책 검사기는 코드로 구현 가능하다. gate가 차단한 것과 모델이 스스로 지킨 것을 분리 집계한다.
 - **주의:** 필수 권한을 없애 업무를 불가능하게 만든 조건을 동일 능력 비교로 해석하지 않는다.
 - **확장:** 파일 접근 범위 / 실행 전 미리보기 / 위험 수준별 승인
 - **참고:** [P25 Defeating Prompt Injections by Design (CaMeL)](https://arxiv.org/abs/2503.18813), [P22 AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents](https://arxiv.org/abs/2406.13352), [P13 tau-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains](https://proceedings.iclr.cc/paper_files/paper/2025/hash/1b126cc38b8638e07bef37e7b2bb72bf-Abstract-Conference.html)
@@ -336,7 +336,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 구조화 계획만 / 동일 모델의 도구 실행 / 도구 실행+외부 정책 검사
 - **주요 지표:** 계획상 위반률 / 실행 위반률 / clean 업무 성공률·말/행동 불일치
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 2–6회. 계획·실행 조건별 관찰량과 허용 도구를 가능한 한 맞춘다.
+- **호출 추정:** 평가 사례당·조건당 2–6회. 계획·실행 조건별 관찰량과 허용 도구를 가능한 한 맞춘다.
 - **주의:** 그냥 챗봇의 거절 문구와 Agent의 실행 실패를 비교해 'Agent가 본질적으로 덜 aligned'라고 결론 내리지 않는다.
 - **확장:** 권한 확대 효과 / 다단계에서의 규칙 유지 / 자기보고의 신뢰성
 - **참고:** [P24 AgentHarm: A Benchmark for Measuring Harmfulness of LLM Agents](https://proceedings.iclr.cc/paper_files/paper/2025/hash/c493d23af93118975cdbc32cbe7323f5-Abstract-Conference.html), [P22 AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents](https://arxiv.org/abs/2406.13352), [P29 AgentIF: Benchmarking Instruction Following of Large Language Models in Agentic Scenarios](https://proceedings.neurips.cc/paper_files/paper/2025/hash/51bb3a8a33610a25aae074bfc51b1b1f-Abstract-Datasets_and_Benchmarks_Track.html)
@@ -351,7 +351,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 기억 무조건 사용 / 출처 메타데이터 확인 / 원문 재검증+승격 정책
 - **주요 지표:** 오염 전파율 / 정상 기억 활용률 / 정정 성공률·검증 비용
 - **구현 부담:** D3
-- **호출 추정:** 사례당·조건당 3–9회. 오염·정상 쌍을 평가하면 2배. 실제 개인정보·비밀·외부 반출 기능은 넣지 않는다.
+- **호출 추정:** 평가 사례당·조건당 3–9회. 오염·정상 쌍을 평가하면 2배. 실제 개인정보·비밀·외부 반출 기능은 넣지 않는다.
 - **주의:** 정상적인 새 사실과 의도적 오염을 쉽게 구별하도록 정답 표식을 넣지 않는다.
 - **확장:** RAG 보안 / 메모리 격리 / 검증된 사실만 쓰기
 - **참고:** [P26 AgentPoison: Red-teaming LLM Agents via Poisoning Memory or Knowledge Bases](https://proceedings.neurips.cc/paper_files/paper/2024/hash/eb113910e9c3f6242541c1652e30dfd6-Abstract.html), [P22 AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents](https://arxiv.org/abs/2406.13352), [P16 LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory](https://proceedings.iclr.cc/paper_files/paper/2025/hash/d813d324dbf0598bbdc9c8e79740ed01-Abstract-Conference.html)
@@ -366,7 +366,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 일반 주의문 / 구체적 충돌 처리 규칙 / 처리 규칙+코드 gate
 - **주요 지표:** 정책 준수율 / 과잉 거절률 / 정당한 확인 요청률·완료율
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 2–6회. 고정 정책과 모의 도구를 쓰면 대부분 자동 판정 가능하다.
+- **호출 추정:** 평가 사례당·조건당 2–6회. 고정 정책과 모의 도구를 쓰면 대부분 자동 판정 가능하다.
 - **주의:** alignment 전체가 아니라 정해진 정책 아래의 행동 준수라는 연구 범위를 명시한다.
 - **확장:** 예외 규칙 위치 / 한국어 표현 차이 / 동일 길이 지시문 비교
 - **참고:** [P29 AgentIF: Benchmarking Instruction Following of Large Language Models in Agentic Scenarios](https://proceedings.neurips.cc/paper_files/paper/2025/hash/51bb3a8a33610a25aae074bfc51b1b1f-Abstract-Datasets_and_Benchmarks_Track.html), [P22 AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents](https://arxiv.org/abs/2406.13352), [P25 Defeating Prompt Injections by Design (CaMeL)](https://arxiv.org/abs/2503.18813)
@@ -381,7 +381,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 자유 완료 보고 / 결과 확인 checklist / 증거 ID가 필요한 완료 gate
 - **주요 지표:** 거짓 완료 보고율 / 상태 분류 Macro-F1 / 불확실성 표시 정확도·검증 호출
 - **구현 부담:** D1
-- **호출 추정:** 사례당·조건당 2–5회. 파일·DB 상태 검사로 정답 생성이 쉬운 편. 상태 보고의 자연어 변형만 사람이 일부 검토한다.
+- **호출 추정:** 평가 사례당·조건당 2–5회. 파일·DB 상태 검사로 정답 생성이 쉬운 편. 상태 보고의 자연어 변형만 사람이 일부 검토한다.
 - **주의:** 불확실하다는 표현만 반복해도 좋은 점수를 받지 않도록 실제 성공·실패 구별을 함께 본다.
 - **확장:** 과제 실행 Agent / 실험 자동화 / 로그 기반 감사
 - **참고:** [P12 ToolSandbox: A Stateful, Conversational, Interactive Evaluation Benchmark for LLM Tool Use Capabilities](https://aclanthology.org/2025.findings-naacl.65/), [P13 tau-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains](https://proceedings.iclr.cc/paper_files/paper/2025/hash/1b126cc38b8638e07bef37e7b2bb72bf-Abstract-Conference.html), [P29 AgentIF: Benchmarking Instruction Following of Large Language Models in Agentic Scenarios](https://proceedings.neurips.cc/paper_files/paper/2025/hash/51bb3a8a33610a25aae074bfc51b1b1f-Abstract-Datasets_and_Benchmarks_Track.html)
@@ -400,7 +400,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 지시 파일 없음 / 핵심 규칙만 / 같은 핵심 규칙+상세 설명
 - **주요 지표:** 기능 성공률 / 제약 준수율 / 탐색·테스트 호출 수·총 토큰
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 3–10회. 각 조건에서 저장소를 동일 상태로 reset한다. 파일 길이와 새 정보 추가를 분리하는 후속 실험이 가능하다.
+- **호출 추정:** 평가 사례당·조건당 3–10회. 각 조건에서 저장소를 동일 상태로 reset한다. 파일 길이와 새 정보 추가를 분리하는 후속 실험이 가능하다.
 - **주의:** 긴 파일에만 필요한 비밀 정보를 넣으면 길이 효과가 아니라 정보 차이를 측정한다.
 - **확장:** 사람 작성/모델 작성 / 제목·목록 구조 / 필수 정보의 위치
 - **참고:** [P30 Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?](https://www.sri.inf.ethz.ch/publications/gloaguen2026agentsmd), [P29 AgentIF: Benchmarking Instruction Following of Large Language Models in Agentic Scenarios](https://proceedings.neurips.cc/paper_files/paper/2025/hash/51bb3a8a33610a25aae074bfc51b1b1f-Abstract-Datasets_and_Benchmarks_Track.html), [P28 Demystifying LLM-Based Software Engineering Agents (Agentless)](https://dl.acm.org/doi/10.1145/3715754)
@@ -415,7 +415,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 단순 도구 설명 / 명확한 schema·예시 / schema+구조화 오류·수정 제안
 - **주요 지표:** 첫 호출 유효율 / 오류 후 복구율 / 오편집률·추가 호출
 - **구현 부담:** D1
-- **호출 추정:** 사례당·조건당 2–6회. 가벼운 로컬 함수로 구현 가능하다. 실제 편집 도구를 재개발하기보다 작은 안전한 도구를 만든다.
+- **호출 추정:** 평가 사례당·조건당 2–6회. 가벼운 로컬 함수로 구현 가능하다. 실제 편집 도구를 재개발하기보다 작은 안전한 도구를 만든다.
 - **주의:** 인터페이스 조건마다 기능이나 권한을 바꾸면 설계 효과를 분리할 수 없다.
 - **확장:** 읽기/쓰기 분리 / 오류 메시지 언어 / 필드명 명확성
 - **참고:** [P27 SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering](https://arxiv.org/abs/2405.15793), [P12 ToolSandbox: A Stateful, Conversational, Interactive Evaluation Benchmark for LLM Tool Use Capabilities](https://aclanthology.org/2025.findings-naacl.65/), [P29 AgentIF: Benchmarking Instruction Following of Large Language Models in Agentic Scenarios](https://proceedings.neurips.cc/paper_files/paper/2025/hash/51bb3a8a33610a25aae074bfc51b1b1f-Abstract-Datasets_and_Benchmarks_Track.html)
@@ -430,7 +430,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 고정 작은 step cap / 고정 큰 step cap / 정체 탐지+적응형 중단
 - **주요 지표:** 예산별 성공률 / 낭비 호출·루프 비율 / 안전 중단률·성공 한 건당 비용
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 3–10회. 큰 예산 조건이 가장 비싸다. 실패를 보고하며 멈추는 경우도 사전 정의된 정답이면 성공으로 분류한다.
+- **호출 추정:** 평가 사례당·조건당 3–10회. 큰 예산 조건이 가장 비싸다. 실패를 보고하며 멈추는 경우도 사전 정의된 정답이면 성공으로 분류한다.
 - **주의:** 실패한 케이스만 무제한 재시도해서 잘 나온 결과를 선택하지 않는다.
 - **확장:** token budget / 오류별 retry 정책 / 시간 제한과 checkpoint
 - **참고:** [P13 tau-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains](https://proceedings.iclr.cc/paper_files/paper/2025/hash/1b126cc38b8638e07bef37e7b2bb72bf-Abstract-Conference.html), [P15 Reflexion: Language Agents with Verbal Reinforcement Learning](https://proceedings.neurips.cc/paper_files/paper/2023/hash/1b44b878bb782e6954cd888628510e90-Abstract.html), [P28 Demystifying LLM-Based Software Engineering Agents (Agentless)](https://dl.acm.org/doi/10.1145/3715754)
@@ -445,7 +445,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 전체 이력 / 최근 구간+요약 / 최근 구간+구조화 상태표
 - **주요 지표:** 상태·제약 유지율 / 최종 성공률 / 입력 토큰·요약 비용
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 3–10회. 요약을 만드는 추가 호출을 포함한다. 모델 context 한도 밖의 비교는 별도 실패 유형으로 보고한다.
+- **호출 추정:** 평가 사례당·조건당 3–10회. 요약을 만드는 추가 호출을 포함한다. 모델 context 한도 밖의 비교는 별도 실패 유형으로 보고한다.
 - **주의:** 잘린 정보를 받은 조건과 정보가 모두 있는 조건을 같은 입력이라고 부르지 않는다.
 - **확장:** summary 주기 / tool output 압축 / checkpoint와 memory 연결
 - **참고:** [P31 Lost in the Middle: How Language Models Use Long Contexts](https://aclanthology.org/2024.tacl-1.9/), [P18 MemGPT: Towards LLMs as Operating Systems](https://arxiv.org/abs/2310.08560), [P29 AgentIF: Benchmarking Instruction Following of Large Language Models in Agentic Scenarios](https://proceedings.neurips.cc/paper_files/paper/2025/hash/51bb3a8a33610a25aae074bfc51b1b1f-Abstract-Datasets_and_Benchmarks_Track.html)
@@ -460,7 +460,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 실행자만 / 실행자 자기 점검 / 같은 모델의 독립 검증 역할+코드 검사
 - **주요 지표:** 오류 검출 precision/recall / 수정 후 성공률 / 정상 결과 훼손률·추가 비용
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 3–9회. 검증자는 별도 호출이므로 비용이 증가한다. 코드 검사 단독 조건을 추가하면 모델 검증의 순이득을 볼 수 있다.
+- **호출 추정:** 평가 사례당·조건당 3–9회. 검증자는 별도 호출이므로 비용이 증가한다. 코드 검사 단독 조건을 추가하면 모델 검증의 순이득을 볼 수 있다.
 - **주의:** 별도 검증자에만 더 강한 모델·더 많은 토큰을 주면 역할 분리 자체의 효과를 알기 어렵다.
 - **확장:** 다른 모델 검증 / 블라인드 검증 / 가짜 성공 감지
 - **참고:** [P28 Demystifying LLM-Based Software Engineering Agents (Agentless)](https://dl.acm.org/doi/10.1145/3715754), [P15 Reflexion: Language Agents with Verbal Reinforcement Learning](https://proceedings.neurips.cc/paper_files/paper/2023/hash/1b44b878bb782e6954cd888628510e90-Abstract.html), [P29 AgentIF: Benchmarking Instruction Following of Large Language Models in Agentic Scenarios](https://proceedings.neurips.cc/paper_files/paper/2025/hash/51bb3a8a33610a25aae074bfc51b1b1f-Abstract-Datasets_and_Benchmarks_Track.html)
@@ -475,7 +475,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 대화만 저장 / 자연어 진행 요약 / 구조화 checkpoint+실제 상태 확인
 - **주요 지표:** 재개 성공률 / 중복·누락·손상률 / 재개까지 호출·시간
 - **구현 부담:** D3
-- **호출 추정:** 사례당·조건당 4–12회. snapshot/reset과 장애 주입이 구현 부담이다. 모델 호출보다 상태 일관성 테스트가 어려울 수 있다.
+- **호출 추정:** 평가 사례당·조건당 4–12회. snapshot/reset과 장애 주입이 구현 부담이다. 모델 호출보다 상태 일관성 테스트가 어려울 수 있다.
 - **주의:** 실제 사용자 작업 폴더를 중단시키지 말고 작은 임시 sandbox에서 수행한다.
 - **확장:** 장시간 조사 / 파일 생성 workflow / 정확한 완료 보고
 - **참고:** [P12 ToolSandbox: A Stateful, Conversational, Interactive Evaluation Benchmark for LLM Tool Use Capabilities](https://aclanthology.org/2025.findings-naacl.65/), [P27 SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering](https://arxiv.org/abs/2405.15793), [P18 MemGPT: Towards LLMs as Operating Systems](https://arxiv.org/abs/2310.08560)
@@ -494,7 +494,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 같은 VLM + 악보 이미지 → 답 / 같은 VLM + 고정 OMR의 기호 출력 → 답 / 선택적 진단: 같은 VLM + 사람이 확인한 정답 기호 → 답 (oracle 상한)
 - **주요 지표:** 답+근거 위치 동시 정확도 / 음높이·길이 추출 오류율 / 파싱 오류와 추론 오류 분리 / OMR 포함 end-to-end 지연·GPU 시간·입출력 token
 - **구현 부담:** D3
-- **호출 추정:** 사례당·조건당 1–3회. 주 비교는 앞의 2조건으로 시작할 수 있다. OMR 모델 추론은 별도 연산비로 기록하고 LLM parser를 쓰면 그 호출도 더한다. 재관찰은 사전 승인된 budget 안에서만.
+- **호출 추정:** 평가 사례당·조건당 1–3회. 주 비교는 앞의 2조건으로 시작할 수 있다. OMR 모델 추론은 별도 연산비로 기록하고 LLM parser를 쓰면 그 호출도 더한다. 재관찰은 사전 승인된 budget 안에서만.
 - **주의:** 직접 제공한 깨끗한 ABC와 원본 이미지를 비교하면 파싱을 생략한 진단 조건이다. 이를 실제 이미지 파이프라인의 비용·정확도와 동일하게 취급하지 않는다. 저작권 있는 악보 스캔을 공개하지 않는다.
 - **확장:** 스캔 왜곡·저해상도에 대한 강건성 / 한 성부에서 두 성부로 난도 확장 / 불확실성 기반 확대·재파싱 선택
 - **참고:** [P39 NOTA: Multimodal Music Notation Understanding for Visual Large Language Model](https://aclanthology.org/2025.findings-naacl.399/), [P40 ChatMusician: Understanding and Generating Music Intrinsically with LLM](https://aclanthology.org/2024.findings-acl.373/), [P41 ABC-Eval: Benchmarking Large Language Models on Symbolic Music Understanding and Instruction Following](https://arxiv.org/abs/2509.23350), [P45 Musical Score Understanding Benchmark: Evaluating Large Language Models’ Comprehension of Complete Musical Scores](https://aclanthology.org/2026.acl-long.493/)
@@ -509,7 +509,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 이미지 출력 지원 모델 + 자연어 명세 → 악보 이미지 (자격 조건 충족 시만) / 텍스트 모델 + 같은 명세 → ABC/MusicXML → 고정 렌더러 / 시각 입력 지원 모델 + 같은 명세 → 같은 기호 형식 → 같은 렌더러 (확장)
 - **주요 지표:** 공통 최종 이미지의 모든 음악 제약 충족률 / 기보 판독 가능성·음표/리듬 정확도 / 기호 유효성·편집 가능성 (별도 능력 지표) / 전체 생성·검증 비용
 - **구현 부담:** D3
-- **호출 추정:** 사례당·조건당 1–3회. native 이미지 출력이 가능한 수업 허용 local/free 모델을 먼저 확인해야 한다. 없으면 해당 대조군은 미실행으로 남긴다. 이미지 생성 GPU 시간·수동 검수 시간이 크며 비교 모델은 미선정.
+- **호출 추정:** 평가 사례당·조건당 1–3회. native 이미지 출력이 가능한 수업 허용 local/free 모델을 먼저 확인해야 한다. 없으면 해당 대조군은 미실행으로 남긴다. 이미지 생성 GPU 시간·수동 검수 시간이 크며 비교 모델은 미선정.
 - **주의:** VLM의 이미지 입력 지원은 이미지 출력 지원과 다르다. PDF 저장과 픽셀 생성도 다르다. 서로 다른 모델 비교는 전체 시스템 비교이며 modality의 순수 효과가 아니다. raster에만 불리한 editable-score 요구를 공통 승패 기준으로 넣지 않는다.
 - **확장:** 정확한 조옮김 요청과 불변 리듬 검사 / 의미가 같은 자연어 명세·형식 명세 비교 / 이미지 생성 후 OMR을 추가한 왕복 변환 오류
 - **참고:** [P39 NOTA: Multimodal Music Notation Understanding for Visual Large Language Model](https://aclanthology.org/2025.findings-naacl.399/), [P40 ChatMusician: Understanding and Generating Music Intrinsically with LLM](https://aclanthology.org/2024.findings-acl.373/), [P41 ABC-Eval: Benchmarking Large Language Models on Symbolic Music Understanding and Instruction Following](https://arxiv.org/abs/2509.23350), [P42 VGBench: Evaluating Large Language Models on Vector Graphics Understanding and Generation](https://aclanthology.org/2024.emnlp-main.213/)
@@ -524,7 +524,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 같은 VLM + 표 이미지 + 고정 계산 도구 / 같은 VLM + 구조화 텍스트 + 같은 계산 도구 / 같은 VLM + 이미지·구조화 텍스트 결합 + 같은 계산 도구
 - **주요 지표:** 정답+근거 셀 동시 정확도 / 정보 부족 F1 / 헤더 연결·좌표·단위 오류율 / 입력 token·이미지 해상도·전체 latency·비용
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 1–4회. 계산 함수 자체는 LLM 호출이 아니다. native workbook 직렬화와 screenshot-only OCR은 별도 실험 블록으로 둔다. Colab 실행 가능성은 후보 모델의 메모리 실측 뒤 판단한다.
+- **호출 추정:** 평가 사례당·조건당 1–4회. 계산 함수 자체는 LLM 호출이 아니다. native workbook 직렬화와 screenshot-only OCR은 별도 실험 블록으로 둔다. Colab 실행 가능성은 후보 모델의 메모리 실측 뒤 판단한다.
 - **주의:** 이미지에 보이지 않는 수식·숨김 시트를 텍스트 조건에만 주면 정보량이 다르다. 필요한 값이 잘린 이미지도 별도 품질 조건으로 분리한다. 텍스트 전용 LLM까지 바꾸는 비교는 후속 시스템 비교다.
 - **확장:** 표 크기별 성능·비용 곡선 / 레이아웃 변형과 미지의 템플릿 일반화 / 표 특징 기반 표현 선택 router
 - **참고:** [P35 Texts or Images? A Fine-grained Analysis on the Effectiveness of Input Representations and Models for Table Question Answering](https://aclanthology.org/2025.findings-acl.117/), [P36 Encoding Spreadsheets for Large Language Models](https://aclanthology.org/2024.emnlp-main.1154/), [P38 SpreadsheetBench: Towards Challenging Real World Spreadsheet Manipulation](https://proceedings.neurips.cc/paper_files/paper/2024/hash/ac840df270ac537dd74530a15c332684-Abstract.html), [P46 TabVerse: Benchmarking Cross-Format Table Understanding in LLMs and VLMs](https://arxiv.org/abs/2606.09578)
@@ -539,7 +539,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 같은 VLM + 화면 관찰·제한된 UI 행동 → xlsx / 같은 VLM + 셀/수식 구조 관찰·제한된 코드/파일 API → xlsx / 선택적 기준선: 명세가 정형화된 하위집합의 결정론적 템플릿
 - **주요 지표:** 숨겨진 실행 테스트를 모두 통과한 task success / 정답 셀·수식 참조 정확도 / 비허용 변경 셀 비율 / 도구 호출 수·wall time·false completion rate
 - **구현 부담:** D3
-- **호출 추정:** 사례당·조건당 2–8회. UI와 파일 API는 관찰·행동 인터페이스를 함께 바꾸는 시스템 조건이다. 별도 Excel/LibreOffice 계산 엔진 및 격리 환경이 필요할 수 있다. 코드 경로만 다루면 범위를 줄일 수 있다.
+- **호출 추정:** 평가 사례당·조건당 2–8회. UI와 파일 API는 관찰·행동 인터페이스를 함께 바꾸는 시스템 조건이다. 별도 Excel/LibreOffice 계산 엔진 및 격리 환경이 필요할 수 있다. 코드 경로만 다루면 범위를 줄일 수 있다.
 - **주의:** xlsx는 그림이 아니다. PNG 출력 모델과 수식이 작동하는 파일을 같은 기능 기준으로 채점하지 않는다. openpyxl의 수식 저장만으로 재계산 성공을 주장하지 않는다. 전체 파일 byte 일치 대신 의미와 비허용 변경을 검사한다.
 - **확장:** 수식 의존 그래프를 통한 오류 위치 탐색 / GUI/구조 관찰은 같게 두고 실행 도구만 바꾸는 ablation / 최소 수정과 실패 후 재개
 - **참고:** [P36 Encoding Spreadsheets for Large Language Models](https://aclanthology.org/2024.emnlp-main.1154/), [P37 SheetCopilot: Bringing Software Productivity to the Next Level through Large Language Models](https://proceedings.neurips.cc/paper_files/paper/2023/hash/0ff30c4bf31db0119a6219e0d250e037-Abstract-Conference.html), [P38 SpreadsheetBench: Towards Challenging Real World Spreadsheet Manipulation](https://proceedings.neurips.cc/paper_files/paper/2024/hash/ac840df270ac537dd74530a15c332684-Abstract.html)
@@ -554,7 +554,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 출력 이미지 지원 모델 → raster 도식 (자격 조건 충족 시만) / 언어 모델 → 제한된 SVG/Graphviz → 고정 렌더러 / 멀티모달 모델 → 같은 코드/렌더러 (확장; 이미지 참고 조건은 분리)
 - **주요 지표:** 공통 최종 이미지의 필수 관계·라벨 동시 충족률 / 엣지/방향/라벨 정확도·겹침률 / 구문·렌더 성공률과 편집 가능성 (별도) / 시간·비용
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 1–3회. 제한된 Graphviz 문법과 코드 경로는 비교적 작게 구현할 수 있다. native 이미지 모델까지 넣으면 GPU·검수 부담이 커져 D3가 될 수 있다. 렌더러 설치·폰트·라이선스는 실행 전 확인.
+- **호출 추정:** 평가 사례당·조건당 1–3회. 제한된 Graphviz 문법과 코드 경로는 비교적 작게 구현할 수 있다. native 이미지 모델까지 넣으면 GPU·검수 부담이 커져 D3가 될 수 있다. 렌더러 설치·폰트·라이선스는 실행 전 확인.
 - **주의:** VGBench·StarVector는 직접 이미지 생성이 항상 나쁘다는 증거가 아니다. 코드에서만 읽은 edge gold와 raster OCR 결과를 그대로 맞비교하지 않는다. 픽셀 유사도는 관계 정확성의 대체 지표가 아니다.
 - **확장:** 다이어그램 이미지 재구성과 자연어 신규 생성 분리 / 한글·영문 라벨과 해상도 강건성 / 후속 편집 요청의 정확성·비용
 - **참고:** [P42 VGBench: Evaluating Large Language Models on Vector Graphics Understanding and Generation](https://aclanthology.org/2024.emnlp-main.213/), [P43 StarVector: Generating Scalable Vector Graphics Code from Images and Text](https://openaccess.thecvf.com/content/CVPR2025/html/Rodriguez_StarVector_Generating_Scalable_Vector_Graphics_Code_from_Images_and_Text_CVPR_2025_paper.html), [P44 Evaluating Constrained Iterative Refinement for Scalable Vector Graphics Generation with Off-the-Shelf VLMs](https://arxiv.org/abs/2608.28678)
@@ -569,14 +569,267 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - **비교 조건:** 고정 초안 → 추가 정보 없는 자기 검토 1회 / 같은 초안 → 구조/실행 검사 피드백 → 수정 1회 / 같은 초안 → 같은 검사 피드백+렌더 이미지 → 수정 1회
 - **주요 지표:** 동일 초안 대비 수정 후 task success 증감 / 잘못 고친 비율·정상 사례 손상률·false completion / 수정 1건당 token·GPU 시간·latency / 개선 1건당 추가 비용
 - **구현 부담:** D2
-- **호출 추정:** 사례당·조건당 1–2회. 주 비교는 동일 모델의 동일 수정 호출 1회로 맞춘다. 공통 초안을 모델로 만들면 초안 생성 호출은 별도 기록하고 모든 조건에서 재사용한다. 무검토 초안은 비용 0의 참고 기준선이다.
+- **호출 추정:** 평가 사례당·조건당 1–2회. 주 비교는 동일 모델의 동일 수정 호출 1회로 맞춘다. 공통 초안을 모델로 만들면 초안 생성 호출은 별도 기록하고 모든 조건에서 재사용한다. 무검토 초안은 비용 0의 참고 기준선이다.
 - **주의:** 검사 결과와 이미지가 제공하는 정보 차이는 의도한 독립 변수다. VLM 대신 다른 LLM을 쓰면 순수 시각 피드백 효과로 해석하지 않는다. 좋아질 때까지 반복하거나 숨겨진 정답 검사 결과를 feedback으로 돌려주지 않는다.
 - **확장:** 렌더링 재관찰을 선택하는 비용 제한 router / 구조화된 피드백 길이·오류 위치 정보 비교 / 도메인 하나에서 검증 후 다른 기호 체계로 전이
 - **참고:** [P38 SpreadsheetBench: Towards Challenging Real World Spreadsheet Manipulation](https://proceedings.neurips.cc/paper_files/paper/2024/hash/ac840df270ac537dd74530a15c332684-Abstract.html), [P41 ABC-Eval: Benchmarking Large Language Models on Symbolic Music Understanding and Instruction Following](https://arxiv.org/abs/2509.23350), [P43 StarVector: Generating Scalable Vector Graphics Code from Images and Text](https://openaccess.thecvf.com/content/CVPR2025/html/Rodriguez_StarVector_Generating_Scalable_Vector_Graphics_Code_from_Images_and_Text_CVPR_2025_paper.html), [P44 Evaluating Constrained Iterative Refinement for Scalable Vector Graphics Generation with Off-the-Shelf VLMs](https://arxiv.org/abs/2608.28678)
 
+## Agent의 필요성을 검증하는 구체 업무
+
+고정 절차보다 관찰에 따른 적응이 유리한 작은 업무는 무엇인가?
+
+### X1. 오류를 보고 다음 실험을 고르는 검색 연구원
+
+- **문제:** 동일한 실험 횟수에서 오류 분석 기반 설정 선택이 random search보다 유리한가?
+- **업무:** 고정된 검색 설정 6–12개 중 dev 결과를 보고 다음 실험을 선택한다.
+- **예시:** 조사 제거 후 좋아졌지만 어미까지 제거하면 나빠진 질의를 분석하고 다음 설정 하나를 고른다.
+- **50개 구성:** 전문어 10개 / 수치·단위 10개 / 형태 변형 10개 / 동의 표현 10개 / 문서 경계 10개
+- **정답 정보:** 50개 튜닝 mission마다 dev와 숨긴 test 질의·관련 문서를 분리한다. 검색 질의 50개와 튜닝 episode 50개는 다르다.
+- **비교 조건:** 같은 횟수 random search / 고정 튜닝 순서 / 오류 관찰 기반 agent
+- **주요 지표:** 숨긴 test nDCG@10·MRR / dev 최적 설정 대비 regret / 실험 수·총 CPU/GPU 시간
+- **구현 부담:** D2
+- **호출 추정:** 독립 튜닝 mission당·조건당 3–5회. episode당 실험 3–5회의 최소 범위 제안. mission 작성 부담은 높고 임베딩/인덱스 구축은 별도.
+- **주의:** test 결과를 agent에 반복 제공하지 않는다. corpus 재사용만으로 새 도메인 일반화를 주장하지 않는다.
+- **확장:** Kiwi POS ablation / hybrid 가중치 탐색 / 설정 선택 근거의 타당성
+- **참고:** [P47 DS-Agent: Automated Data Science by Empowering Large Language Models with Case-Based Reasoning](https://proceedings.mlr.press/v235/guo24b.html), [P01 Operational Advice for Dense and Sparse Retrievers: HNSW, Flat, or Inverted Indexes?](https://aclanthology.org/2025.acl-industry.61/), [P02 BEIR: A Heterogeneous Benchmark for Zero-shot Evaluation of Information Retrieval Models](https://datasets-benchmarks-proceedings.neurips.cc/paper/2021/hash/65b9eea6e1cc6bb9f0cd2a47751a186f-Abstract-round2.html)
+
+- **평가 단위:** 독립 튜닝 mission
+
+### X2. 질문할 줄 아는 데이터 분석가
+
+- **문제:** 의도가 모호한 DB 요청에서 언제 질문하고 언제 조회해야 하는가?
+- **업무:** 가상 SQLite DB에서 용어·기간·대상을 확인하고 올바른 query와 결과 상태를 만든다.
+- **예시:** 이번 학기에 활동이 적은 회원을 추리되 활동 정의와 휴학생 포함 여부를 확인한다.
+- **50개 구성:** 용어 정의 10개 / 대상 범위 10개 / 기간 10개 / 조건 충돌 10개 / 명확한 요청 10개
+- **정답 정보:** 숨긴 사용자 조건, 기대 result set/DB 상태, 허용 질문을 고정한다.
+- **비교 조건:** 질문 없이 추정 / 고정 체크리스트 / 적응적 질문 agent
+- **주요 지표:** 최종 결과/상태 정확도 / 잘못된 대상 처리율 / 불필요 질문·턴 수
+- **구현 부담:** D2
+- **호출 추정:** DB 요청 episode당·조건당 2–6회. 상태 기반 함수형 사용자 simulator를 쓰면 추가 LLM 사용자 호출을 줄일 수 있다.
+- **주의:** 질문 수만 줄인 정책을 성공으로 세지 않는다. simulator가 임의 정답을 만들어내면 비교가 무너진다.
+- **확장:** 복수 테이블 / 의도 정정 / 조회와 변경 업무 분리
+- **참고:** [P48 BIRD-INTERACT: Re-imagining Text-to-SQL Evaluation via Lens of Dynamic Interactions](https://proceedings.iclr.cc/paper_files/paper/2026/hash/496b549556509bbb9770bf9d335c5800-Abstract-Conference.html), [P12 ToolSandbox: A Stateful, Conversational, Interactive Evaluation Benchmark for LLM Tool Use Capabilities](https://aclanthology.org/2025.findings-naacl.65/)
+
+- **평가 단위:** DB 요청 episode
+
+### X3. 변경사항을 전파하는 지식 유지보수 agent
+
+- **문제:** 사실 하나가 바뀌면 파생 계산과 관련 설명만 정확하게 고칠 수 있는가?
+- **업무:** 가상 프로젝트의 Markdown/JSON 5–10개에서 영향을 찾아 수정하고 불변 영역을 보존한다.
+- **예시:** 행사 인원을 30→24명으로 수정하되 식비·준비물만 갱신하고 고정 대관료·과거 회의록은 유지한다.
+- **50개 구성:** 단일 사실 10개 / 파생 수치 10개 / 예외·보존 10개 / 출처 충돌 10개 / 취소·과거 이력 10개
+- **정답 정보:** 허용 최종 상태, 필요한 변경 집합, 불변 영역과 의존성을 평가기에서 보관한다.
+- **비교 조건:** 전체 문서 재작성 / 검색 후 관련 파일 편집 / 의존성 확인·검증 agent
+- **주요 지표:** 변경 precision/recall / 파생 수치 정확도 / 불변 영역 보존·남은 모순
+- **구현 부담:** D2
+- **호출 추정:** 문서 묶음 갱신 episode당·조건당 3–8회. 파일 sandbox만 사용. 명시적 의존성 규칙 갱신기는 강한 추가 기준선.
+- **주의:** 모든 의존성을 주면 규칙 프로그램으로 충분할 수 있다. 문자열 단일 정답보다 허용 상태를 채점한다.
+- **확장:** 근거 추적 / 시간별 버전 / 변경 취소·복구
+- **참고:** [P49 MemTxn: A Transaction Boundary for Source-Supported Updates and Complete-State Recovery in Agent Memory](https://arxiv.org/abs/2607.27834), [P16 LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory](https://proceedings.iclr.cc/paper_files/paper/2025/hash/d813d324dbf0598bbdc9c8e79740ed01-Abstract-Conference.html), [I01 LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
+
+- **평가 단위:** 문서 묶음 갱신 episode
+
+### X4. 어떤 사례를 사람에게 물을지 고르는 라벨링 연구원
+
+- **문제:** 제한된 라벨 예산을 불확실도·다양성 기준보다 잘 배분할 수 있는가?
+- **업무:** 고정 분류 taxonomy에서 표본 선택→oracle 라벨→분류기/ICL 갱신→dev 평가를 반복한다.
+- **예시:** 환불·변경·문의의 경계 사례 중 다음으로 사람이 라벨링할 예시를 고른다.
+- **50개 구성:** 명확한 의도 10개 / 복합 의도 10개 / 경계 사례 10개 / 드문 클래스 10개 / 분포 변화 10개
+- **정답 정보:** 최종 평가 문장 50개의 검수 라벨. training pool·dev·선택할 oracle 라벨은 별도로 필요하다.
+- **비교 조건:** random / uncertainty/diversity/coverage / agent 표본 선택
+- **주요 지표:** macro-F1·클래스 recall / 라벨 예산–성능 곡선 / 중복 선택률·총 연산 비용
+- **구현 부담:** D2
+- **호출 추정:** 선택 라운드당·조건당 1–5회. 호출 범위는 라벨 선택 라운드당 가정이다. 평가 문장 50개가 독립 agent 실행 50회가 아니므로 50×조건 산식을 적용하지 않는다.
+- **주의:** 평가 50개로 정책을 개발하지 않는다. 분류기 학습과 선택 정책의 기여를 분리한다.
+- **확장:** 작은 분류기 학습 / ICL 표본 선택 / 오라클 오류에 대한 강건성
+- **참고:** [P50 Enhancing Text Classification through LLM-Driven Active Learning and Human Annotation](https://aclanthology.org/2024.law-1.10/), [P51 CoverICL: Selective Annotation for In-Context Learning via Active Graph Coverage](https://aclanthology.org/2024.emnlp-main.1185/)
+
+- **평가 단위:** 선택 라운드 + 고정 평가 문장 50개
+
+### X5. 한국어의 완곡·생략·정정을 실제 행동으로 연결
+
+- **문제:** 직접 명령문과 자연스러운 한국어 요청에서 실행 결과가 달라지는가?
+- **업무:** 의도·대상·범위를 확인하고 가상 설정을 수정한 뒤 금지 행동이 없는지 검증한다.
+- **예시:** 그분은 이번에 빼는 게 낫겠네요. 명단에서 지우지 말고 알림만 꺼주세요.
+- **50개 구성:** 생략 10개 / 간접 요청 10개 / 정정 10개 / 부정·예외 10개 / 대상 모호성 10개
+- **정답 정보:** 50개 기본 시나리오마다 직접 표현/자연스러운 표현 쌍, 의도 슬롯·허용 상태·금지 행동.
+- **비교 조건:** 원문 직접 실행 / 구조화 의도 추출 후 실행 / 확인 질문 agent
+- **주요 지표:** 의도 슬롯 F1 / 최종 상태 성공률·비허용 행동률 / 표현 변형별 성능차·질문 효율
+- **구현 부담:** D2
+- **호출 추정:** 기본 시나리오 50쌍당·조건당 2–6회. 직접/간접 표현의 paired 입력은 기본 50사례에 대해 조건 입력 수가 2배가 된다.
+- **주의:** 원문이 실제로 모호하면 clarification을 올바른 행동으로 인정한다. 정확한 한국어 가설의 신규성은 미확인.
+- **확장:** 공손성·완곡성 / 다중 턴 정정 / 언어별 비교
+- **참고:** [P13 tau-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains](https://proceedings.iclr.cc/paper_files/paper/2025/hash/1b126cc38b8638e07bef37e7b2bb72bf-Abstract-Conference.html), [P52 τ²-Bench: Evaluating Conversational Agents in a Dual-Control Environment](https://proceedings.mlr.press/v306/barres26a.html), [P29 AgentIF: Benchmarking Instruction Following of Large Language Models in Agentic Scenarios](https://proceedings.neurips.cc/paper_files/paper/2025/hash/51bb3a8a33610a25aae074bfc51b1b1f-Abstract-Datasets_and_Benchmarks_Track.html)
+
+- **평가 단위:** 기본 시나리오 50쌍
+
+### X6. 사용자를 안내하며 원인을 좁히는 실습환경 진단
+
+- **문제:** 동일한 오류 문구의 다른 원인을 중간 확인으로 구분할 수 있는가?
+- **업무:** 가짜 환경의 상태 검사·안전한 수정 도구로 진단하고 복구를 확인한다.
+- **예시:** import 오류에서 interpreter 불일치·미설치·파일명 충돌 중 원인을 좁힌다.
+- **50개 구성:** 환경 불일치 10개 / 패키지 10개 / 경로 10개 / 이름 충돌 10개 / 실행 상태 10개
+- **정답 정보:** 숨긴 원인, 관찰 함수, 허용 수정, 복구 상태를 고정한다.
+- **비교 조건:** 고정 체크리스트 / 첫 증상만 보고 일괄 처방 / 관찰 기반 진단 agent
+- **주요 지표:** 원인 식별·복구 성공률 / 진단·수정 횟수 / 불필요 변경·거짓 완료
+- **구현 부담:** D2
+- **호출 추정:** 장애 복구 episode당·조건당 3–8회. 실제 PC 대신 모의 상태 또는 disposable sandbox 5종 장애만 구현한다.
+- **주의:** 실제 계정·삭제·유료 설치를 연결하지 않는다. simulator 오류와 agent 실패를 분리한다.
+- **확장:** 사용자 행동 안내 / 관찰 누락 / 복구 중 조건 변화
+- **참고:** [P52 τ²-Bench: Evaluating Conversational Agents in a Dual-Control Environment](https://proceedings.mlr.press/v306/barres26a.html), [P12 ToolSandbox: A Stateful, Conversational, Interactive Evaluation Benchmark for LLM Tool Use Capabilities](https://aclanthology.org/2025.findings-naacl.65/)
+
+- **평가 단위:** 장애 복구 episode
+
+### X7. 그럴듯한 NLP 실험 결론을 검증하는 감사 agent
+
+- **문제:** 추가 검사를 선택해 잘못된 개선 주장을 반박하고 정상 주장을 보존할 수 있는가?
+- **업무:** 고정된 검색/분류 실험 파일과 허용 재실행 도구를 검사해 주장의 근거를 평가한다.
+- **예시:** 조사를 제거하면 항상 좋아진다는 주장의 split·유형별 결과·분모를 점검한다.
+- **50개 구성:** split 누수 10개 / 중복 데이터 10개 / 평가 분모 10개 / 통제되지 않은 설정 10개 / 정상 주장 10개
+- **정답 정보:** 주입한 오류와 위치, 정상 사례, 유효한 반례·재실행의 판정 조건.
+- **비교 조건:** 보고서만 읽는 reviewer / 고정 진단 검사 / 적응적 재실험 agent
+- **주요 지표:** 오류 탐지 precision/recall / 정상 주장 오탐·원인 위치 정확도 / 유효 반례·추가 실험 비용
+- **구현 부담:** D2
+- **호출 추정:** 실험 주장 감사 episode당·조건당 3–6회. 논문 전체 재현이 아니라 태스크 하나·오류 유형 몇 개로 제한한다.
+- **주의:** 오류 주입은 합성 benchmark라고 명시하고 무조건 비판하는 답을 보상하지 않는다.
+- **확장:** 재현 설정 검사 / 통계적 과장 / 근거가 부족한 일반화
+- **참고:** [P53 Curie: Toward Rigorous and Automated Scientific Experimentation with AI Agents](https://arxiv.org/abs/2502.16069), [P47 DS-Agent: Automated Data Science by Empowering Large Language Models with Case-Based Reasoning](https://proceedings.mlr.press/v235/guo24b.html)
+
+- **평가 단위:** 실험 주장 감사 episode
+
+## 강화학습 × 멀티모달 × 자연어 에이전트
+
+목표를 이해하고 무엇을 더 보고 어떤 도구를 쓰며 언제 멈출지 학습할 수 있는가?
+
+### RL1. 선택적으로 보는 문서·차트 독해
+
+- **문제:** 질문에 필요한 영역을 더 보는 정책이 동일 예산에서 정확한가?
+- **업무:** 축소 이미지에서 필요한 영역을 확대·OCR·계산하고 종료한다.
+- **예시:** 표에서 전년 대비 증가율이 가장 높은 항목을 찾는다.
+- **50개 구성:** 숫자 읽기 10개 / 두 값 비교 10개 / 비율 계산 10개 / 범례 연결 10개 / 작은 글씨·복잡한 배치 10개
+- **정답 정보:** 정답·허용 오차·근거 영역. 원본 문서 단위로 train/dev/test를 분리한다.
+- **비교 조건:** 전체 이미지 1회 / 고정 영역 스캔/규칙 선택 / 학습 관찰 정책
+- **주요 지표:** 정답률·근거 적중 / 도구 수·시간 / 정확도–예산 곡선
+- **구현 부담:** D2
+- **호출 추정:** 학습과 분리한 평가 episode당·조건당 0–5회. 캐시·고정 VLM의 작은 선택 정책. 대형 VLM 자체 RL은 확장이다. 호출 범위는 평가 추론의 설계 가정이며 RL 학습·도구/encoder 연산·캐시 생성 비용은 별도.
+- **주의:** 부분 관찰의 이력이 필요하다. 정답 영역을 정책에 미리 주지 않는다.
+- **확장:** 해상도 / OCR 오류 / 관찰 예산
+- **참고:** [P54 V*: Guided Visual Search as a Core Mechanism in Multimodal LLMs](https://openaccess.thecvf.com/content/CVPR2024/html/Wu_V_Guided_Visual_Search_as_a_Core_Mechanism_in_Multimodal_CVPR_2024_paper.html), [P55 DeepEyes: Incentivizing "Thinking with Images" via Reinforcement Learning](https://arxiv.org/abs/2505.14362), [P56 Learning to Select Visual Tools from Experience (VisTA)](https://openaccess.thecvf.com/content/CVPR2026/html/Huang_Learning_to_Select_Visual_Tools_from_Experience_CVPR_2026_paper.html)
+
+- **평가 단위:** 학습과 분리한 평가 episode
+
+- **정책 관찰:** 질문·이미지 특징·이미 확인한 영역·남은 예산
+- **행동:** 격자/탐지된 영역 확대·OCR·계산·종료
+- **보상 제안:** 정답 보상에서 관찰 비용 차감
+
+### RL2. 멀티모달 검색 경로와 중단 정책
+
+- **문제:** 질의와 중간 결과에 맞춘 경로 선택이 고정 hybrid보다 효율적인가?
+- **업무:** 텍스트·표·이미지 컬렉션에서 근거를 찾아 필요할 때만 재검색한다.
+- **예시:** 설명은 비슷한 상품의 유지비 표와 안정성 그래프를 비교한다.
+- **50개 구성:** 어휘 일치 10개 / 의미 재표현 10개 / 표 수치 10개 / 시각 속성 10개 / 복수 근거 10개
+- **정답 정보:** 관련 문서·근거·최종 답. 후보 검색과 재순위화 성능을 분리한다.
+- **비교 조건:** BM25/dense/고정 hybrid / 규칙 라우터 / 학습 라우터
+- **주요 지표:** Recall@k·nDCG / 근거·답 정확도 / 구축/조회/학습 비용
+- **구현 부담:** D2
+- **호출 추정:** 학습과 분리한 평가 episode당·조건당 0–5회. 한 번 선택이면 bandit, 결과에 따라 재선택하면 sequential RL. 호출 범위는 평가 추론의 설계 가정이며 RL 학습·도구/encoder 연산·캐시 생성 비용은 별도.
+- **주의:** 임베딩·인덱스와 RL 학습 비용을 숨기지 않는다. DB 제품과 검색 알고리즘은 다른 층이다.
+- **확장:** 문서 규모 / 시각 정보 비중 / 노이즈
+- **참고:** [P58 V-Retrver: Evidence-Driven Agentic Reasoning for Universal Multimodal Retrieval](https://arxiv.org/abs/2602.06034), [P05 Adaptive-RAG: Learning to Adapt Retrieval-Augmented Large Language Models through Question Complexity](https://aclanthology.org/2024.naacl-long.389/), [P01 Operational Advice for Dense and Sparse Retrievers: HNSW, Flat, or Inverted Indexes?](https://aclanthology.org/2025.acl-industry.61/)
+
+- **평가 단위:** 학습과 분리한 평가 episode
+
+- **정책 관찰:** 질의·후보·검색 점수·관찰 이력·예산
+- **행동:** BM25·이미지 검색·질의 수정·확대·종료
+- **보상 제안:** 근거 또는 답 성공에서 검색·추론 비용 차감
+
+### RL3. 한국어 지시를 따르는 시각 Gridworld
+
+- **문제:** 관계·순서·부정 지시를 처음 보는 배치에서도 행동에 연결하는가?
+- **업무:** 작은 환경에서 자연어 목표에 맞춰 이동·집기·문 열기를 수행한다.
+- **예시:** 문을 연 다음 빨간 상자 옆의 열쇠를 가져오되 파란 공은 건드리지 않는다.
+- **50개 구성:** 속성 지시 10개 / 공간 관계 10개 / 순서 10개 / 부정 10개 / 표현 변형 10개
+- **정답 정보:** 목표 조건·금지 행동·환경 seed. 숨긴 목표 구조는 evaluator 전용이다.
+- **비교 조건:** 같은 관찰의 비학습 정책 / imitation learning / RL 정책
+- **주요 지표:** 성공률·위반율 / 평균 step / 학습 표본 효율·새 조합 일반화
+- **구현 부담:** D2
+- **호출 추정:** 학습과 분리한 평가 episode당·조건당 0–1회. 고정 언어 encoder+작은 CNN/정책 등. 큰 LLM 반복 호출은 필요하지 않을 수 있다. 호출 범위는 평가 추론의 설계 가정이며 RL 학습·도구/encoder 연산·캐시 생성 비용은 별도.
+- **주의:** MiniGrid 기본 image는 compact 기호일 수 있다. RGB wrapper와 한국어/금지 조건 구현을 별도 확인한다.
+- **확장:** 직접 이해 vs 목표 변환 / 부분 시야 / 새 표현 조합
+- **참고:** [P57 BabyAI: A Platform to Study the Sample Efficiency of Grounded Language Learning](https://arxiv.org/abs/1810.08272), [D01 MiniGrid 공식 환경·관찰 문서](https://minigrid.farama.org/)
+
+- **평가 단위:** 학습과 분리한 평가 episode
+
+- **정책 관찰:** 한국어 지시·부분 RGB 시야·방향·관찰 이력
+- **행동:** 이동·회전·집기·놓기·문 열기
+- **보상 제안:** 목표 성공, 위반 패널티, step 비용
+
+### RL4. 되묻기와 시각 관찰의 선택 정책
+
+- **문제:** 언어/시각의 모호성에 따라 질문·관찰·행동을 구분하는가?
+- **업무:** 합성 장면에서 사용자 의도를 확인하고 올바른 대상을 선택한다.
+- **예시:** 저번 것보다 작은 빨간 걸 골라줘.
+- **50개 구성:** 명확한 지시 10개 / 언어적 모호성 10개 / 시각적 모호성 10개 / 복합 모호성 10개 / 해결 불가 10개
+- **정답 정보:** 숨긴 사용자 의도와 일관된 답변 규칙, 허용 대상·보류 조건.
+- **비교 조건:** 질문 안 함/항상 질문 / 불확실성 임계값 / 학습 선택 정책
+- **주요 지표:** 성공률·잘못된 실행 / 불필요 질문·과잉 보류 / 질문 수
+- **구현 부담:** D2
+- **호출 추정:** 학습과 분리한 평가 episode당·조건당 0–5회. 규칙 기반 사용자 simulator와 작은 선택 정책으로 시작한다. 호출 범위는 평가 추론의 설계 가정이며 RL 학습·도구/encoder 연산·캐시 생성 비용은 별도.
+- **주의:** 무조건 질문/보류하는 정책의 높은 안전 점수를 성공으로 착각하지 않는다.
+- **확장:** 한국어 지시어 / 생략 / 질문 비용
+- **참고:** [P48 BIRD-INTERACT: Re-imagining Text-to-SQL Evaluation via Lens of Dynamic Interactions](https://proceedings.iclr.cc/paper_files/paper/2026/hash/496b549556509bbb9770bf9d335c5800-Abstract-Conference.html), [P52 τ²-Bench: Evaluating Conversational Agents in a Dual-Control Environment](https://proceedings.mlr.press/v306/barres26a.html), [P57 BabyAI: A Platform to Study the Sample Efficiency of Grounded Language Learning](https://arxiv.org/abs/1810.08272)
+
+- **평가 단위:** 학습과 분리한 평가 episode
+
+- **정책 관찰:** 장면·발화·공개된 대화 단서
+- **행동:** 속성 질문·영역 확대·대상 선택·보류
+- **보상 제안:** 정답, 오실행 패널티, 질문/관찰 비용
+
+### RL5. 시각 산출물의 수정 순서를 배우는 정책
+
+- **문제:** 구조/시각 피드백으로 필요한 수정만 고를 수 있는가?
+- **업무:** 고정 SVG 차트의 제한된 수정 도구로 요청 조건을 충족한다.
+- **예시:** 겹친 항목명을 읽을 수 있게 하고 강조 대상만 파란색으로 바꿔줘.
+- **50개 구성:** 라벨 겹침 10개 / 잘림 10개 / 색상 오류 10개 / 수치 오류 10개 / 복합 오류 10개
+- **정답 정보:** 원자료 수치·레이아웃 제약·불변 영역. 숨긴 최종 평가와 공개 feedback 분리.
+- **비교 조건:** 단발 생성/구조 검사 / 시각 피드백 고정 정책 / 학습 수정 정책
+- **주요 지표:** 모든 조건 충족률 / 정상 영역 손상·수정 횟수 / 수치 정확도·시간
+- **구현 부담:** D3
+- **호출 추정:** 학습과 분리한 평가 episode당·조건당 0–5회. 작은 이산 편집 행동만 학습. 자유 코드 생성 RL은 범위 밖. 호출 범위는 평가 추론의 설계 가정이며 RL 학습·도구/encoder 연산·캐시 생성 비용은 별도.
+- **주의:** 구조 검사만으로 충분한 문제를 일부러 제외하지 않는다. 시각 입력 제거와 결정론적 수정기를 비교한다.
+- **확장:** 피드백 선택 / 최소 수정 / 예산
+- **참고:** [P44 Evaluating Constrained Iterative Refinement for Scalable Vector Graphics Generation with Off-the-Shelf VLMs](https://arxiv.org/abs/2608.28678), [P56 Learning to Select Visual Tools from Experience (VisTA)](https://openaccess.thecvf.com/content/CVPR2026/html/Huang_Learning_to_Select_Visual_Tools_from_Experience_CVPR_2026_paper.html), [P42 VGBench: Evaluating Large Language Models on Vector Graphics Understanding and Generation](https://aclanthology.org/2024.emnlp-main.213/)
+
+- **평가 단위:** 학습과 분리한 평가 episode
+
+- **정책 관찰:** 요청·렌더 이미지·공개 검사 결과
+- **행동:** 글꼴·여백·레이블 회전·색 변경·재렌더·종료
+- **보상 제안:** 제약 충족·오류 감소·수정 비용
+
+### RL6. 악보의 선택적 재독해 정책
+
+- **문제:** 불확실한 마디만 다시 읽으면 전체 재처리보다 유리한가?
+- **업무:** 인쇄 단선율 4–8마디에서 질문 대상의 음과 박자를 읽고 검증한다.
+- **예시:** 세 번째 마디의 음높이와 음길이를 알려줘.
+- **50개 구성:** 음높이 10개 / 음길이 10개 / 쉼표 10개 / 임시표 10개 / 마디·박자 10개
+- **정답 정보:** 직접 만든 기호 원본에서 렌더링하되 정답 기호는 evaluator에만 보관한다.
+- **비교 조건:** 전체 이미지 VLM / OMR→기호/고정 전처리 / 학습 재독해 정책
+- **주요 지표:** pitch/duration 정확도 / note tuple F1·대상 정확도 / 도구 수·처리비용
+- **구현 부담:** D3
+- **호출 추정:** 학습과 분리한 평가 episode당·조건당 0–5회. OMR 지각 성능을 먼저 확인한다. 오디오·다성부·작곡 전체를 함께 구현하지 않는다. 호출 범위는 평가 추론의 설계 가정이며 RL 학습·도구/encoder 연산·캐시 생성 비용은 별도.
+- **주의:** 박자 합만 맞는 오답을 성공 처리하지 않는다. 도구 라이선스와 학습 요구량은 미확정.
+- **확장:** 해상도 / 새 선율 / 전처리 선택
+- **참고:** [P39 NOTA: Multimodal Music Notation Understanding for Visual Large Language Model](https://aclanthology.org/2025.findings-naacl.399/), [P41 ABC-Eval: Benchmarking Large Language Models on Symbolic Music Understanding and Instruction Following](https://arxiv.org/abs/2509.23350), [P45 Musical Score Understanding Benchmark: Evaluating Large Language Models’ Comprehension of Complete Musical Scores](https://aclanthology.org/2026.acl-long.493/), [P54 V*: Guided Visual Search as a Core Mechanism in Multimodal LLMs](https://openaccess.thecvf.com/content/CVPR2024/html/Wu_V_Guided_Visual_Search_as_a_Core_Mechanism_in_Multimodal_CVPR_2024_paper.html)
+
+- **평가 단위:** 학습과 분리한 평가 episode
+
+- **정책 관찰:** 악보 이미지·질문·OMR 후보·공개 음악 규칙 검사
+- **행동:** 마디 확대·전처리/OMR 재실행·후보 비교·종료
+- **보상 제안:** 음·길이·마디 정확성에서 처리 비용 차감
+
 ## 참고자료의 확인 수준
 
-아래에는 논문 46편과 아이디어 자료 1건이 포함됩니다. 학회/저널, 워크숍/포스터, preprint, 실무 아이디어를 구분합니다.
+아래에는 논문 58편과 기타 자료 2건이 포함됩니다. 학회/저널, 워크숍/포스터, preprint, 아이디어·공식 문서를 구분합니다.
 
 ### P01. Operational Advice for Dense and Sparse Retrievers: HNSW, Flat, or Inverted Indexes?
 
@@ -831,6 +1084,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - 주의: 공식 초록·원문 검색 발췌 확인. 입력 표현 연구이며 파일 생성이나 도구 실행의 우열을 직접 검증한 논문은 아니다.
 
 - 저자: Wei Zhou, Mohsen Mesgar, Heike Adel, Annemarie Friedrich
+
 - 확인일: 2026-10-14
 - 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
 
@@ -842,6 +1096,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - 주의: 공식 초록 확인. arXiv의 SheetCompressor와 출판본 명칭을 구분한다. 압축·표 탐지 결과가 모든 수식 업무의 정확성을 보장하지 않는다.
 
 - 저자: Haoyu Dong et al.
+
 - 확인일: 2026-10-14
 - 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
 
@@ -853,6 +1108,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - 주의: 공식 초록 확인. 범용 GUI 조작 모델 또는 이미지 생성 모델 자체의 논문으로 해석하지 않는다. 로컬 구현·환경 호환성은 미검증.
 
 - 저자: Hongxin Li, Jingran Su, Yuntao Chen, Qing Li, Zhaoxiang Zhang
+
 - 확인일: 2026-10-14
 - 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
 
@@ -864,6 +1120,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - 주의: 공식 초록·원문 도입부 확인. 공개 benchmark 사례를 그대로 가져오는 것은 직접 작성 50개를 대체하지 않는다. 실행 결과 일치와 일반적인 수식 동치 증명은 다르다.
 
 - 저자: Zeyao Ma et al.
+
 - 확인일: 2026-10-14
 - 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
 
@@ -875,6 +1132,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - 주의: 공식 초록 확인. 음악 기호 이해 연구를 직접 악보 픽셀 생성 또는 범용 악보 편집의 성능 증거로 확대하지 않는다.
 
 - 저자: Mingni Tang et al.
+
 - 확인일: 2026-10-14
 - 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
 
@@ -886,6 +1144,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - 주의: 공식 초록 확인. 음악 특화 학습 모델과 범용 VLM의 차이는 모달리티뿐 아니라 학습 데이터 차이도 포함한다. ABC는 자연어 문장이 아니라 형식 기호다.
 
 - 저자: Ruibin Yuan et al.
+
 - 확인일: 2026-10-14
 - 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
 
@@ -897,6 +1156,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - 주의: arXiv 초록·서지 확인. 이번 확인 범위에서 학회 게재 여부를 별도로 확정하지 않았다. 자체 데이터에 동일 성능을 기대하거나 음악적 미감을 객관 점수로 대체하지 않는다.
 
 - 저자: Jiahao Zhao, Yunjia Li, Wei Li, Kazuyoshi Yoshii
+
 - 확인일: 2026-10-14
 - 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
 
@@ -908,6 +1168,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - 주의: 공식 초록·원문 검색 발췌 확인. 텍스트로 표현 가능한 시각 작업의 근거이지, raster 생성 대 코드 생성에서 어느 쪽이 보편적으로 우세하다는 증거는 아니다.
 
 - 저자: Bocheng Zou, Mu Cai, Jianrui Zhang, Yong Jae Lee
+
 - 확인일: 2026-10-14
 - 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
 
@@ -919,6 +1180,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - 주의: 공식 초록 확인. 픽셀 지표만으로 벡터 구조를 충분히 평가하기 어렵다. 체크포인트·의존성·현재 GPU 실행 가능성은 확인하지 않았다.
 
 - 저자: Juan A. Rodriguez et al.
+
 - 확인일: 2026-10-14
 - 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
 
@@ -930,6 +1192,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - 주의: arXiv 초록·Comments 확인. 2쪽 포스터이며 본회의 장문 논문으로 부르지 않는다. 시각 피드백 반복이 항상 개선한다는 가설을 경계하는 자료다.
 
 - 저자: Matthew Perlman, James Beetham, Niels Da Vitoria Lobo, Amrit Singh Bedi, Mubarak Shah
+
 - 확인일: 2026-10-14
 - 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
 
@@ -941,6 +1204,7 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - 주의: 공식 초록 확인. 1,800 QA의 저자 benchmark이며 우리 50개 단편 사례와 난도가 같지 않다. 이해 평가이지 native 악보 이미지 생성 평가가 아니다.
 
 - 저자: Congren Dai et al.
+
 - 확인일: 2026-10-14
 - 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
 
@@ -952,5 +1216,136 @@ D1=비교적 낮음, D2=중간, D3=높음. 호출량은 사례당·조건당 계
 - 주의: arXiv 초록·도입부·검색 발췌 확인. 내용 고정 비교의 참고 자료이며 최신 preprint의 결과를 모든 모델에 일반화하지 않는다.
 
 - 저자: Momina Ahsan, Sarfraz Ahmad, Ming Shan Hee, Roy Ka-Wei Lee, Preslav Nakov
+
 - 확인일: 2026-10-14
 - 확인 수준: 공식 논문 페이지/저자 원문에서 명시한 범위 확인; 전문 정독·코드 감사·재현 미실시
+
+### P47. DS-Agent: Automated Data Science by Empowering Large Language Models with Case-Based Reasoning
+
+- ICML 2024
+- [원문](https://proceedings.mlr.press/v235/guo24b.html)
+- 연결 아이디어: 사례 기반 추론과 실험 피드백으로 데이터 과학의 반복 실험을 지원한다.
+- 주의: 한국어 IR 튜닝은 우리의 축소 응용이다. 논문 당시 비용·성공률을 현 모델의 견적으로 쓰지 않는다.
+
+- 확인일: 2026-10-23
+- 확인 수준: 공식 출판/저자 초록·서지 또는 공식 환경 문서 확인. 전문 정독·코드 감사·재현 미실시.
+
+### P48. BIRD-INTERACT: Re-imagining Text-to-SQL Evaluation via Lens of Dynamic Interactions
+
+- ICLR 2026
+- [원문](https://proceedings.iclr.cc/paper_files/paper/2026/hash/496b549556509bbb9770bf9d335c5800-Abstract-Conference.html)
+- 연결 아이디어: 함수형 사용자 simulator, clarification, 실행 오류, CRUD의 최종 상태를 결합한 평가 환경이다.
+- 주의: 전체 환경의 재현은 필수가 아니다. SELECT 정답만 맞추는 평가와 상태 변경 성공을 구분한다.
+
+- 확인일: 2026-10-23
+- 확인 수준: 공식 출판/저자 초록·서지 또는 공식 환경 문서 확인. 전문 정독·코드 감사·재현 미실시.
+
+### P49. MemTxn: A Transaction Boundary for Source-Supported Updates and Complete-State Recovery in Agent Memory
+
+- arXiv preprint 2026
+- [원문](https://arxiv.org/abs/2607.27834)
+- 연결 아이디어: 근거가 있는 기억 갱신, 충돌 버전 선택, 장애 후 상태 복구를 다룬다.
+- 주의: 문서 전반의 변경 전파를 모두 해결한 연구로 확대하지 않는다. preprint·저자 보고이며 독립 재현 미실시.
+
+- 확인일: 2026-10-23
+- 확인 수준: 공식 출판/저자 초록·서지 또는 공식 환경 문서 확인. 전문 정독·코드 감사·재현 미실시.
+
+### P50. Enhancing Text Classification through LLM-Driven Active Learning and Human Annotation
+
+- LAW 2024 워크숍
+- [원문](https://aclanthology.org/2024.law-1.10/)
+- 연결 아이디어: 불확실성에 따라 사람과 LLM 주석을 결합하는 active learning을 연구한다.
+- 주의: 주석 신뢰성과 분류 성능을 분리한다. 임의 agent 선택기가 기존 표본 선택보다 좋다는 증거는 아니다.
+
+- 확인일: 2026-10-23
+- 확인 수준: 공식 출판/저자 초록·서지 또는 공식 환경 문서 확인. 전문 정독·코드 감사·재현 미실시.
+
+### P51. CoverICL: Selective Annotation for In-Context Learning via Active Graph Coverage
+
+- EMNLP 2024
+- [원문](https://aclanthology.org/2024.emnlp-main.1185/)
+- 연결 아이디어: 의미적 이웃 그래프의 coverage와 불확실성을 사용해 제한된 주석 예산의 ICL 예시를 선택한다.
+- 주의: ICL 자체는 파라미터 갱신이 아니다. agent의 효과를 주장하려면 이런 강한 비-agent 기준선과 비교한다.
+
+- 확인일: 2026-10-23
+- 확인 수준: 공식 출판/저자 초록·서지 또는 공식 환경 문서 확인. 전문 정독·코드 감사·재현 미실시.
+
+### P52. τ²-Bench: Evaluating Conversational Agents in a Dual-Control Environment
+
+- ICML 2026
+- [원문](https://proceedings.mlr.press/v306/barres26a.html)
+- 연결 아이디어: 사용자와 agent가 함께 상태를 바꾸는 환경에서 추론·소통·조정을 평가한다.
+- 주의: 사용자 simulator를 상태에 묶어야 한다. 최신 코드가 논문 버전과 같다고 가정하지 말고 commit을 고정한다.
+
+- 확인일: 2026-10-23
+- 확인 수준: 공식 출판/저자 초록·서지 또는 공식 환경 문서 확인. 전문 정독·코드 감사·재현 미실시.
+
+### P53. Curie: Toward Rigorous and Automated Scientific Experimentation with AI Agents
+
+- arXiv preprint 2025
+- [원문](https://arxiv.org/abs/2502.16069)
+- 연결 아이디어: 실험의 신뢰성·통제·해석 가능성을 agent 연구의 중심에 둔다.
+- 주의: 공식 arXiv 초록 확인. 학회 채택 논문으로 표기하지 않으며 오류 주입 감사 태스크는 우리의 제안이다.
+
+- 확인일: 2026-10-23
+- 확인 수준: 공식 출판/저자 초록·서지 또는 공식 환경 문서 확인. 전문 정독·코드 감사·재현 미실시.
+
+### P54. V*: Guided Visual Search as a Core Mechanism in Multimodal LLMs
+
+- CVPR 2024
+- [원문](https://openaccess.thecvf.com/content/CVPR2024/html/Wu_V_Guided_Visual_Search_as_a_Core_Mechanism_in_Multimodal_CVPR_2024_paper.html)
+- 연결 아이디어: 고해상도 이미지의 필요한 세부를 찾는 guided visual search와 V*Bench를 제안한다.
+- 주의: 능동 관찰의 근거이지 우리의 작은 정책 RL 학습 결과가 아니다.
+
+- 확인일: 2026-10-23
+- 확인 수준: 공식 출판/저자 초록·서지 또는 공식 환경 문서 확인. 전문 정독·코드 감사·재현 미실시.
+
+### P55. DeepEyes: Incentivizing "Thinking with Images" via Reinforcement Learning
+
+- ICLR 2026; arXiv v3 채택 표기 확인
+- [원문](https://arxiv.org/abs/2505.14362)
+- 연결 아이디어: 이미지 기반 능동 관찰을 end-to-end RL로 학습한다.
+- 주의: 대형 모델 전체 학습과 작은 행동 정책 학습은 다르다. 학습 자원·현재 GPU 재현성 미검증.
+
+- 확인일: 2026-10-23
+- 확인 수준: 공식 출판/저자 초록·서지 또는 공식 환경 문서 확인. 전문 정독·코드 감사·재현 미실시.
+
+### P56. Learning to Select Visual Tools from Experience (VisTA)
+
+- CVPR 2026
+- [원문](https://openaccess.thecvf.com/content/CVPR2026/html/Huang_Learning_to_Select_Visual_Tools_from_Experience_CVPR_2026_paper.html)
+- 연결 아이디어: 경험과 보상에 기반해 시각 도구 조합을 선택하는 agent를 학습한다.
+- 주의: arXiv v2는 frozen reasoner와 별도 VLM selector를 설명한다. 작은 MLP로 축소하는 것은 우리 제안이며 버전별 설정 차이를 확인해야 한다.
+
+- 확인일: 2026-10-23
+- 확인 수준: 공식 출판/저자 초록·서지 또는 공식 환경 문서 확인. 전문 정독·코드 감사·재현 미실시.
+
+### P57. BabyAI: A Platform to Study the Sample Efficiency of Grounded Language Learning
+
+- ICLR 2019; arXiv 채택 표기 확인
+- [원문](https://arxiv.org/abs/1810.08272)
+- 연결 아이디어: 언어 지시를 환경 행동에 접지하는 학습과 표본 효율을 평가한다.
+- 주의: 한국어·추가 금지 조건은 별도 구현이다. 기본 상징 관찰과 RGB 관찰을 구분한다.
+
+- 확인일: 2026-10-23
+- 확인 수준: 공식 출판/저자 초록·서지 또는 공식 환경 문서 확인. 전문 정독·코드 감사·재현 미실시.
+
+### P58. V-Retrver: Evidence-Driven Agentic Reasoning for Universal Multimodal Retrieval
+
+- arXiv preprint 2026
+- [원문](https://arxiv.org/abs/2602.06034)
+- 연결 아이디어: 시각적 근거를 추가 확인하며 후보를 재순위화하고 단계적 학습·RL을 적용한다.
+- 주의: 논문 방법과 고정 인코더+작은 검색 라우터는 동일하지 않다. 학회 채택·학습 자원 재현성 미확인.
+
+- 확인일: 2026-10-23
+- 확인 수준: 공식 출판/저자 초록·서지 또는 공식 환경 문서 확인. 전문 정독·코드 감사·재현 미실시.
+
+### D01. MiniGrid 공식 환경·관찰 문서
+
+- Farama 공식 프로젝트 문서
+- [원문](https://minigrid.farama.org/)
+- 연결 아이디어: 작은 Gridworld와 BabyAI 환경, RGB/상징적 관찰 및 부분 시야 구성을 제공한다.
+- 주의: 라이브러리 문서이며 논문 1편으로 세지 않는다. 설치·버전 고정·GPU 학습은 미실행.
+
+- 확인일: 2026-10-23
+- 확인 수준: 공식 출판/저자 초록·서지 또는 공식 환경 문서 확인. 전문 정독·코드 감사·재현 미실시.
