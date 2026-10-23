@@ -1,0 +1,204 @@
+{
+  "as_of": "2026-10-23",
+  "method": "Exa broad discovery followed by primary-source landing page/abstract and official documentation review; not systematic or exhaustive",
+  "search_calls": 17,
+  "requested_result_items": 113,
+  "returned_url_occurrences": 113,
+  "unique_returned_urls": 107,
+  "selected_academic_works": 35,
+  "selected_papers": 34,
+  "selected_theses": 1,
+  "fetch_calls": 10,
+  "requested_fetch_urls": 49,
+  "unique_fetch_urls": [
+    "https://aclanthology.org/2022.tacl-1.11/",
+    "https://aclanthology.org/N18-1074/",
+    "https://fever.ai/dataset/averitec.html",
+    "https://proceedings.neurips.cc/paper_files/paper/2023/hash/cd86a30526cd1aff61d6f89f107634e4-Abstract-Datasets_and_Benchmarks.html",
+    "https://aclanthology.org/2024.fever-1.1/",
+    "https://aclanthology.org/2020.findings-emnlp.309/",
+    "https://aclanthology.org/2023.acl-long.386/",
+    "https://aclanthology.org/2025.findings-naacl.158/",
+    "https://aclanthology.org/2025.fever-1.13/",
+    "https://proceedings.mlr.press/v267/braun25b.html",
+    "https://arxiv.org/abs/2409.00009",
+    "https://aclanthology.org/2026.acl-demo.36/",
+    "https://arxiv.org/abs/2403.17169",
+    "https://aclanthology.org/2024.emnlp-industry.48/",
+    "https://aclanthology.org/2025.emnlp-main.1519/",
+    "https://www.ijcai.org/proceedings/2025/893",
+    "https://aclanthology.org/2024.findings-emnlp.428/",
+    "https://aclanthology.org/2025.fever-1.20/",
+    "https://arxiv.org/abs/2106.05707",
+    "https://arxiv.org/abs/2310.05253",
+    "https://react-lm.github.io/",
+    "https://aclanthology.org/2023.emnlp-main.398/",
+    "https://arxiv.org/abs/2403.18802",
+    "https://arxiv.org/abs/2405.01593",
+    "https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART003331812",
+    "https://doi.org/10.5626/jok.2023.50.8.680",
+    "https://arxiv.org/abs/2510.18368",
+    "https://hdl.handle.net/10371/182352",
+    "https://fever.ai/dataset/averimatec.html",
+    "https://arxiv.org/abs/2505.17978",
+    "https://aclanthology.org/2026.fever-1.10/",
+    "https://dl.acm.org/doi/10.1145/3696410.3714748",
+    "https://ecos.bok.or.kr/api/",
+    "https://kosis.kr/serviceInfo/openAPIGuide.do",
+    "https://www.kosis.kr/openapi/devGuide/devGuide_0101List.do",
+    "https://www.bok.or.kr/static/view/popup/rss_popup.html",
+    "https://developers.google.com/fact-check/tools/api/reference/rest/v1alpha1/claims/search",
+    "https://aclanthology.org/2025.fever-1.15/",
+    "https://aclanthology.org/2025.fever-1.16/",
+    "https://fever.ai/2025/task.html",
+    "https://aclanthology.org/2020.emnlp-main.609/",
+    "https://arxiv.org/abs/1909.02164",
+    "https://arxiv.org/abs/2411.05375",
+    "https://github.com/MichSchli/AVeriTeC",
+    "https://github.com/ssu-humane/HerO2",
+    "https://www.khan.co.kr/help/help_rss.html",
+    "https://rss.donga.com/",
+    "https://www.data.go.kr/data/15095335/openapi.do",
+    "https://www.data.go.kr/data/15095295/openapi.do?recommendDataYn=Y"
+  ],
+  "extra_verification": [
+    {
+      "url": "https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART003331812",
+      "method": "Public page citation meta tags read via HTTP GET",
+      "finding": "2026; Korean Journal of Journalism & Communication; 70(2); 86-123; DOI 10.20879/kjjcs.2026.70.2.003"
+    }
+  ],
+  "queries": [
+    {
+      "area": "survey",
+      "query": "category:research paper automated fact checking survey evidence retrieval claim verification Guo Schlichtkrull Vlachos 2022",
+      "objective": "학술 survey와 원논문을 우선. 주장 탐지, evidence retrieval, verdict, explanations 과제를 구분하는 자료.",
+      "numResults": 8
+    },
+    {
+      "area": "benchmarks",
+      "query": "category:research paper FEVER AVeriTeC FEVEROUS HoVer fact verification evidence datasets benchmark",
+      "objective": "원논문·공식 데이터셋을 우선. claim 종류, evidence 형식, temporal leakage와 metric 확인.",
+      "numResults": 8
+    },
+    {
+      "area": "agents",
+      "query": "category:research paper agentic fact checking tools web search ReAct FactAgent 2024 2025 2026",
+      "objective": "2026-10-23까지 발표된 fact-checking agent 원논문. 블로그 제외. 적응적 도구 선택, baseline, 출처 확인.",
+      "numResults": 8
+    },
+    {
+      "area": "decomposition",
+      "query": "category:research paper ProgramFC FOLK fact checking claim decomposition question answering large language models",
+      "objective": "주장 분해 및 질문 생성 방법 원논문. 관측 결과와 설계 아이디어를 구분할 자료.",
+      "numResults": 8
+    },
+    {
+      "area": "temporal",
+      "query": "category:research paper time sensitive fact verification temporal evidence conflicts numerical claims benchmark",
+      "objective": "시점·증거 충돌·숫자 주장을 평가하는 원논문. 일반 fake news style classification 제외.",
+      "numResults": 8
+    },
+    {
+      "area": "korean",
+      "query": "category:research paper Korean fact verification dataset evidence retrieval Ko-Check Korean fact checking benchmark",
+      "objective": "한국어 주장-근거 검증 데이터셋과 논문. 중국어 CHEF와 한국어 자료를 구분. 접근·라이선스·근거 annotation 확인.",
+      "numResults": 8
+    },
+    {
+      "area": "evaluation",
+      "query": "category:research paper automated fact checking evidence evaluation citation correctness abstention uncertainty AVeriTeC scoring",
+      "objective": "판정과 evidence 공동평가, 인용정확성, 근거부족·보류 및 annotation 신뢰성 원자료.",
+      "numResults": 8
+    },
+    {
+      "area": "multimodal",
+      "query": "category:research paper AVerImaTeC multimodal fact checking evidence image textual claims benchmark",
+      "objective": "텍스트+이미지 실제 주장 fact checking 원논문. 현 프로젝트 선택적 확장용.",
+      "numResults": 8
+    },
+    {
+      "area": "agent_specific",
+      "query": "category:research paper FactAgent DEFAME evidence based fact checking agent FOLK search 2024 2025",
+      "objective": "팩트체크 tool agent의 정확한 제목·학회·원문·코드 확인. survey와 블로그보다 원논문.",
+      "numResults": 6
+    },
+    {
+      "area": "retrieval",
+      "query": "category:research paper fact checking BM25 dense retrieval reranking evidence selection Korean CHEF AVeriTeC",
+      "objective": "학부 프로젝트에서 재현 가능한 BM25 dense hybrid reranker evidence 선택 ablation 원논문.",
+      "numResults": 6
+    },
+    {
+      "area": "abstain",
+      "query": "category:research paper fact verification abstention calibration sufficient evidence Self-RAG ALCE SAFE",
+      "objective": "근거부족 판정과 실행실패 구분, citation 평가, retrieval stopping 참고 원논문.",
+      "numResults": 6
+    },
+    {
+      "area": "apis",
+      "query": "한국은행 ECOS KOSIS Open API 개발가이드 통계자료 JSON RSS 정책브리핑 공식 문서",
+      "objective": "공식 사이트의 API 명세·인증·이용조건 또는 RSS안내. 키/라이브 데이터 요청 없이 도구 후보 확인.",
+      "numResults": 6
+    },
+    {
+      "area": "metrics_version",
+      "query": "category:research paper AVeriTeC 2025 shared task Ev2R evidence evaluation 2024 Hungarian METEOR",
+      "objective": "공식 FEVER 2025 shared task와 Ev2R metric 원논문. 2024/2025 평가 버전 차이·한계 확인.",
+      "numResults": 5
+    },
+    {
+      "area": "korean_primary",
+      "query": "\"한국어 팩트체크 필요성 탐지 모델 및 RAG 기반\" 이종혁 2025 2026 논문",
+      "objective": "KCI·학회·출판사 원페이지. 발행연도 학술지 metadata 확인, 전재 블로그 제외.",
+      "numResults": 5
+    },
+    {
+      "area": "table_evidence",
+      "query": "category:research paper TabFact table based fact verification SciFact scientific claims verification",
+      "objective": "TabFact와 SciFact 원논문만. 표·과학 분야 확장용 task설명과 venue를 확인.",
+      "numResults": 5
+    },
+    {
+      "area": "rss_news",
+      "query": "한겨레 경향신문 RSS 서비스 공식 안내 기사 RSS 이용",
+      "objective": "한국어 신문사의 공식 RSS 안내 페이지를 우선. RSS 제공 여부와 본문 재배포 권한을 구분할 출처.",
+      "numResults": 5
+    },
+    {
+      "area": "public_api",
+      "query": "대한민국 정책브리핑 RSS OpenDART 개발가이드 공공데이터포털 API 공식",
+      "objective": "정책 소식 RSS와 공공 자료 API의 공식 안내. API 키 발급이나 실제 데이터 호출은 하지 않음.",
+      "numResults": 5
+    }
+  ],
+  "selection_rules": [
+    "Primary papers, conference/workshop pages, author projects and official data/API docs",
+    "Remove arXiv/DOI/PDF duplicates of the same work",
+    "Include fixed pipelines and efficiency-focused systems, not only agent success stories",
+    "Separate claim verification, check-worthiness, QA factuality and generated-text evaluation",
+    "2026-10-23 is an observation cutoff; this is not a claim of complete literature coverage"
+  ],
+  "excluded_or_deferred": [
+    "Unofficial mirrors and SEO/blog summaries are not cited as paper evidence",
+    "Unverified generic 2026 abstention results were not included as confirmed findings",
+    "Other papers also named FactAgent were not conflated with Li et al. arXiv:2405.01593",
+    "No claim that a ready-to-use Korean open-web claim-evidence benchmark was exhaustively ruled out",
+    "Team member's existing paper list not yet received",
+    "Exact API quotas, complete data/code licences and runtime feasibility remain to be verified before use"
+  ],
+  "conflicts_resolved": [
+    "NumTemp is the earlier title of arXiv:2403.17169; use QuanTemp once",
+    "KoSimpleQA search summary and fetched abstract disagree on size; do not freeze a count",
+    "AVeriTeC 2024 Hungarian METEOR and 2025 Ev2R based scores must not be conflated",
+    "Korean RAG paper date checked as 2026, not inferred from its 2025 election subject"
+  ],
+  "execution": {
+    "experimental_llm_calls": 0,
+    "model_downloads": 0,
+    "api_key_use": false,
+    "live_statistical_data_calls": 0,
+    "private_trajectory_uploads": false,
+    "full_texts_republished": false
+  }
+}

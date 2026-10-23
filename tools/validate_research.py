@@ -49,6 +49,7 @@ def main():
         assert all(isinstance(n, int) and n > 0 for _, n in t["data"]), t["id"]
         assert all(r in refs for r in t["refs"]), t["id"]
         assert 0 <= t["calls"][0] <= t["calls"][1], t["id"]
+        assert all(x in tasks for x in t.get("related", [])), t["id"]
     for th in themes.values():
         assert all(r in refs for r in th["papers"]), th["id"]
     for r in refs.values():
@@ -71,8 +72,24 @@ def main():
         check_local_link(RESEARCH, link)
     assert f"{len(tasks)}개" in markdown and f"{len(tasks)}개" in html
     assert "{TASK_COUNT}" not in html, "Unrendered template variable"
+    assert not re.search(r"@@[A-Z_]+@@", html), "Unrendered atlas token"
+    guide = json.loads((RESEARCH / "atlas_guide.json").read_text(encoding="utf-8"))
+    assert {g["id"] for g in guide["themes"]} == set(themes), "Missing theory theme"
+    for g in guide["themes"]:
+        assert g["slug"] in ids, g["id"]
+        assert g["concepts"] and g["controls"] and g["questions"], g["id"]
+        assert all(r in refs for r in g["papers"]), g["id"]
+    assert html.count('class="task-card"') == len(tasks)
+    assert html.count('class="ref-item"') == len(refs)
+    assert html.count('class="archive"') == 3
+    assert not re.search(r"<(?:script|iframe)[^>]+src=", html, re.I), "External runtime dependency"
+    assert not re.search(r"<link[^>]+(?:stylesheet|preload)", html, re.I), "External CSS/font"
+    embedded = re.search(r'<script id="atlas-data" type="application/json">(.*?)</script>', html, re.S)
+    assert embedded and json.loads(embedded[1])["tasks"] == data["tasks"], "Stale interactive data"
     for path in [ROOT / "README.md", RESEARCH / "README.md",
-                 RESEARCH / "candidates.md", RESEARCH / "multimodal_comparison.md"]:
+                 RESEARCH / "candidates.md", RESEARCH / "multimodal_comparison.md",
+                 RESEARCH / "agent_tasks_20261023.md", RESEARCH / "rl_multimodal_20261023.md",
+                 RESEARCH / "update_20261023.md"]:
         source = path.read_text(encoding="utf-8")
         for target in re.findall(r"\]\(([^\s)]+)\)", source):
             check_local_link(path.parent, target)
