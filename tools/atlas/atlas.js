@@ -144,7 +144,7 @@
   $("team-note").value = teamNote;
   $("team-note").addEventListener("input", () => { teamNote = $("team-note").value; save(); });
   $("export-notes").addEventListener("click", () => {
-    const lines = ["# NLP 5조 연구 주제 논의", "", "후보집 버전: " + data.date, "", "주제·모델·예산 미확정. 논의 기록이며 실험 결과가 아님.", ""];
+    const lines = ["# NLP 5조 연구 주제 논의", "", "후보집 버전: " + data.date, "", "큰 방향은 팩트체크 Agent. 세부 태스크·모델·예산 미확정. 아래 후보는 탐색 기록이며 실험 결과가 아님.", ""];
     for (const id of selected) {
       const t = byId.get(id);
       lines.push("## " + id + ". " + t.title, "", "- 연구 질문: " + t.problem, "- 업무: " + t.task,

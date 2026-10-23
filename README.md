@@ -2,13 +2,23 @@
 
 2026년 서울시립대학교 NLP 수업의 5조 공동 연구 공간입니다.
 
-**현재 단계: 주제 탐색. 최종 태스크·모델·실험 조건은 아직 결정하지 않았습니다.**
-기존 조사 자료는 연구 제안이며, 실험을 수행한 결과가 아닙니다.
+**현재 단계: 기사·뉴스·주장을 검증하는 팩트체크 Agent로 큰 방향 합의.**
+대상 분야·세부 태스크·모델·데이터·예산·비교 조건은 아직 결정하지 않았습니다. 기존 후보집은 탐색 기록으로 보존하며, 실험을 수행한 결과가 아닙니다.
+
+## 지금 함께 볼 자료
+
+- [팩트체크 Agent 구상](docs/research/fact_checking/README.md): 합의한 큰 틀과 3개 track·6개 연구 질문 후보
+- [문헌 지도](docs/research/fact_checking/literature.md): 논문 34편·학위논문 1편, 확인 범위와 우리 실험 연결
+- [평가 설계](docs/research/fact_checking/evaluation.md): 50개 구성안·강한 기준선·판정/근거/비용·누출 통제
+- [RSS/API·도구 후보](docs/research/fact_checking/tools.md): 공식 자료 확인, 도구 역할·이용조건·실패 처리
+- [큰 방향 합의 기록](docs/decisions/001-fact-checking-direction.md): 확정한 것과 아직 정하지 않은 것
+
+2026-10-23 조사: Exa 17회 검색·113개 결과 항목(중복 포함)을 탐색하고 원자료 49개 URL을 직접 조회했습니다. 전체 논문 전문 정독·코드 감사·재현을 완료했다는 뜻은 아닙니다. 기존 후보집과 새 문헌집의 중복 논문은 두 번 합산하지 않습니다.
 
 ## 처음 오셨다면
 
 1. [협업 안내](CONTRIBUTING.md)를 읽습니다. Git 명령어를 몰라도 웹에서 시작할 수 있습니다.
-2. [49개 연구 후보](docs/research/candidates.md) 또는 [통합 HTML Research Atlas](docs/research/research_catalog.html)를 읽고 관심 있는 후보 ID와 이유를 Issues에 남깁니다.
+2. [현재 팩트체크 구상](docs/research/fact_checking/README.md)을 먼저 읽습니다. [49개 후보](docs/research/candidates.md)와 [HTML Research Atlas](docs/research/research_catalog.html)는 이전 탐색과 관련 개념을 확인하는 기록입니다.
 3. 새 작업은 Issue로 목적과 완료 기준을 정한 뒤, 작업용 branch에서 진행합니다.
 4. 변경은 PR로 제안하고 다른 팀원이 확인한 뒤 main에 합칩니다.
 
@@ -31,7 +41,7 @@
 
 RAG, ReAct, 메모리, LLM/Agent alignment, Harness, 멀티모달 입력·기호/도구 생성의 기존 36개에 **적응적 업무 X1–X7**과 **강화학습·멀티모달 RL1–RL6**을 더해 **8개 주제군·49개 후보**를 정리했습니다.
 
-2026-10-23 추가: [Agent의 필요성을 검증하는 업무 7가지](docs/research/agent_tasks_20261023.md), [강화학습·멀티모달 연계 6가지](docs/research/rl_multimodal_20261023.md). 참고자료는 논문 58편·아이디어 1건·공식 문서 1건입니다. 모두 연구 제안이며 모델·예산·최종 주제는 미확정입니다.
+2026-10-23 탐색 기록: [Agent의 필요성을 검증하는 업무 7가지](docs/research/agent_tasks_20261023.md), [강화학습·멀티모달 연계 6가지](docs/research/rl_multimodal_20261023.md). 이 후보집의 참고자료는 논문 58편·아이디어 1건·공식 문서 1건입니다. 이후 큰 방향은 팩트체크 Agent로 합의했으며, 개별 후보의 내용은 당시 제안으로 보존합니다.
 
 ### 팀 논의용 HTML 사용법
 
