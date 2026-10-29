@@ -1,0 +1,1363 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NLP 5조 · 팩트체크에서 다음 행동까지</title>
+<style>
+:root{--ink:#172e2b;--muted:#5a6c66;--green:#17634f;--mint:#e5efe7;--bg:#f7f7f0;--line:#d8e0d6;--white:#fff;--warm:#f3ead5;--purple:#eae9f5}*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:26px}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.85 'Malgun Gothic','Apple SD Gothic Neo',sans-serif;word-break:keep-all;overflow-wrap:anywhere}a{color:var(--green);text-underline-offset:4px}button,input,select{font:inherit}button,summary{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #d4a842;outline-offset:4px}[hidden]{display:none!important}aside{position:fixed;width:232px;inset:0 auto 0 0;border-right:1px solid var(--line);background:#eaf0e7;padding:31px 23px;overflow-y:auto}.brand{font:800 11px/1.4 Arial,sans-serif;letter-spacing:.15em}.side-title{font-size:23px;font-weight:800;line-height:1.4;margin:26px 0 13px;letter-spacing:-.05em}.side-meta{font-size:12px;color:var(--muted);margin-bottom:26px}nav a{display:block;text-decoration:none;color:var(--muted);font-size:13px;padding:9px 0}nav a:hover{color:var(--green)}.side-footer{font-size:11px;border-top:1px solid var(--line);padding-top:18px;margin-top:25px;color:var(--muted)}main{margin-left:232px;padding:42px 5vw 70px;max-width:1500px}.hero{padding:22px 0 45px;border-bottom:2px solid var(--ink)}.eyebrow{font-size:12px;letter-spacing:.12em;font-weight:800;color:var(--green)}h1{font-size:clamp(37px,4.3vw,60px);line-height:1.23;letter-spacing:-.055em;margin:20px 0}h2{font-size:30px;line-height:1.4;letter-spacing:-.035em;margin:5px 0 25px}h3{font-size:21px;line-height:1.5;letter-spacing:-.025em;margin:30px 0 12px}p{margin:10px 0 18px}.hero p{font-size:19px;max-width:780px;color:#3b554c}.hero-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:30px 0 20px}.hero-flow div{background:var(--white);border-top:3px solid var(--green);padding:16px 13px}.hero-flow b{font-size:16px;display:block}.hero-flow small{font-size:12px;color:var(--muted)}.hero-links{display:flex;gap:12px;flex-wrap:wrap}.hero-links a,.task-reading{display:inline-block;padding:9px 15px;border:1px solid var(--green);border-radius:3px;text-decoration:none;font-size:14px;background:var(--green);color:white}.hero-links a.secondary{background:transparent;color:var(--green)}section{padding:48px 0;border-bottom:1px solid var(--line)}section>p:first-of-type{font-size:18px;color:#334f45}ul,ol{padding-left:23px}li{margin:8px 0}strong{font-weight:800}.table-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:5px;background:white}table{border-collapse:collapse;width:100%;min-width:660px;font-size:14px;line-height:1.8}th,td{padding:13px 15px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:#e8efe5;color:#315044;font-size:13px}td:first-child{font-weight:700}tr:last-child td{border-bottom:0}code{font: .88em Consolas,monospace;background:#e8ece3;border-radius:3px;padding:2px 5px}pre{background:#17382f;color:#edf4ea;padding:23px;white-space:pre-wrap;overflow-wrap:anywhere;border-radius:6px;font-size:13px;line-height:1.7}pre code{background:none;padding:0;color:inherit}.task-card{background:white;border:1px solid var(--line);border-top:4px solid var(--green);padding:25px 27px;margin:25px 0;border-radius:7px}.task-card>h3{margin:0 0 14px;font-size:24px}.task-card>p{font-size:16px}.task-preview{background:#f1f5ec;padding:15px 18px;margin:18px 0}.task-preview p{font-size:14px;margin:8px 0}.task-preview b{color:var(--green);margin-right:6px}.task-detail summary,.read-details summary{font-size:14px;color:var(--green);padding:9px 0;font-weight:700}.task-detail li{font-size:14px}.task-reading{margin-top:14px;background:white;color:var(--green);font-size:13px}.compare-box{padding:24px;background:var(--mint);border-radius:7px;margin-top:30px}.compare-box h3{margin-top:0}.compare-selects{display:grid;grid-template-columns:1fr 1fr;gap:15px}.compare-selects label{font-size:12px}.compare-selects select{display:block;width:100%;padding:10px;border:1px solid #adbfaf;background:white;color:var(--ink);font-size:14px;margin-top:5px}.compare-pair{display:grid;grid-template-columns:1fr 1fr;gap:15px}.compare-pair article{background:white;padding:18px;margin-top:15px}.compare-pair h4{font-size:18px;margin:0 0 12px}.compare-pair p{font-size:13px;margin:12px 0}.compare-pair b{display:block;color:var(--green)}.reading-intro{background:var(--ink);color:white;padding:23px 27px;border-radius:6px;margin-top:35px}.reading-intro h3{margin:0 0 8px;color:#e6f0b9}.reading-intro p{font-size:15px;margin:8px 0}.reading-filters{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 10px}.filter-btn{border:1px solid #bccbbb;color:#40584e;background:white;padding:7px 12px;border-radius:18px;font-size:12px}.filter-btn.selected{background:var(--green);color:white;border-color:var(--green)}.count{font-size:12px;color:var(--muted)}.paper-grid{display:grid;grid-template-columns:1fr 1fr;gap:19px}.paper-card{background:white;padding:23px;border:1px solid var(--line);border-radius:7px;display:flex;flex-direction:column}.card-meta{display:flex;flex-wrap:wrap;gap:5px 12px;justify-content:space-between;font-size:11px;letter-spacing:.01em;color:var(--green);font-weight:700}.paper-card h3{font-size:22px;line-height:1.5;margin:17px 0 10px}.paper-card p{font-size:14px;line-height:1.85;margin:8px 0 12px}.architecture{font-size:13px;background:#eef2e9;padding:14px;margin:10px 0 17px;border-radius:4px}.architecture span{display:block;font-size:11px;font-weight:800;color:var(--green);margin-bottom:6px}.paper-result strong,.paper-apply strong{font-size:12px;color:var(--green)}.paper-apply{padding:12px 0 0;border-top:1px solid var(--line);margin-top:7px}.read-details{border-top:1px solid var(--line);padding-top:6px;margin-top:9px}.paper-links{display:flex;flex-wrap:wrap;gap:12px;margin-top:auto;padding-top:18px;font-size:12px}.full-title{font-size:12px!important;color:var(--muted)}.matrix-demo{padding:24px;background:var(--purple);border-radius:7px;margin:24px 0}.matrix-demo h3{margin-top:0}.matrix-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}.matrix-options button{padding:12px;border:1px solid #bab9cc;background:white;font-size:13px;color:#34314e;border-radius:4px;text-align:left}.matrix-options button.selected{background:#39344f;color:white;border-color:#39344f}.case-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}.case-grid div{padding:15px;background:white;border-radius:4px}.case-grid span{font-size:12px;color:#5f5975;display:block}.case-grid b{font-size:21px;display:block}.case-explanation{font-size:14px}.case-goal{background:#39344f;color:#fff;padding:17px;border-radius:4px;font-size:14px}.library-drawer{background:white;border:1px solid var(--line);border-radius:7px}.library-drawer>summary{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding:23px;font-size:20px;font-weight:700;list-style:none}.library-drawer>summary:before{content:'+';color:var(--green)}.library-drawer[open]>summary:before{content:'−'}.library-drawer>summary b{color:var(--green);font-size:26px}.library-drawer>summary small{font-weight:400;font-size:12px;color:var(--muted)}.library-content{padding:0 23px 23px}.library-filters{display:grid;grid-template-columns:2fr 1fr;gap:15px}.library-filters label{font-size:12px}.library-filters input,.library-filters select{width:100%;display:block;padding:10px;border:1px solid var(--line);border-radius:3px;margin-top:5px;font-size:14px}#library-count,#library-empty{font-size:13px;color:var(--muted)}.library-row{border-top:1px solid var(--line)}.library-row>summary{font-size:14px;padding:15px 0}.library-row>summary span{font-size:12px;font-weight:800;color:var(--green);margin-right:14px}.library-body{padding:0 20px 20px;font-size:14px}.tag{font-size:11px;color:var(--green)}.filename{font:11px Consolas,monospace;overflow-wrap:anywhere;color:var(--muted)}#notes{font-size:14px;background:#edf0e7;padding:30px;margin-top:35px;border-radius:7px}#notes>p{font-size:14px}#notes h3{font-size:18px}.footer{font-size:12px;color:var(--muted);padding-top:25px;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}.print{border:1px solid var(--line);background:white;border-radius:3px;padding:6px 12px;font-size:12px}
+@media(max-width:1120px){aside{width:195px;padding:25px 18px}main{margin-left:195px;padding:35px 4vw}.paper-grid{grid-template-columns:1fr}.paper-card{max-width:900px}.hero-flow{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){aside{position:static;width:auto;padding:18px 21px;border-right:0;border-bottom:1px solid var(--line)}.side-title,.side-meta,.side-footer{display:none}nav{display:flex;overflow-x:auto;white-space:nowrap;gap:16px;margin-top:10px}nav a{font-size:12px;padding:6px 0}main{margin:0;padding:28px 20px 50px}.hero{padding-top:4px}h1{font-size:38px}h2{font-size:25px}.hero p{font-size:17px}.hero-flow{gap:8px}.hero-flow div{padding:12px}.hero-flow b{font-size:14px}section{padding:35px 0}section>p:first-of-type{font-size:16px}.task-card{padding:20px 17px}.task-card>h3{font-size:21px}.task-preview{padding:12px}.paper-card{padding:20px}.paper-card h3{font-size:21px}.compare-selects,.compare-pair,.matrix-options,.case-grid,.library-filters{grid-template-columns:1fr}.compare-box,.matrix-demo{padding:18px}.reading-intro{padding:20px}.library-content{padding:0 16px 18px}.library-drawer>summary{padding:18px}#notes{padding:22px 18px}.hero-links a{font-size:13px}}
+@media print{aside,.reading-filters,.compare-box,.matrix-demo,.task-reading,.library-filters,.print{display:none!important}main{margin:0;padding:0;max-width:none}body{background:white;font-size:10pt}h1{font-size:26pt}h2{font-size:19pt}.hero{padding:0 0 18px}.hero-flow div{border:1px solid #ccc}.hero p{font-size:12pt}section{padding:18px 0}a{color:inherit}table{min-width:0;font-size:9pt}.table-wrap{overflow:visible}.paper-grid{display:block}.paper-card,.task-card{break-inside:avoid;margin:15px 0}.paper-card{display:block}.paper-card[hidden]{display:block!important}.paper-card p{font-size:10pt}#notes{background:white}.hero-links{display:none}}
+</style></head><body>
+<aside><div class="brand">UOS · NLP TEAM 05</div><div class="side-title">팩트체크에서<br>다음 행동까지</div><div class="side-meta">세 사람이 함께 읽는 연구 설계</div><nav aria-label="목차"><a href="#start">01 · 무엇을 만들까</a><a href="#course">02 · 수업·과제와 연결</a><a href="#tasks">03 · 명확한 Task 6개</a><a href="#map">04 · 연구 지도·논문 소개</a><a href="#four-cases">05 · 진짜·가짜 4조합</a><a href="#evaluation">06 · 데이터·채점·개선</a><a href="#team">07 · 세 사람의 첫 작업</a><a href="#library">08 · 논문 자료실</a><a href="#notes">09 · 범위·출처·유의사항</a></nav><div class="side-footer">2026.10.29 개편<br>팀 저장소 공유본<br><a href="https://github.com/CJI0718/uos-nlp-2026-team5" target="_blank" rel="noreferrer">팀 GitHub ↗</a></div></aside>
+<main><header class="hero"><div class="eyebrow">NEWS → EVIDENCE → INVESTIGATION → ACTION</div><h1>소식을 읽고,<br>근거로 확인하고,<br>다음 행동까지.</h1><p>관심 분야의 소식을 조사하는 Agent를 만든다.<br>세 사람이 함께 정할 것은 <strong>어떤 주장을, 어떤 행동으로 검증하고, 무엇으로 성공을 잴 것인가</strong>다.</p><div class="hero-flow"><div><b>주장을 받는다</b><small>숫자·조건·시점</small></div><div><b>근거를 찾는다</b><small>문서·표·공식 원출처</small></div><div><b>차이를 확인한다</b><small>계산·맥락·왜곡 위치</small></div><div><b>다음 행동을 고른다</b><small>재검증·보고·Mission·추적</small></div></div><div class="hero-links"><a href="#start">처음부터 이해하기</a><a href="#tasks" class="secondary">Task 후보 비교</a><a href="#four-cases" class="secondary">진짜·가짜 네 조합</a></div></header>
+<section id="start"><h2>01. 우리가 함께 만들 것은 무엇인가?</h2>
+<p><strong>관심 분야의 소식을 모으고, 원출처로 사실과 왜곡을 조사한 뒤, 유용한 후속 업무와 추적까지 연결하는 Agent를 구상한다.</strong> 첫 연구 단위는 한국어 주장과 근거를 대조해 판정·오류 위치를 설명하는 과정이다. 여기서 어느 행동 선택이 정확도와 비용을 바꾸는지 비교한다.</p>
+<p>이 문서의 독자는 프로젝트를 오늘 처음 접하는 팀원이다. 먼저 전체 구상과 한 가지 사례를 따라가고, 여섯 태스크 중 탐구하고 싶은 질문을 고른 뒤, 그 질문에 답해 줄 논문을 읽자.</p>
+<h3>헌수님의 최신 GitHub 구상까지 이어서 보기</h3>
+<p>10월 27일 업로드한 <a href="https://github.com/CJI0718/uos-nlp-2026-team5/blob/912c0d0f31222c46a80b383f968ddea316c8794e/docs/research/fact_checking/README.md#8-%EA%B5%AC%EC%B2%B4%ED%99%94%ED%95%9C-%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8-%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C%EC%9A%B0-%EB%B0%8F-%EC%84%B8%EB%B6%80-%ED%83%9C%EC%8A%A4%ED%81%AC-%EC%A0%9C%EC%95%88-autonomous-news-investigation--mission-agent">Autonomous News Investigation &amp; Mission Agent 구상</a>은 검증을 후속 행동으로 연결한다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>전체 흐름</th>
+<th>이용자가 얻는 것</th>
+<th>연구 후보와의 연결</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>관심 분야·주기·업무 범위 설정</td>
+<td>나에게 맞는 조사 요청</td>
+<td>평가 입력의 사용자 조건</td>
+</tr>
+<tr>
+<td>뉴스·공식 발표 발견</td>
+<td>새롭고 관련 있는 소식</td>
+<td>RSS·문서 모음 구성</td>
+</tr>
+<tr>
+<td>팩트체크·왜곡 조사</td>
+<td>판정, 문제 문구, 원문 근거, 설명</td>
+<td><strong>T1–T5</strong>, 2×2 근거 조작 실험</td>
+</tr>
+<tr>
+<td>Mission 발견·실행</td>
+<td>정보에서 이어지는 자료 제작·일정 관리·활용 준비</td>
+<td><strong>T6</strong>, 후속 업무 선택과 실행 결과</td>
+</tr>
+<tr>
+<td>검증 브리핑</td>
+<td>무엇을 확인하고 무엇을 했는지</td>
+<td>설명·인용·완료 상태 평가</td>
+</tr>
+<tr>
+<td>장기 추적</td>
+<td>새로운 증거에 따른 재검증·변경 알림</td>
+<td>T3·T6의 시점별 상태 갱신</td>
+</tr>
+</tbody>
+</table>
+</div><p>Mission에는 <strong>Opportunity Execution</strong>(기회 활용 준비), <strong>News-to-Artifact</strong>(검증한 정보로 자료 제작), <strong>Event &amp; Change Manager</strong>(일정·변경 관리), <strong>App Trust &amp; Safe Trial</strong>(앱 조사·격리 체험)이 있다. 논문의 실험 수치가 뉴스에서 과장되었다면 왜곡 문장을 짚고, 실제로 쓸 만한 데이터가 공개되었다면 비교표나 분석 파일을 만드는 식이다.</p>
+<p>이 큰 구상에서 <strong>50개 사례로 검증할 중심 기능을 선택하고</strong>, 같은 사례에 고정 절차와 적응형 Agent를 적용하자. 헌수님의 Phase 1–7 중 팩트체크·왜곡 조사와 Mission 생성 판단을 정량 평가에 연결하고, 선택한 Mission 하나를 작은 시연으로 이어갈 수 있다.</p>
+<h3>한 문장으로 보는 fact-checking</h3>
+<p>팩트체크는 <strong>확인 가능한 근거를 조사해 주장의 사실 여부를 검증하는 일</strong>이다. 자료의 출처·내용·시점도 함께 확인한다. “이 정책은 훌륭하다” 같은 평가보다 “이 정책은 7월부터 시행됐다”처럼 근거로 확인할 수 있는 내용을 대상으로 삼는다. 모델의 최종 출력에는 지지·반박·근거 부족 판정, 그 판단을 뒷받침하는 출처, 짧은 설명이 함께 들어간다.</p>
+<p><strong>설명용 사례</strong> — 입력: “A시의 2025년 도서관 대출량은 2024년보다 20% 늘었다.”</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>단계</th>
+<th>Agent가 관측하거나 수행하는 일</th>
+<th>남기는 결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>주장 이해</td>
+<td>지역=A시, 지표=대출량, 비교 기간=2024→2025, 변화율=20% 추출</td>
+<td>확인할 조건</td>
+</tr>
+<tr>
+<td>자료 검색</td>
+<td>공식 표에서 2024년 100만 건, 2025년 110만 건 확인</td>
+<td>표의 행·열·출처</td>
+</tr>
+<tr>
+<td>비교 가능성 확인</td>
+<td>두 값의 지역·집계 범위·단위가 같은지 점검</td>
+<td>비교에 쓰는 값</td>
+</tr>
+<tr>
+<td>계산</td>
+<td>(110−100)÷100×100</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>판정·설명</td>
+<td>“20% 증가”와 계산 결과 대조</td>
+<td><strong>반박 — 증가율은 10%</strong>, 두 값과 계산식 인용</td>
+</tr>
+</tbody>
+</table>
+</div><p>핵심 연구 질문은 다음 선택에서 생긴다. <strong>표 하나로 충분한가? 주석을 더 읽어야 하는가? 추가 검색을 해야 하는가? 계산은 어느 값으로 해야 하는가?</strong> Agent는 도구의 결과를 보고 이 중 다음 행동을 선택한다.</p>
+<h3>지금까지의 대화가 이 주제로 모인 이유</h3>
+<p>우리는 Kiwi·BM25·임베딩 검색의 차이, ReAct의 도구 선택, 근거를 읽고 설명을 만드는 과정을 함께 다룰 태스크를 찾았다. 팩트체크는 이 관심을 <strong>하나의 입력과 채점 가능한 출력</strong>으로 연결한다. RSS는 검증할 주장을 모으는 입구, 공식 문서·API는 근거, 검색기·계산기는 도구가 된다.</p>
+<p>세 사람이 같은 질문을 공유하자. <strong>“Agent가 상황에 맞춰 행동을 바꾸면, 정해진 순서의 파이프라인보다 어디에서 더 정확하거나 효율적인가?”</strong> 아래 여섯 후보는 이 질문을 서로 다른 데이터와 행동으로 실험하는 방법이다.</p>
+</section><section id="course"><h2>02. 수업에서 배운 것을 어떻게 쓰는가?</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>수업·실습에서 익힌 것</th>
+<th>프로젝트에서 맡는 일</th>
+<th>직접 관찰할 수 있는 변화</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>토큰화·Kiwi·BM25</td>
+<td>한국어 주장과 근거 문서를 어휘로 검색</td>
+<td>조사 제거 전후의 근거 회수율</td>
+</tr>
+<tr>
+<td>임베딩·dense retrieval</td>
+<td>표현이 다른 문서에서 의미상 관련 근거 탐색</td>
+<td>BM25와 dense·hybrid의 Recall@k</td>
+</tr>
+<tr>
+<td>RAG</td>
+<td>검색한 근거를 모델 입력에 넣어 설명과 판정 생성</td>
+<td>근거 교체에 따른 판정·인용 변화</td>
+</tr>
+<tr>
+<td>ReAct·도구 호출</td>
+<td>검색 결과를 보고 다음 질문·API·계산·종료 선택</td>
+<td>도구 수·실행 성공률·판정 정확도</td>
+</tr>
+<tr>
+<td>프롬프트 설계·구조화 출력</td>
+<td>주장 조건과 근거 ID를 유지하고 일정한 형식으로 응답</td>
+<td>형식 성공률·조건 누락률</td>
+</tr>
+<tr>
+<td>LLM Judge·평가</td>
+<td>설명이 출처로 뒷받침되는지 사람 검수와 함께 분석</td>
+<td>인용 정확성·검수 일치도</td>
+</tr>
+</tbody>
+</table>
+</div><h3>학부 프로젝트 크기로 만드는 방법</h3>
+<p>출발점은 <strong>한 도메인, 검증할 주장 50개, 도구 3–4개, 비교 시스템 2–3개</strong>다. 이미 공개된 모델과 검색기를 조합하고, 우리가 직접 만드는 부분은 태스크 정의·평가 데이터·행동 정책·오류 분석이다. Colab GPU는 임베딩 색인과 reranker 추론에 활용할 수 있다.</p>
+<p>이렇게 하면 세 사람이 데이터·검색·Agent를 나누어 구현하면서도 같은 50개 사례로 결과를 설명할 수 있다. 가장 작은 파일럿은 <strong>주장 5개를 읽고, 근거를 표시하고, 한 번의 검색→도구→판정을 끝까지 연결하는 것</strong>이다.</p>
+<h3>과제 점수와 우리 결과물을 연결하기</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>과제 요소</th>
+<th>강의안의 요구</th>
+<th>우리 팀이 만드는 것</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>중간 주제·데이터</td>
+<td>AI Agents로 풀 수 있는 태스크, 평가데이터 50개</td>
+<td>선택한 T1–T6의 입출력·성공 조건, 직접 작성한 사례</td>
+</tr>
+<tr>
+<td>중간 발표</td>
+<td>태스크 설명 1장 + 관련 논문 15장</td>
+<td>문제 사례 → 선행연구 지도 → 비교할 정책 → 평가 설계</td>
+</tr>
+<tr>
+<td>중간 평가</td>
+<td>논문발표 4 / 태스크 3 / 평가척도 3</td>
+<td>왜 이 태스크인지, 어떤 논문에서 무엇을 가져왔는지</td>
+</tr>
+<tr>
+<td>기말 제출</td>
+<td>공개 GitHub, 슬라이드 10장</td>
+<td>실행 코드·데이터·설정·결과·재현 안내</td>
+</tr>
+<tr>
+<td>기말 평가</td>
+<td>데이터 50개 직접 작성 5 / 분석 2 / 개선 실행 3</td>
+<td>첫 결과 → 오류 유형 → 수정 → 재실행의 비교</td>
+</tr>
+<tr>
+<td>실행 환경</td>
+<td>Colab + Pi + local 또는 free 모델 활용</td>
+<td>실험을 돌리는 환경과 모델 ID·버전 기록</td>
+</tr>
+</tbody>
+</table>
+</div><p>문헌 발표의 중심은 <strong>논문끼리 어떤 질문이 달라지고, 그 차이에서 우리의 실험이 어떻게 나오는가</strong>다. 예를 들어 Fathom으로 고정 RAG를 설명하고, FIRE로 반복 검색을 설명한 뒤, 같은 한국어 50개에서 어떤 행동 정책을 비교할지 제시할 수 있다.</p>
+</section><section id="tasks"><h2>03. 선택할 수 있는 명확한 Task 여섯 가지</h2>
+<p>각 후보에서 입력·출력·도구·50개 구성·채점 대상을 함께 고른다. 화면의 비교표에서 우선 관심 있는 두 후보를 나란히 살펴보자.</p>
+<article class="task-card" id="task-T1" data-task="T1"><h3>T1 · 공식 수치 주장을 계산으로 검증하기</h3>
+<p><strong>Task 정의:</strong> 한국어 수치 주장과 기준 기간을 입력받아, 공식 표·통계 자료에서 비교할 값을 찾아 계산하고, 주장과의 일치 여부 및 근거를 출력한다.</p>
+<div class="task-preview"><p><b>입력 </b>“A시의 2025년 대출량은 전년 대비 20% 증가했다.” + 지역·기준일.</p><p><b>출력 </b>지지/반박/근거 부족, 지표·기간·단위, 사용한 값, 계산식, 근거 ID.</p><p><b>주 지표 </b>판정 Macro-F1, 계산에 쓸 지표·기간·단위의 정확 일치율, 계산 정확도, 사례당 도구 수.</p></div><details class="task-detail"><summary>Agent 행동 · 50개 구성 · 비교군 · 구현 규모</summary><ul>
+<li><strong>입력:</strong> “A시의 2025년 대출량은 전년 대비 20% 증가했다.” + 지역·기준일.</li>
+<li><strong>출력:</strong> 지지/반박/근거 부족, 지표·기간·단위, 사용한 값, 계산식, 근거 ID.</li>
+<li><strong>Agent의 선택:</strong> 지표를 선택한다 → 부족한 연도나 주석을 더 찾는다 → 계산 함수를 고른다 → 결과를 비교하고 종료한다.</li>
+<li><strong>도구:</strong> 문서 검색, 공식 표/시계열 조회, 단위·증감률 계산, 원문 구간 열기.</li>
+<li><strong>50개 구성:</strong> 단일 수치 확인 10 / 증감률 15 / 비율·분모 10 / 기간·단위·집계 범위 10 / 범위 안에서 근거 부족 5.</li>
+<li><strong>비교군:</strong> 고정 검색→LLM 판정 / 고정 검색→계산 도구→판정 / 관측에 따라 추가 조회하는 Agent. 마지막 두 조건의 차이로 행동 선택 효과를 본다.</li>
+<li><strong>주 지표:</strong> 판정 Macro-F1, 계산에 쓸 지표·기간·단위의 정확 일치율, 계산 정확도, 사례당 도구 수.</li>
+<li><strong>채점 예:</strong> 100→110이면 “10%, 반박”이 정답이다. 수치만 맞고 다른 지역의 표를 인용했다면 판정 점수와 근거 선택 점수를 따로 기록한다.</li>
+<li><strong>핵심 논문:</strong> QuanTemp FC23, TSVer FC26, TAT-QA E30, ProgramFC FC11.</li>
+<li><strong>구현 규모:</strong> 중간. 공식 자료 공급원을 하나 정하고 표 형식을 고정하면 작은 계산 함수로 시작할 수 있다. GPU는 선택한 검색 모델에 따라 사용한다.</li>
+<li><strong>배울 것:</strong> 숫자 연산보다 어려운 ‘무엇을 계산할 것인가’를 언어 이해·retrieval·tool use로 연결하기.</li>
+</ul>
+</details><button class="task-reading" data-select-task="T1">이 태스크의 논문 보기</button></article><article class="task-card" id="task-T2" data-task="T2"><h3>T2 · 여러 조건이 붙은 주장을 나누고 다시 합치기</h3>
+<p><strong>Task 정의:</strong> 두 개 이상의 사실 조건이 포함된 한국어 주장을 입력받아, 검증할 하위 주장을 만들고 각각의 근거를 수집한 뒤 원래 문장의 논리 관계에 맞춰 종합 판정한다.</p>
+<div class="task-preview"><p><b>입력 </b>“A시설과 B시설은 모두 2024년에 개관했고 주말에도 운영한다.”</p><p><b>출력 </b>하위 주장 목록, 각 판정·근거, AND/OR 등 종합 관계, 전체 판정.</p><p><b>주 지표 </b>전체 판정 Macro-F1, 필수 조건 보존율, 하위 주장 판정 정확도, 종합 오류율, LLM 호출 수.</p></div><details class="task-detail"><summary>Agent 행동 · 50개 구성 · 비교군 · 구현 규모</summary><ul>
+<li><strong>입력:</strong> “A시설과 B시설은 모두 2024년에 개관했고 주말에도 운영한다.”</li>
+<li><strong>출력:</strong> 하위 주장 목록, 각 판정·근거, AND/OR 등 종합 관계, 전체 판정.</li>
+<li><strong>Agent의 선택:</strong> 직접 판정할지 분해할지, 어느 조건을 먼저 확인할지, 누락된 조건을 다시 검사할지 선택한다.</li>
+<li><strong>도구:</strong> 근거 검색, 문서 구간 읽기, 하위 주장 상태표, 종합 규칙 실행.</li>
+<li><strong>50개 구성:</strong> 단일 주장 10 / 두 조건 AND 15 / 세 조건 이상 10 / 부정·예외 10 / 일부 조건의 근거 부족 5.</li>
+<li><strong>비교군:</strong> 직접 판정 / 항상 분해 / 선택적 분해와 종합 점검 Agent. 같은 근거 검색기와 모델을 사용한다.</li>
+<li><strong>주 지표:</strong> 전체 판정 Macro-F1, 필수 조건 보존율, 하위 주장 판정 정확도, 종합 오류율, LLM 호출 수.</li>
+<li><strong>채점 예:</strong> A는 2024년, B는 2023년에 개관했다면 AND 주장은 반박이다. A만 조사해 전체를 지지하면 ‘검증 범위 누락’으로 분류한다.</li>
+<li><strong>핵심 논문:</strong> LoCal FC17, ProgramFC FC11, Claimify E01, Decomposition Dilemmas E05, VitaminC P02.</li>
+<li><strong>구현 규모:</strong> 중간. 프롬프트·상태표로 구현할 수 있고, 조건 누락·논리 관계의 사람 검수가 주요 작업이다.</li>
+<li><strong>배울 것:</strong> divide and conquer가 도움이 되는 조건과, 나누는 과정에서 의미가 달라지는 조건을 실험하기.</li>
+</ul>
+</details><button class="task-reading" data-select-task="T2">이 태스크의 논문 보기</button></article><article class="task-card" id="task-T3" data-task="T3"><h3>T3 · 특정 시점에 참인 주장을 검증하기</h3>
+<p><strong>Task 정의:</strong> 주장과 <code>as_of</code> 날짜를 입력받아, 문서의 발표일·효력일·변경 이력을 대조하고 그 날짜에 맞는 사실 여부와 시간 근거를 출력한다.</p>
+<div class="task-preview"><p><b>입력 </b>“A시설은 6월 20일 현재 무료로 이용할 수 있다.”</p><p><b>출력 </b>반박, 기준일 6월 20일, 무료 전환 효력일 7월 1일, 공지·이전 요금표 인용.</p><p><b>주 지표 </b>판정 Macro-F1, 유효 시점 근거 선택률, 시간 조건 정확도, 미래 근거 사용률, 호출 수.</p></div><details class="task-detail"><summary>Agent 행동 · 50개 구성 · 비교군 · 구현 규모</summary><ul>
+<li><strong>입력:</strong> “A시설은 6월 20일 현재 무료로 이용할 수 있다.”</li>
+<li><strong>자료 예:</strong> 6월 1일 공지에 “7월 1일부터 무료 전환”, 이전 요금표에는 유료라고 적혀 있다.</li>
+<li><strong>출력:</strong> 반박, 기준일 6월 20일, 무료 전환 효력일 7월 1일, 공지·이전 요금표 인용.</li>
+<li><strong>Agent의 선택:</strong> 최신 공지를 볼지 과거 버전을 볼지, 날짜가 충돌하면 원문이나 변경 이력을 더 읽을지 선택한다.</li>
+<li><strong>도구:</strong> 날짜 필터 검색, 문서 버전 조회, 날짜·기간 비교, 시간선 구성.</li>
+<li><strong>50개 구성:</strong> 특정 시점의 상태 15 / 발표일과 시행일 15 / 변경 전후 10 / 기간 중첩·반복 5 / 시간 근거 부족 5.</li>
+<li><strong>비교군:</strong> 날짜 없는 의미 검색+판정 / 고정 날짜 필터+판정 / 시점·효력일을 확인하는 Agent.</li>
+<li><strong>주 지표:</strong> 판정 Macro-F1, 유효 시점 근거 선택률, 시간 조건 정확도, 미래 근거 사용률, 호출 수.</li>
+<li><strong>채점 예:</strong> 최신 문서에 ‘무료’가 있어도 적용일이 7월 1일이면 6월 20일 주장은 반박이다. 이 사례는 검색 성공과 시간 해석 성공을 분리해서 채점한다.</li>
+<li><strong>핵심 논문:</strong> Time Matters FC24, ChronoFact FC25, TSVer FC26, AVeriTeC FC03.</li>
+<li><strong>구현 규모:</strong> 중간~높음. 버전과 날짜가 명확한 공지·정책 자료를 모으는 작업 비중이 크다.</li>
+<li><strong>배울 것:</strong> 시의성 있는 검색, temporal reasoning, ‘지금 아는 정보’와 ‘당시 이용 가능한 정보’의 평가 설계.</li>
+</ul>
+</details><button class="task-reading" data-select-task="T3">이 태스크의 논문 보기</button></article><article class="task-card" id="task-T4" data-task="T4"><h3>T4 · 한국어 주장에 결정적인 근거를 찾아 검증하기</h3>
+<p><strong>Task 정의:</strong> 한국어 주장과 고정된 문서 모음에 대해, 근거를 검색하고 필요하면 질문을 바꿔 재검색하여 판정과 근거 묶음을 반환한다.</p>
+<div class="task-preview"><p><b>입력 </b>“A시설은 주말에도 이용할 수 있다.”</p><p><b>출력 </b>문맥에 맞춰 명확히 한 주장 조건, 지지/반박/근거 부족, 시간표의 근거 구간, 사용한 검색 질의.</p><p><b>주 지표 </b>근거 Recall@k, 최소 근거집합 완성률, 판정 Macro-F1, 추가 검색 1회당 회복한 사례 수, 지연·색인 용량.</p></div><details class="task-detail"><summary>Agent 행동 · 50개 구성 · 비교군 · 구현 규모</summary><ul>
+<li><strong>입력:</strong> “A시설은 주말에도 이용할 수 있다.”</li>
+<li><strong>자료 예:</strong> 검색 상위에는 시설 소개가, 다른 문서에는 ‘토요일 운영·일요일 휴관’ 시간표가 있다.</li>
+<li><strong>출력:</strong> 문맥에 맞춰 명확히 한 주장 조건, 지지/반박/근거 부족, 시간표의 근거 구간, 사용한 검색 질의.</li>
+<li><strong>Agent의 선택:</strong> 현재 문서가 질문에 답하는지 검사하고, ‘이용 안내→운영시간→휴관일’로 질의를 구체화하거나 종료한다.</li>
+<li><strong>도구:</strong> Kiwi+BM25 검색, dense/hybrid 검색, 문서 구간 읽기, 근거 충분성 상태표.</li>
+<li><strong>50개 구성:</strong> 직접 어휘 일치 15 / 표현 차이 15 / 두 문서 결합 10 / 유사하지만 틀린 문서 5 / 문서 모음에 답이 없음 5.</li>
+<li><strong>비교군:</strong> 1차 실험은 같은 고정 판정기에 BM25·dense·hybrid를 연결한다. 2차 실험은 한 검색기를 고정하고 한 번 검색 vs Agent 재검색을 비교한다.</li>
+<li><strong>주 지표:</strong> 근거 Recall@k, 최소 근거집합 완성률, 판정 Macro-F1, 추가 검색 1회당 회복한 사례 수, 지연·색인 용량.</li>
+<li><strong>채점 예:</strong> 운영시간 문서를 찾았는지, 정확한 요일 구간을 인용했는지, ‘주말’의 범위를 판정에 반영했는지를 나눠 기록한다.</li>
+<li><strong>핵심 논문:</strong> CFR E19, Dense X Retrieval P17, 한국어 대조학습 FC31, Fathom FC21, FIRE FC15, Sufficient Context E22.</li>
+<li><strong>구현 규모:</strong> 중간. 기존 Kiwi 실습을 직접 확장하기 좋다. Colab은 embedding·reranker에 활용한다.</li>
+<li><strong>배울 것:</strong> 검색 점수가 좋은 문서와 판정에 결정적인 근거의 차이, 검색 최적화가 최종 답에 주는 효과.</li>
+</ul>
+</details><button class="task-reading" data-select-task="T4">이 태스크의 논문 보기</button></article><article class="task-card" id="task-T5" data-task="T5"><h3>T5 · 기사·게시물의 왜곡 위치를 원문과 짝지어 찾기</h3>
+<p><strong>Task 정의:</strong> 기사 또는 게시물의 주장과 연결된 원자료를 입력받아, 원자료에 비해 바뀐 수치·조건·범위·인용 부분을 찾아 문구 쌍과 오류 유형으로 출력한다. 추가 원자료가 필요한 경우 Agent가 찾아 대조한다.</p>
+<div class="task-preview"><p><b>입력 </b>원논문은 “실험 A에서 처리량 40% 증가”, 게시물은 “모든 작업의 성능이 40% 향상됐다”.</p><p><b>출력 </b>게시물의 ‘모든 작업의 성능’ ↔ 원문 ‘실험 A의 처리량’, 유형=범위 확대·지표 일반화, 판정과 설명, 출처.</p><p><b>주 지표 </b>오류 유형 Macro-F1, 왜곡 span token-F1, 원문↔게시물 대응 쌍 정확도, 근거 있는 설명 비율, 조사 비용.</p></div><details class="task-detail"><summary>Agent 행동 · 50개 구성 · 비교군 · 구현 규모</summary><ul>
+<li><strong>입력:</strong> 원논문은 “실험 A에서 처리량 40% 증가”, 게시물은 “모든 작업의 성능이 40% 향상됐다”.</li>
+<li><strong>출력:</strong> 게시물의 ‘모든 작업의 성능’ ↔ 원문 ‘실험 A의 처리량’, 유형=범위 확대·지표 일반화, 판정과 설명, 출처.</li>
+<li><strong>Agent의 선택:</strong> 숫자·표를 다시 확인할지, 조건·예외 구간을 더 읽을지, 인용 관계를 찾아볼지 선택한다.</li>
+<li><strong>도구:</strong> 문구 검색, 원문·표 읽기, 조건/지표 대조, 수치 계산.</li>
+<li><strong>50개 구성:</strong> 정확한 전달 10 / 수치·단위 변경 10 / 조건 누락 10 / 범위 확대 10 / 인용·시간 맥락 변경 10.</li>
+<li><strong>비교군:</strong> 한 번에 원문 대조 / 고정 분해·대조 / 오류 유형에 맞춰 추가 조사하는 Agent.</li>
+<li><strong>주 지표:</strong> 오류 유형 Macro-F1, 왜곡 span token-F1, 원문↔게시물 대응 쌍 정확도, 근거 있는 설명 비율, 조사 비용.</li>
+<li><strong>채점 예:</strong> 단순히 ‘과장’이라고 쓰는 것과, 바뀐 문구·원문 조건을 정확히 짝지어 제시하는 것을 따로 채점한다.</li>
+<li><strong>핵심 논문:</strong> FactLens P15, TRACER P16, Claimify E01, LoCal FC17, Evidence Attribution E37.</li>
+<li><strong>구현 규모:</strong> 중간~높음. span과 생략 조건의 사람 annotation이 핵심이다. 원자료와 기사/게시물의 쌍을 먼저 확보하면 실험 단위를 작게 고정할 수 있다.</li>
+<li><strong>배울 것:</strong> 참거짓 분류를 넘어 ‘어디가 어떻게 달라졌는가’를 설명하는 검증, 오류 유형별 적응적 조사.</li>
+</ul>
+</details><button class="task-reading" data-select-task="T5">이 태스크의 논문 보기</button></article><article class="task-card" id="task-T6" data-task="T6"><h3>T6 · 검증된 소식에서 후속 업무를 선택하고 상태를 갱신하기</h3>
+<p><strong>Task 정의:</strong> 검증 결과·사용자 관심·위임된 업무 범위를 입력받아, 후속 Mission의 생성 여부와 유형을 선택하고 작은 실행 환경에서 결과와 변경 상태를 확인한다.</p>
+<div class="task-preview"><p><b>입력 </b>‘행사 일정이 11월 10일에서 12일로 변경됨’이라는 검증 결과 + 해당 행사 추적 상태 + 일정 관리 권한.</p><p><b>출력 </b>Mission=일정 갱신, 기존 항목 ID, 변경 필드, 실행 후 확인 상태, 브리핑 항목.</p><p><b>주 지표 </b>Mission 유형 Macro-F1, 실행 성공률, 중복 작업률, 상태 갱신 정확도, 범위 밖 행동률.</p></div><details class="task-detail"><summary>Agent 행동 · 50개 구성 · 비교군 · 구현 규모</summary><ul>
+<li><strong>입력:</strong> ‘행사 일정이 11월 10일에서 12일로 변경됨’이라는 검증 결과 + 해당 행사 추적 상태 + 일정 관리 권한.</li>
+<li><strong>출력:</strong> Mission=일정 갱신, 기존 항목 ID, 변경 필드, 실행 후 확인 상태, 브리핑 항목.</li>
+<li><strong>Agent의 선택:</strong> 새 업무/기존 업무 수정/추가 조사/추적 등록/행동 없음 중 선택한다.</li>
+<li><strong>도구:</strong> 추적 상태 읽기, 공식 공지 검색, 테스트 일정·파일 생성/수정, 실행 결과 재조회.</li>
+<li><strong>50개 구성:</strong> 행사·일정 10 / 활용 기회 10 / 자료 제작 10 / 변경·취소 10 / 정보 부족·중복·행동 없음 10.</li>
+<li><strong>비교군:</strong> 키워드 규칙 / 단발 LLM 분류 / 검증·상태 조회를 결합한 Agent. 실행형 표본은 로컬 테스트 일정과 파일로 채점한다.</li>
+<li><strong>주 지표:</strong> Mission 유형 Macro-F1, 실행 성공률, 중복 작업률, 상태 갱신 정확도, 범위 밖 행동률.</li>
+<li><strong>채점 예:</strong> 이미 등록된 행사를 새로 추가하면 중복 오류다. 날짜를 바꾸고 다시 조회해 새 값이 확인되면 실행 성공이다.</li>
+<li><strong>핵심 연결:</strong> 헌수님의 STEP 3–4·Tracking, ReAct FC10, Time Matters FC24. 연구의 중심을 후속 업무 선택에 둘 때 직접적인 Mission benchmark도 추가로 읽는다.</li>
+<li><strong>구현 규모:</strong> 높음. 실행형 기능은 일정 관리 한 종류로 시작하면 상태 전후를 자동 채점하기 좋다.</li>
+<li><strong>배울 것:</strong> 검증 결과를 실제 행동으로 연결하기, 정보의 참거짓과 업무의 완료 여부를 각각 평가하기.</li>
+</ul>
+</details><button class="task-reading" data-select-task="T6">이 태스크의 논문 보기</button></article><h3>어떤 흥미를 살리고 싶은가?</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>후보</th>
+<th>가장 관심을 둘 질문</th>
+<th>주된 작업</th>
+<th>첫 데모에서 보여줄 장면</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T1 수치</td>
+<td>값을 찾고 계산 도구를 선택할 수 있는가?</td>
+<td>표 정리·함수·단위 검수</td>
+<td>틀린 증가율을 계산으로 반박</td>
+</tr>
+<tr>
+<td>T2 복합 주장</td>
+<td>나누는 것이 언제 이득인가?</td>
+<td>조건 annotation·분해·종합</td>
+<td>빠진 조건을 발견해 재검증</td>
+</tr>
+<tr>
+<td>T3 시점</td>
+<td>그 날짜에 참이었는가?</td>
+<td>날짜·버전 자료·시간선</td>
+<td>발표일과 시행일을 구분</td>
+</tr>
+<tr>
+<td>T4 근거 탐색</td>
+<td>무엇을 더 찾아야 판정할 수 있는가?</td>
+<td>한국어 검색·재질의·충분성</td>
+<td>첫 검색 실패 후 핵심 문서 회수</td>
+</tr>
+<tr>
+<td>T5 왜곡 위치</td>
+<td>어떤 문구·조건이 원문과 달라졌는가?</td>
+<td>원문 쌍·span·오류 유형</td>
+<td>‘모든 작업’을 ‘특정 실험’과 대조</td>
+</tr>
+<tr>
+<td>T6 후속 업무</td>
+<td>검증 결과로 어떤 행동을 할 것인가?</td>
+<td>상태·Mission·실행 검증</td>
+<td>변경된 행사 날짜를 정확히 갱신</td>
+</tr>
+</tbody>
+</table>
+</div><div class="compare-box"><h3>두 후보를 나란히 비교하기</h3><div class="compare-selects"><label>후보 1<select id="compare-a"><option value="T1">T1 · 공식 수치 주장을 계산으로 검증하기</option><option value="T2">T2 · 여러 조건이 붙은 주장을 나누고 다시 합치기</option><option value="T3">T3 · 특정 시점에 참인 주장을 검증하기</option><option value="T4">T4 · 한국어 주장에 결정적인 근거를 찾아 검증하기</option><option value="T5">T5 · 기사·게시물의 왜곡 위치를 원문과 짝지어 찾기</option><option value="T6">T6 · 검증된 소식에서 후속 업무를 선택하고 상태를 갱신하기</option></select></label><label>후보 2<select id="compare-b"><option value="T1">T1 · 공식 수치 주장을 계산으로 검증하기</option><option value="T2">T2 · 여러 조건이 붙은 주장을 나누고 다시 합치기</option><option value="T3">T3 · 특정 시점에 참인 주장을 검증하기</option><option value="T4">T4 · 한국어 주장에 결정적인 근거를 찾아 검증하기</option><option value="T5">T5 · 기사·게시물의 왜곡 위치를 원문과 짝지어 찾기</option><option value="T6">T6 · 검증된 소식에서 후속 업무를 선택하고 상태를 갱신하기</option></select></label></div><div id="task-comparison"></div></div></section><section id="map"><h2>04. 선행연구는 어떤 문제를 각각 풀었나?</h2>
+<p>논문을 ‘좋은 모델 순위’로 읽기보다, <strong>팩트체크의 어느 고장을 고치는 연구인가</strong>로 읽으면 우리 설계와 연결하기 쉽다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>고장 또는 질문</th>
+<th>대표 연구의 접근</th>
+<th>우리 후보와 연결</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>실제 주장·근거·정답을 어떻게 묶는가?</td>
+<td>AVeriTeC: 주장에 검증 질문·답·웹 근거·판정 결합</td>
+<td>모든 후보의 데이터 schema</td>
+</tr>
+<tr>
+<td>일단 작동하는 검증기를 어떻게 만드는가?</td>
+<td>Fathom: 질문 확장→BM25·semantic retrieval→판정</td>
+<td>공통 고정 baseline</td>
+</tr>
+<tr>
+<td>자료를 더 찾을지 언제 멈출지?</td>
+<td>ReAct·QACheck·FIRE: 관측에 따른 다음 행동</td>
+<td>T4, 그리고 T1–T3의 제어 정책</td>
+</tr>
+<tr>
+<td>분해한 답이 원래 주장과 맞는가?</td>
+<td>ProgramFC·LoCal: 하위 작업과 논리적 종합</td>
+<td>T2</td>
+</tr>
+<tr>
+<td>의미가 비슷한 문서가 진짜 근거인가?</td>
+<td>CFR·한국어 대조학습·Dense X: 근거 선택·단위 개선</td>
+<td>T4</td>
+</tr>
+<tr>
+<td>숫자·날짜를 읽었다고 검증이 끝나는가?</td>
+<td>QuanTemp·TSVer·Time Matters·ChronoFact</td>
+<td>T1·T3</td>
+</tr>
+<tr>
+<td>맞는 판정에 좋은 설명이 따라오는가?</td>
+<td>ALCE·Evidence Attribution: 인용을 별도 평가</td>
+<td>모든 후보의 설명 평가</td>
+</tr>
+<tr>
+<td>문장 일부는 맞는데 무엇을 숨겼는가?</td>
+<td>FactLens·TRACER: 세부 사실·누락 맥락 분석</td>
+<td>T5</td>
+</tr>
+<tr>
+<td>조작된 근거가 주어지면 어떻게 되는가?</td>
+<td>VitaminC·CrossAug·Fact2Fiction: 대조 자료·근거 오염</td>
+<td>아래 2×2 공통 실험</td>
+</tr>
+</tbody>
+</table>
+</div><div class="reading-intro"><h3>공통 6편으로 프로젝트 한 바퀴 읽기</h3><p>데이터 → 실행 → 기준선 → 적응 → 오류 → 평가. 여섯 소개를 훑고, 관심 태스크에 맞춰 두 편을 골라 원문의 그림과 표를 읽자.</p></div>
+<div class="reading-filters" role="group" aria-label="읽을 논문 범위"><button class="filter-btn selected" data-reading-filter="core" aria-pressed="true">공통 6편</button><button class="filter-btn" data-reading-filter="T1" aria-pressed="false">T1 수치 검증</button><button class="filter-btn" data-reading-filter="T2" aria-pressed="false">T2 복합 주장</button><button class="filter-btn" data-reading-filter="T3" aria-pressed="false">T3 시점 검증</button><button class="filter-btn" data-reading-filter="T4" aria-pressed="false">T4 근거 탐색</button><button class="filter-btn" data-reading-filter="T5" aria-pressed="false">T5 왜곡 위치</button><button class="filter-btn" data-reading-filter="T6" aria-pressed="false">T6 후속 업무</button><button class="filter-btn" data-reading-filter="2x2" aria-pressed="false">2x2 진짜·가짜 2×2</button><button class="filter-btn" data-reading-filter="all" aria-pressed="false">소개 28편 전체</button></div><p class="count" id="reading-count" aria-live="polite">6편 표시</p><div class="paper-grid">
+<article class="paper-card" id="intro-FC03" data-tags="T1 T2 T3 T4 T5" data-core="true">
+<div class="card-meta"><span>FC03 · 평가 데이터</span><span>AVeriTeC</span></div>
+<h3>실제 뉴스 주장을 채점하려면 정답 말고 무엇을 적어야 할까?</h3><p>실세계 주장에는 검증에 쓴 질문·답·근거와 시점이 함께 필요하다.</p>
+<div class="architecture"><span>구조</span>실제 주장 → 검증 질문 → 웹 근거가 붙은 답 → 종합 판정·설명</div>
+<div class="paper-result"><strong>논문 결과</strong><p>50개 팩트체크 기관에서 모은 실제 주장 4,568개를 구성하고, 질문–답·웹 근거·설명과 판정 평가 체계를 제시했다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>우리 50개 사례의 schema를 만들 때 가장 직접적인 참고다. 주장마다 ‘무엇을 알아야 판정할 수 있는가’를 먼저 적게 해 준다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> Abstract → 데이터 수집·annotation → 라벨·평가식 → 실제 QA 사례</p><p><b>읽고 남길 것</b> 팀 공용 사례 양식 1개와 사람 검수 기준 5줄.</p><p class="full-title">AVeriTeC: A Dataset for Real-world Claim Verification with Evidence from the Web</p></details>
+<div class="paper-links"><a href="https://proceedings.neurips.cc/paper_files/paper/2023/file/cd86a30526cd1aff61d6f89f107634e4-Paper-Datasets_and_Benchmarks.pdf" target="_blank" rel="noreferrer">원출처 PDF · 40쪽 ↗</a><a href="https://proceedings.neurips.cc/paper_files/paper/2023/hash/cd86a30526cd1aff61d6f89f107634e4-Abstract-Datasets_and_Benchmarks.html" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-FC10" data-tags="T1 T2 T3 T4 T6" data-core="true">
+<div class="card-meta"><span>FC10 · Agent 실행 방식</span><span>ReAct</span></div>
+<h3>검색 결과를 본 뒤 다음 행동을 바꾸는 것이 어떻게 가능한가?</h3><p>추론과 외부 행동을 번갈아 수행하면 새로운 정보를 반영해 계획을 갱신할 수 있다.</p>
+<div class="architecture"><span>구조</span>현재 관측 해석 → 도구 행동 → 결과 관측 → 다음 행동 또는 최종 답</div>
+<div class="paper-result"><strong>논문 결과</strong><p>HotpotQA·FEVER에서 Wikipedia API와 상호작용하는 검증을 실험하고, ALFWorld·WebShop에서도 추론과 행동 결합의 효과를 보고했다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>우리 Agent loop의 출발점이다. 첫 검색 후 원문 열기·재검색·계산·종료 중 무엇을 고르는지 기록한다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> 방법 그림 → Wikipedia 도구 예시 → reasoning/acting 비교 → 실패 사례</p><p><b>읽고 남길 것</b> 도구 3–4개의 입력·출력과 종료 조건을 그린 한 장.</p><p class="full-title">ReAct: Synergizing Reasoning and Acting in Language Models</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC10_2023_ReAct_Synergizing_Reasoning_and_Acting_in_Language_Models.pdf" target="_blank" rel="noreferrer">저장소 PDF · 33쪽 ↗</a><a href="https://react-lm.github.io/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-FC21" data-tags="T1 T4 T5" data-core="true">
+<div class="card-meta"><span>FC21 · 고정 RAG pipeline</span><span>Fathom</span></div>
+<h3>작은 공개 모델로 비교 기준이 될 검증기를 만들 수 있을까?</h3><p>질문 확장과 검색을 모듈로 묶어 가벼운 모델로 실제 주장 검증을 수행한다.</p>
+<div class="architecture"><span>구조</span>HyDE식 질문 확장 → BM25 검색 → 의미 유사도 검색·선별 → 작은 LLM의 판정·근거 설명</div>
+<div class="paper-result"><strong>논문 결과</strong><p>AVeriTeC 평가에서 test score 0.2043, dev score 0.378을 보고했다. 초록은 각 split에서 기준선 대비 개선을 제시한다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>Agent와 비교할 작동 가능한 고정 절차의 청사진이다. 같은 검색·판정 모듈을 공유하고 행동 선택 부분을 바꿀 수 있다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> System description → retrieval 단계 → 결과의 dev/test 조건</p><p><b>읽고 남길 것</b> 우리 고정 baseline의 모듈 목록과 Agent가 변경할 선택 표시.</p><p class="full-title">Fathom: A Fast and Modular RAG Pipeline for Fact-Checking</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC21_2025_Fathom_A_Fast_and_Modular_RAG_Pipeline_for_Fact-Checking.pdf" target="_blank" rel="noreferrer">저장소 PDF · 8쪽 ↗</a><a href="https://aclanthology.org/2025.fever-1.20/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-FC15" data-tags="T1 T4" data-core="true">
+<div class="card-meta"><span>FC15 · 적응적 검색·검증</span><span>FIRE</span></div>
+<h3>항상 많이 검색하는 것보다 필요한 순간에 더 찾는 편이 나을까?</h3><p>원자적 주장마다 근거를 고정 개수 수집하는 비용을 줄이고 반복 검증을 통합한다.</p>
+<div class="architecture"><span>구조</span>현재 주장·근거 평가 → 최종 판정 또는 다음 검색 질의 생성 → 근거 추가 → 반복</div>
+<div class="paper-result"><strong>논문 결과</strong><p>논문의 비교 실험에서 성능을 소폭 높이면서 평균 LLM 비용은 약 1/7.6, 검색 비용은 약 1/16.5 수준으로 줄였다고 보고한다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>정확도와 호출 수를 함께 보는 이유를 준다. 우리 오류·충분성 관측이 검색 종료에 어떻게 작용하는지 비교할 수 있다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> 프레임워크 그림 → 종료·다음 질의 선택 → 비용 표 → ablation</p><p><b>읽고 남길 것</b> 정확도–호출 수 그래프에 넣을 정책 두 가지.</p><p class="full-title">FIRE: Fact-checking with Iterative Retrieval and Verification</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC15_2025_FIRE_Fact-checking_with_Iterative_Retrieval_and_Verification.pdf" target="_blank" rel="noreferrer">저장소 PDF · 14쪽 ↗</a><a href="https://aclanthology.org/2025.findings-naacl.158/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-E22" data-tags="T1 T4" data-core="true">
+<div class="card-meta"><span>E22 · 오류 분석·보류</span><span>Sufficient Context</span></div>
+<h3>틀린 답은 자료가 부족해서일까, 자료를 못 읽어서일까?</h3><p>검색 결과가 답하기에 충분한지와 모델이 답을 맞히는지를 분리해 RAG 오류를 분석한다.</p>
+<div class="architecture"><span>구조</span>질문·검색 문맥 → 충분성 분류 → 모델 답/보류 분석 → 충분성·confidence 기반 선택적 생성</div>
+<div class="paper-result"><strong>논문 결과</strong><p>큰 모델은 충분한 문맥을 잘 쓰면서도 부족한 문맥에서 오답을 확정하는 경향을, 작은 모델은 충분한 문맥에서도 오류·보류가 생기는 경향을 보고했다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>검색 실패와 판정 실패를 다른 오류로 나눌 수 있다. ‘더 찾기’와 ‘읽는 방식 바꾸기’ 중 무엇을 개선할지 알려 준다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> sufficient context 정의 → 사례 분류 → selective generation 실험</p><p><b>읽고 남길 것</b> 충분/부족 근거 예시 각 3개와 재검색·보류 규칙.</p><p class="full-title">Sufficient Context: A New Lens on Retrieval Augmented Generation Systems</p></details>
+<div class="paper-links"><a href="https://proceedings.iclr.cc/paper_files/paper/2025/file/33dffa2e3d2ab74a783d1a8c292f66d9-Paper-Conference.pdf" target="_blank" rel="noreferrer">원출처 PDF · 25쪽 ↗</a><a href="https://proceedings.iclr.cc/paper_files/paper/2025/hash/33dffa2e3d2ab74a783d1a8c292f66d9-Abstract-Conference.html" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-FC27" data-tags="T1 T2 T3 T4 T5" data-core="true">
+<div class="card-meta"><span>FC27 · 인용 평가</span><span>ALCE</span></div>
+<h3>정답을 말했는데 붙인 링크가 엉뚱하다면 몇 점일까?</h3><p>LLM 답변의 유창성·정확성·인용 품질을 별도로 평가한다.</p>
+<div class="architecture"><span>구조</span>질문·retrieval corpus → 근거 검색 → 인용 달린 답변 → fluency·correctness·citation 평가</div>
+<div class="paper-result"><strong>논문 결과</strong><p>자동 인용 평가가 사람 판단과 연관됨을 보이고, ELI5에서는 가장 좋은 모델도 약 절반의 경우 완전한 인용 지지를 갖추지 못한다고 보고했다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>판정 F1만으로 설명 품질을 놓치는 문제를 해결한다. 설명의 각 문장과 근거 구간을 연결해 채점하자.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> citation correctness/completeness 정의 → 평가 예시 → 오류 분석</p><p><b>읽고 남길 것</b> 설명 문장별 인용 지지·누락 체크표.</p><p class="full-title">Enabling Large Language Models to Generate Text with Citations (ALCE)</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC27_2023_Enabling_Large_Language_Models_to_Generate_Text_with_Citations_%28ALCE%29.pdf" target="_blank" rel="noreferrer">저장소 PDF · 24쪽 ↗</a><a href="https://aclanthology.org/2023.emnlp-main.398/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-FC01" data-tags="T1 T2 T3 T4 T5" data-core="false" hidden>
+<div class="card-meta"><span>FC01 · 분야 개관</span><span>팩트체크 Survey</span></div>
+<h3>팩트체크를 이루는 하위 문제는 무엇일까?</h3><p>여러 데이터셋과 모델이 서로 다른 팩트체크 정의·범위를 다룬다.</p>
+<div class="architecture"><span>구조</span>주장·검증 필요성 → 근거 수집 → 사실 판정 → 관련 데이터·모델 분류</div>
+<div class="paper-result"><strong>논문 결과</strong><p>자동 팩트체크의 공통 개념과 데이터·모델을 정리하고 NLP·지식표현·데이터베이스와의 연결 및 연구 과제를 제시했다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>새 팀원이 전체 지도를 잡고, 우리 연구가 어느 모듈을 바꾸는지 표시하기 좋다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> Introduction → pipeline 분류 → evidence retrieval·claim verification</p><p><b>읽고 남길 것</b> 우리 입력·출력과 연구할 모듈에 색칠한 구조도.</p><p class="full-title">A Survey on Automated Fact-Checking</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC01_2022_A_Survey_on_Automated_Fact-Checking.pdf" target="_blank" rel="noreferrer">저장소 PDF · 29쪽 ↗</a><a href="https://aclanthology.org/2022.tacl-1.11/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-E21" data-tags="T2 T4" data-core="false" hidden>
+<div class="card-meta"><span>E21 · 질문 기반 검증 시스템</span><span>QACheck</span></div>
+<h3>검증을 ‘답해야 할 질문 목록’으로 바꿔 볼까?</h3><p>여러 단계가 필요한 주장의 검증 경로를 사용자가 이해하도록 드러낸다.</p>
+<div class="architecture"><span>구조</span>claim verifier → question generator → QA module → QA validator → reasoner</div>
+<div class="paper-result"><strong>논문 결과</strong><p>주장을 검증 질문–답 쌍으로 풀고 각 질문의 근거 출처와 종합 판정을 함께 제시하는 데모 시스템을 구현했다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>우리 로그를 질문·관측·다음 행동으로 정리하는 인터페이스 아이디어다. 어떤 질문이 판정을 바꾸었는지 읽을 수 있다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> 시스템 모듈 설명 → 실제 사용 예 → QA validation</p><p><b>읽고 남길 것</b> 검증 질문 3개가 최종 판정으로 이어지는 예시.</p><p class="full-title">QACheck: A Demonstration System for Question-Guided Multi-Hop Fact-Checking</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E21_2023_QACheck_A_Demonstration_System_for_Question-Guided_Multi-Hop_Fact-Checking.pdf" target="_blank" rel="noreferrer">저장소 PDF · 10쪽 ↗</a><a href="https://aclanthology.org/2023.emnlp-demo.23/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-FC11" data-tags="T1 T2" data-core="false" hidden>
+<div class="card-meta"><span>FC11 · 프로그램 기반 추론</span><span>ProgramFC</span></div>
+<h3>복잡한 문장을 작은 함수 호출로 바꾸면 어떤 점이 좋아질까?</h3><p>복합 주장의 검증을 특화 함수가 처리할 하위 작업으로 나눈다.</p>
+<div class="architecture"><span>구조</span>LLM이 추론 프로그램 작성 → 사실 조회·QA 등 handler 실행 → 프로그램 결과 종합</div>
+<div class="paper-result"><strong>논문 결과</strong><p>두 검증 데이터셋과 여러 근거 가용성 조건에서 일곱 baseline보다 좋은 성능을 보고했다. 명시적 프로그램은 사람이 오류를 찾는 경로가 된다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>수치 계산·조건 비교를 코드에 맡기고, 모델은 어떤 함수를 쓸지 결정하는 구조를 배울 수 있다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> 프로그램 예시 → function library → 실험 조건 → 오류 사례</p><p><b>읽고 남길 것</b> 우리 사례 하나를 푸는 의사코드와 함수 입력·출력.</p><p class="full-title">Fact-Checking Complex Claims with Program-Guided Reasoning</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC11_2023_Fact-Checking_Complex_Claims_with_Program-Guided_Reasoning.pdf" target="_blank" rel="noreferrer">저장소 PDF · 24쪽 ↗</a><a href="https://aclanthology.org/2023.acl-long.386/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-FC17" data-tags="T2 T5" data-core="false" hidden>
+<div class="card-meta"><span>FC17 · 다중 역할 검증</span><span>LoCal</span></div>
+<h3>부분 답이 모두 그럴듯한데 전체 결론이 틀릴 수 있을까?</h3><p>하위 작업이 원 주장을 보존하는지와 추론 과정이 충분한 근거를 갖추는지를 검사한다.</p>
+<div class="architecture"><span>구조</span>분해 Agent → 사실 검증·QA reasoning agents → 답 종합 → 논리 평가·반사실 라벨 평가 → 수정</div>
+<div class="paper-result"><strong>논문 결과</strong><p>FEVEROUS와 HoVer에서 다양한 근거 가용성 조건을 비교해 baseline 대비 개선을 보고하고, 구조화된 해법·평가 과정을 제공했다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>T2의 조건 누락·잘못된 종합을 점검하는 설계다. 2×2에서는 제공 근거만 따르는 판단과 원출처 대조의 차이도 토론할 수 있다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> 전체 구조 그림 → decomposing agent → 두 evaluating agents → ablation</p><p><b>읽고 남길 것</b> ‘원문 조건이 빠졌는가/종합 규칙이 맞는가’ 점검표.</p><p class="full-title">LoCal: Logical and Causal Fact-Checking with LLM-Based Multi-Agents</p></details>
+<div class="paper-links"><a href="https://dl.acm.org/doi/10.1145/3696410.3714748" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-E01" data-tags="T2 T5" data-core="false" hidden>
+<div class="card-meta"><span>E01 · 주장 추출·평가</span><span>Claimify</span></div>
+<h3>기사에서 뽑은 한 문장이 원래 뜻을 그대로 담고 있을까?</h3><p>검증할 주장을 추출할 때 정확성·내용 포괄·문맥 독립성을 함께 유지한다.</p>
+<div class="architecture"><span>구조</span>Selection → Disambiguation → Decomposition → coverage·decontextualization 평가</div>
+<div class="paper-result"><strong>논문 결과</strong><p>제안한 평가 체계에서 기존 추출 방법보다 좋은 결과를 보였고, 모호성을 문맥으로 풀어 신뢰할 만한 해석을 가진 주장을 추출하는 특징을 제시했다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>‘그는/내년/모든 경우’가 무엇을 가리키는지 보존하는 데이터 작성법과 분해 정책에 연결된다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> Section 3 단계 → coverage·decontextualization 평가 → 예시</p><p><b>읽고 남길 것</b> 원문과 추출 주장을 대조하는 annotation 항목.</p><p class="full-title">Towards Effective Extraction and Evaluation of Factual Claims (Claimify)</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E01_2025_Towards_Effective_Extraction_and_Evaluation_of_Factual_Claims_%28Claimify%29.pdf" target="_blank" rel="noreferrer">저장소 PDF · 50쪽 ↗</a><a href="https://aclanthology.org/2025.acl-long.348/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-E05" data-tags="T2 T5" data-core="false" hidden>
+<div class="card-meta"><span>E05 · 분해 오류 분석</span><span>Decomposition Dilemmas</span></div>
+<h3>잘게 나누면 무조건 잘 풀릴까?</h3><p>Decompose-Then-Verify의 효과가 연구마다 다른 이유를 오류 유형과 실험으로 분석한다.</p>
+<div class="architecture"><span>구조</span>원문 → 분해 방식별 하위 주장 → 검증·종합 → 분해 오류와 최종 성능 비교</div>
+<div class="paper-result"><strong>논문 결과</strong><p>분해가 주는 이득과 분해가 새로 만드는 잡음 사이의 trade-off를 제시하고, 분해 오류를 유형화했다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>항상 분해 vs 선택적 분해를 비교하는 가장 직접적인 동기다. 전체 정답률과 조건 보존율을 함께 보자.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> 분해 오류 taxonomy → 사례 → downstream 성능 분석</p><p><b>읽고 남길 것</b> 우리 문항에서 분해가 도운 경우·해친 경우의 분류표.</p><p class="full-title">Decomposition Dilemmas: Does Claim Decomposition Boost or Burden Fact-Checking Performance?</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E05_2025_Decomposition_Dilemmas_Does_Claim_Decomposition_Boost_or_Burden_Fact-Checking_Performance.pdf" target="_blank" rel="noreferrer">저장소 PDF · 23쪽 ↗</a><a href="https://arxiv.org/abs/2411.02400" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-P15" data-tags="T2 T5" data-core="false" hidden>
+<div class="card-meta"><span>P15 · 세부 검증 benchmark</span><span>FactLens</span></div>
+<h3>문장 전체의 참거짓보다 틀린 부분을 더 정확히 알려줄 수 있을까?</h3><p>복합 주장을 하위 주장으로 검증할 때 문맥·의미 보존과 세부 오류를 평가한다.</p>
+<div class="architecture"><span>구조</span>사람이 검수한 복합 주장 → 하위 주장 품질 평가 → 세부 사실 검증 → 자동 평가와 사람 판단 대조</div>
+<div class="paper-result"><strong>논문 결과</strong><p>자동 FactLens 평가와 사람 판단이 정렬됨을 보고하고, 하위 주장의 특성이 전체 검증에 미치는 영향을 분석했다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>헌수님의 왜곡 위치 조사에 필요한 세부 채점의 출발점이다. 하위 주장 점수와 원문 대응 쌍을 만들 수 있다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> benchmark 구성 → sub-claim quality metric → human alignment</p><p><b>읽고 남길 것</b> 세부 오류 유형과 대응 구간을 표시한 사례 두 개.</p><p class="full-title">FactLens: Benchmarking Fine-Grained Fact Verification</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P15_2025_FactLens_Benchmarking_Fine-Grained_Fact_Verification.pdf" target="_blank" rel="noreferrer">저장소 PDF · 12쪽 ↗</a><a href="https://aclanthology.org/2025.findings-acl.929/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-P16" data-tags="T2 T5" data-core="false" hidden>
+<div class="card-meta"><span>P16 · 맥락 누락·반쪽 진실</span><span>TRACER</span></div>
+<h3>문장에 쓴 사실은 맞는데, 빼먹은 사실 때문에 오해한다면?</h3><p>핵심 맥락이 생략된 half-truth를 별도 검증 문제로 다룬다.</p>
+<div class="architecture"><span>구조</span>주장–근거 정렬 → 암시된 의도·누락 맥락 추론 → 숨겨진 내용 영향 평가 → 재판정</div>
+<div class="paper-result"><strong>논문 결과</strong><p>약 15k 정치 주장 benchmark POLITIFACT-HIDDEN을 제시하고, 여러 baseline의 Half-True F1을 최대 16점 높였다고 보고했다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>T5의 조건 누락·범위 확대를 설계할 근거다. 문장에 없는 예외를 어디서 찾아 어떤 근거로 설명할지 생각하게 한다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> half-truth 정의 → TRACER 모듈 → 문장별 근거 정렬 → 오류 예</p><p><b>읽고 남길 것</b> 참인 부분·누락 조건·오해되는 결론을 구분한 예시.</p><p class="full-title">The Missing Parts: Augmenting Fact Verification with Half Truth Detection (TRACER)</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P16_2025_The_Missing_Parts_Augmenting_Fact_Verification_with_Half_Truth_Detection_%28TRACER%29.pdf" target="_blank" rel="noreferrer">저장소 PDF · 18쪽 ↗</a><a href="https://aclanthology.org/2025.emnlp-main.1724/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-P02" data-tags="T2 T4 T5 2x2" data-core="false" hidden>
+<div class="card-meta"><span>P02 · 대조 평가 데이터</span><span>VitaminC</span></div>
+<h3>근거의 숫자 하나만 바꾸면 모델의 판정도 바뀔까?</h3><p>언어가 거의 같은 근거의 작은 사실 차이에 검증 모델이 반응하는지 평가한다.</p>
+<div class="architecture"><span>구조</span>Wikipedia 사실 수정 이력 → 비슷하지만 다른 근거 쌍 → 주장–근거 대조 학습·평가</div>
+<div class="paper-result"><strong>논문 결과</strong><p>10만 건 이상의 수정 이력으로 40만 개 이상의 claim–evidence 쌍을 만들고, 대조 학습이 적대적 검증·NLI 평가의 강건성을 높임을 보고했다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>2×2에서 어휘 난이도를 유지한 채 사실만 바꾸는 방법의 참고다. 원출처 재검증 조건을 추가하면 Agent 행동을 측정할 수 있다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> 대조쌍 구성 예 → 데이터 생성 → adversarial 평가</p><p><b>읽고 남길 것</b> 우리 기준 사실 하나에서 진짜·가짜 근거 쌍 만들기.</p><p class="full-title">Get Your Vitamin C! Robust Fact Verification with Contrastive Evidence</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P02_2021_Get_Your_Vitamin_C%21_Robust_Fact_Verification_with_Contrastive_Evidence.pdf" target="_blank" rel="noreferrer">저장소 PDF · 20쪽 ↗</a><a href="https://aclanthology.org/2021.naacl-main.52/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-P01" data-tags="T2 T4 2x2" data-core="false" hidden>
+<div class="card-meta"><span>P01 · 평가 편향 분석</span><span>FEVER Symmetric</span></div>
+<h3>근거를 읽지 않고 주장 말투만 보고 맞히는 것은 아닐까?</h3><p>FEVER의 claim-only 분류기가 높은 점수를 얻는 데이터 편향을 조사한다.</p>
+<div class="architecture"><span>구조</span>주장만 사용하는 모델 분석 → 대칭 주장·근거 평가셋 작성 → 기존 모델·편향 완화 비교</div>
+<div class="paper-result"><strong>논문 결과</strong><p>편향 단서가 줄어든 평가셋에서 FEVER 학습 모델의 성능이 크게 하락했고, 편향을 줄이는 정규화 방법은 그 평가셋에서 개선을 보였다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>claim-only baseline과 2×2 그룹 채점이 필요한 이유다. 진짜 근거가 바뀔 때 반응하는지 확인한다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> Figure 1 → 대칭 평가셋 제작 → claim-only 결과</p><p><b>읽고 남길 것</b> 정답을 암시하는 말투를 줄인 주장 대조쌍.</p><p class="full-title">Towards Debiasing Fact Verification Models</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P01_2019_Towards_Debiasing_Fact_Verification_Models.pdf" target="_blank" rel="noreferrer">저장소 PDF · 7쪽 ↗</a><a href="https://aclanthology.org/D19-1341/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-E06" data-tags="T2 T4 2x2" data-core="false" hidden>
+<div class="card-meta"><span>E06 · 대조 데이터 증강</span><span>CrossAug</span></div>
+<h3>주장과 근거를 각각 바꾼 뒤 교차 결합하면 무엇을 배울까?</h3><p>데이터 수집 편향에 기대는 검증 모델을 대조 증강으로 개선한다.</p>
+<div class="architecture"><span>구조</span>원 주장·근거 → 두 단계로 새 주장·근거 생성 → 원 쌍과 cross-wise 결합 → 대조 학습</div>
+<div class="paper-result"><strong>논문 결과</strong><p>FEVER의 편향 완화 평가와 저자원 조건에서 기존 방법 대비 개선을 보고했다. 원 쌍과 변경 쌍의 교차 결합이 방법의 중심이다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>사용자가 제안한 네 조합과 가장 가까운 설계다. 우리는 학습 증강에서 더 나아가 원출처 조회 정책·회복 비용을 비교할 수 있다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> 증강 단계 그림 → 교차 라벨 정의 → Symmetric 실험</p><p><b>읽고 남길 것</b> 네 조합의 context_relation 정답을 직접 검수한 표.</p><p class="full-title">CrossAug: A Contrastive Data Augmentation Method for Debiasing Fact Verification Models</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E06_2021_CrossAug_A_Contrastive_Data_Augmentation_Method_for_Debiasing_Fact_Verification_Models.pdf" target="_blank" rel="noreferrer">저장소 PDF · 5쪽 ↗</a><a href="https://arxiv.org/abs/2109.15107" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-P04" data-tags="T2 T4 T5 2x2" data-core="false" hidden>
+<div class="card-meta"><span>P04 · 근거 오염 평가</span><span>Fact2Fiction</span></div>
+<h3>Agent가 열심히 조사해도 검색 결과가 조작돼 있으면?</h3><p>하위 주장 검증을 겨냥한 오염 근거가 Agent 기반 팩트체크를 어떻게 흔드는지 연구한다.</p>
+<div class="architecture"><span>구조</span>검증기의 분해·설명 관찰 → 하위 주장에 맞춘 오염 근거 구성 → 검색·판정에 대한 영향 평가</div>
+<div class="paper-result"><strong>논문 결과</strong><p>여러 오염 예산에서 기존 공격보다 높은 성공률을 보고하며, Agent 팩트체크도 근거 오염에 취약함을 보였다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>③ 가짜 주장+가짜 근거를 왜 시험해야 하는지 보여 준다. 닫힌 문서 모음에서 재검증·원출처 확인 정책을 비교하자.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> 위협 모델 → 실험 환경 → 오염 예산별 결과 → 방어 논의</p><p><b>읽고 남길 것</b> 조작 유형과 Agent의 확인 행동을 짝지은 방어 실험표.</p><p class="full-title">Fact2Fiction: Targeted Poisoning Attack to Agentic Fact-checking System</p></details>
+<div class="paper-links"><a href="https://ojs.aaai.org/index.php/AAAI/article/download/40353/44314" target="_blank" rel="noreferrer">원출처 PDF · 8쪽 ↗</a><a href="https://ojs.aaai.org/index.php/AAAI/article/view/40353" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-E19" data-tags="T4" data-core="false" hidden>
+<div class="card-meta"><span>E19 · 근거 재순위화</span><span>CFR</span></div>
+<h3>관련 문서를 찾는 검색기와 판정에 필요한 문서를 찾는 검색기는 다를까?</h3><p>주장과 직접 비슷하지 않아도 검증 질문에 답하는 문서를 더 잘 찾는다.</p>
+<div class="architecture"><span>구조</span>AVeriTeC의 하위 질문·답·gold → 여러 대조 학습 신호 → Contriever 기반 reranker → 최종 검증</div>
+<div class="paper-result"><strong>논문 결과</strong><p>AVeriTeC에서 최종 veracity 분류 정확도 개선을 보고하고 FEVER·ClaimDecomp·HotpotQA 등으로의 전이도 평가했다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>retrieval 최적화를 최종 판정과 연결한다. Recall@k가 높은데 왜 틀리는지, 어떤 종류의 근거가 빠지는지 분석할 수 있다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> 문제 예 → 대조 신호 → retrieval와 end-to-end 결과</p><p><b>읽고 남길 것</b> ‘관련하지만 불충분’ 문서와 결정적 근거의 대조 예시.</p><p class="full-title">Contrastive Learning to Improve Retrieval for Real-World Fact Checking (CFR)</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E19_2024_Contrastive_Learning_to_Improve_Retrieval_for_Real-World_Fact_Checking_%28CFR%29.pdf" target="_blank" rel="noreferrer">저장소 PDF · 16쪽 ↗</a><a href="https://aclanthology.org/2024.fever-1.28/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-P17" data-tags="T4" data-core="false" hidden>
+<div class="card-meta"><span>P17 · 검색 단위 설계</span><span>Dense X Retrieval</span></div>
+<h3>문서·문단·문장·명제 중 무엇을 검색 단위로 삼을까?</h3><p>dense retrieval의 색인 단위를 바꾸면 근거와 downstream 답변이 어떻게 바뀌는지 살핀다.</p>
+<div class="architecture"><span>구조</span>문서 → 문단/문장/독립 명제 변환 → 단위별 색인·검색 → 동일 자원에서 QA</div>
+<div class="paper-result"><strong>논문 결과</strong><p>논문의 실험에서 proposition 단위가 passage 단위보다 검색과 일정 계산 예산의 QA 성능을 개선했다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>우리 parsing→DB→retrieve 관심을 작은 변수 하나로 만들 수 있다. 조건·대상을 보존한 명제가 실제 근거를 더 잘 찾는지 본다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> proposition 정의 → 단위 생성 예 → granularity 비교</p><p><b>읽고 남길 것</b> 같은 문서의 세 가지 chunk와 근거 token 비교.</p><p class="full-title">Dense X Retrieval: What Retrieval Granularity Should We Use?</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P17_2024_Dense_X_Retrieval_What_Retrieval_Granularity_Should_We_Use.pdf" target="_blank" rel="noreferrer">저장소 PDF · 19쪽 ↗</a><a href="https://aclanthology.org/2024.emnlp-main.845/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-FC31" data-tags="T4" data-core="false" hidden>
+<div class="card-meta"><span>FC31 · 한국어 근거 선택</span><span>한국어 대조학습</span></div>
+<h3>한국어 팩트체크의 근거 문장은 어떻게 학습할까?</h3><p>한국어 주장에 맞는 근거 문장을 찾기 위해 대조 학습을 적용한다.</p>
+<div class="architecture"><span>구조</span>주장·근거 유사 문장 구성 → 문장 embedding 대조 학습 → 근거 문장 선택</div>
+<div class="paper-result"><strong>논문 결과</strong><p>문장 선택 단계에서 fine-tuned pretrained 모델과 SimCSE 등 비교 방법보다 효과적인 결과를 보고했다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>Kiwi+BM25와 embedding 검색을 비교할 때 한국어 근거 선택의 선행 사례를 제공한다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> 문장 선택 문제 → 학습 데이터·positive 설정 → 비교 실험</p><p><b>읽고 남길 것</b> 한국어 어휘 일치/표현 차이 사례를 나눈 평가표.</p><p class="full-title">A Contrastive Learning Method for Automated Fact-Checking</p></details>
+<div class="paper-links"><a href="https://jok.kiise.or.kr/digital-library/manuscript/file/100849/NODE11495796.pdf" target="_blank" rel="noreferrer">원출처 PDF · 8쪽 ↗</a><a href="https://doi.org/10.5626/jok.2023.50.8.680" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-FC23" data-tags="T1 T3" data-core="false" hidden>
+<div class="card-meta"><span>FC23 · 수치 주장 benchmark</span><span>QuanTemp</span></div>
+<h3>‘증가했다’는 문장을 검증할 때 숫자와 시간은 어떻게 얽힐까?</h3><p>실제 수치 주장의 비교·통계·구간·시간 요소를 평가한다.</p>
+<div class="architecture"><span>구조</span>실세계 수치 주장 + 유형·메타데이터 + 근거 모음 → 분해·수치 NLI baseline 평가</div>
+<div class="paper-result"><strong>논문 결과</strong><p>논문에서 가장 좋은 baseline도 Macro-F1 58.32를 기록해 실제 수치 주장 검증의 난도를 드러냈다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>T1의 50개 유형을 만들고 계산 오류·근거 선택 오류를 나눌 수 있다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> 주장 유형 taxonomy → 데이터 예 → baseline·오류 분석</p><p><b>읽고 남길 것</b> 우리 수치 문항 50개의 유형별 개수와 gold 필드.</p><p class="full-title">QuanTemp: A real-world open-domain benchmark for fact-checking numerical claims</p></details>
+<div class="paper-links"><a href="https://arxiv.org/pdf/2403.17169v3" target="_blank" rel="noreferrer">원출처 PDF · 11쪽 ↗</a><a href="https://arxiv.org/abs/2403.17169" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-FC26" data-tags="T1 T3" data-core="false" hidden>
+<div class="card-meta"><span>FC26 · 시계열 근거 benchmark</span><span>TSVer</span></div>
+<h3>맞는 지표를 찾았어도 시간 구간을 잘못 고르면?</h3><p>주장에 맞는 시계열과 시간 구간·설명을 함께 검증한다.</p>
+<div class="architecture"><span>구조</span>304개 실제 주장 + 400개 시계열 → 관련 시간 구간 annotation → 판정·근거 설명 평가</div>
+<div class="paper-result"><strong>논문 결과</strong><p>41개 기관에서 모은 주장에 대해 판정·설명을 평가했다. 초록의 Gemini-2.5-Pro baseline은 verdict accuracy 63.57, 설명 Ev2R 47.36을 보고한다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>단순 값 하나보다 ‘어느 구간을 비교했는가’를 정답으로 저장하는 방식을 배울 수 있다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> Figure 1 → time-frame annotation → verdict·justification 평가</p><p><b>읽고 남길 것</b> 지표 ID·시작/종료일·계산을 포함한 데이터 schema.</p><p class="full-title">TSVer: A Benchmark for Fact Verification Against Time-Series Evidence</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC26_2025_TSVer_A_Benchmark_for_Fact_Verification_Against_Time-Series_Evidence.pdf" target="_blank" rel="noreferrer">저장소 PDF · 21쪽 ↗</a><a href="https://aclanthology.org/2025.emnlp-main.1519/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-E30" data-tags="T1" data-core="false" hidden>
+<div class="card-meta"><span>E30 · 표·본문 수치 추론</span><span>TAT-QA</span></div>
+<h3>정답에 표의 숫자와 본문 주석이 동시에 필요하다면?</h3><p>재무 보고서의 표와 텍스트를 함께 읽고 수치 연산을 수행한다.</p>
+<div class="architecture"><span>구조</span>표 셀·본문 span tagging → 관련 의미 추출 → 합·차·비율 등 symbolic operator → 답</div>
+<div class="paper-result"><strong>논문 결과</strong><p>TAGOP은 TAT-QA에서 F1 58.0, 사람 전문가는 90.8을 기록했다. 논문은 하이브리드 근거에서의 수치 추론 간극을 보여 준다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>T1에서 모델이 값을 고르고 결정론적 함수가 계산하는 역할 분리의 참고다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> 데이터 예 → TAGOP 연산자 → 결과·사람 비교</p><p><b>읽고 남길 것</b> 선택할 셀·주석과 호출할 계산 함수를 표시한 예시.</p><p class="full-title">TAT-QA: A Question Answering Benchmark on a Hybrid of Tabular and Textual Content in Finance</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E30_2021_TAT-QA_A_Question_Answering_Benchmark_on_a_Hybrid_of_Tabular_and_Textual_Content_in_Finance.pdf" target="_blank" rel="noreferrer">저장소 PDF · 11쪽 ↗</a><a href="https://aclanthology.org/2021.acl-long.254/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-FC24" data-tags="T3 T6" data-core="false" hidden>
+<div class="card-meta"><span>FC24 · 시간 민감 검색·판정</span><span>Time Matters</span></div>
+<h3>내용이 비슷한 문서 중 어느 시점의 자료를 읽어야 할까?</h3><p>의미와 시간 관계를 함께 반영해 temporal claim의 근거를 검색한다.</p>
+<div class="architecture"><span>구조</span>시간 민감 표현 학습 → 시간 정보를 반영한 근거 검색 → LLM temporal reasoning → 판정</div>
+<div class="paper-result"><strong>논문 결과</strong><p>두 시간 주장 데이터셋을 구성하고 시간 정보를 활용한 접근의 검증 정확도 개선을 보고했다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>발표일·시행일·상태 변화가 다른 T3의 baseline을 설계할 수 있다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> 시간 주장 예 → representation·retrieval → temporal reasoning 실험</p><p><b>읽고 남길 것</b> 시점이 바뀌면 판정이 달라지는 사례 두 개.</p><p class="full-title">Time Matters: An End-to-End Solution for Temporal Claim Verification</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC24_2024_Time_Matters_An_End-to-End_Solution_for_Temporal_Claim_Verification.pdf" target="_blank" rel="noreferrer">저장소 PDF · 8쪽 ↗</a><a href="https://aclanthology.org/2024.emnlp-industry.48/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-FC25" data-tags="T3 T6" data-core="false" hidden>
+<div class="card-meta"><span>FC25 · 시간선 검증</span><span>ChronoFact</span></div>
+<h3>사건 하나하나는 맞아도 순서가 바뀌면 이야기가 틀릴까?</h3><p>여러 사건·중첩·반복을 가진 주장을 시간선 관계로 검증한다.</p>
+<div class="architecture"><span>구조</span>주장·근거의 사건 추출 → 각각 시간선 구성 → 사건 진위·순서 관계 검증 → 종합</div>
+<div class="paper-result"><strong>논문 결과</strong><p>복합 시간 주장 데이터셋과 시간선 기반 방법을 제시하고 복잡한 시간 관계 검증의 효과를 실험으로 보고했다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>Tracking의 이전 상태→새 발표→수정 상태를 분명히 기록하는 설계와 연결된다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> Figure 1 → timeline construction → event relation → 실험</p><p><b>읽고 남길 것</b> 발표·시행·변경을 구분한 시간선과 판정표.</p><p class="full-title">ChronoFact: Timeline-based Temporal Fact Verification</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC25_2025_ChronoFact_Timeline-based_Temporal_Fact_Verification.pdf" target="_blank" rel="noreferrer">저장소 PDF · 9쪽 ↗</a><a href="https://www.ijcai.org/proceedings/2025/893" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-E37" data-tags="T5" data-core="false" hidden>
+<div class="card-meta"><span>E37 · 설명–근거 연결 평가</span><span>Evidence Attribution</span></div>
+<h3>이 문장의 인용을 가리면 사람이 같은 근거를 다시 찾을까?</h3><p>생성된 팩트체크 설명의 출처 연결이 정확한지 평가한다.</p>
+<div class="architecture"><span>구조</span>인용 포함 설명 → citation masking → 근거 recovery → 사람·자동 평가 비교</div>
+<div class="paper-result"><strong>논문 결과</strong><p>자동 annotation과 사람 annotation의 상관을 확인했고, 강한 모델도 부정확한 attribution을 만들며 사람 검수 근거가 설명 품질에 중요함을 보고했다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>T5에서 원문↔문구 대응이 실제로 설명을 뒷받침하는지 채점하는 아이디어다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> citation masking/recovery protocol → human correlation → 오류 예</p><p><b>읽고 남길 것</b> 인용을 가린 설명과 복원할 근거 ID 평가표.</p><p class="full-title">Evaluating Evidence Attribution in Generated Fact Checking Explanations</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E37_2025_Evaluating_Evidence_Attribution_in_Generated_Fact_Checking_Explanations.pdf" target="_blank" rel="noreferrer">저장소 PDF · 22쪽 ↗</a><a href="https://aclanthology.org/2025.naacl-long.282/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+<article class="paper-card" id="intro-FC18" data-tags="T5" data-core="false" hidden>
+<div class="card-meta"><span>FC18 · 멀티모달 확장</span><span>DEFAME</span></div>
+<h3>기사 사진이나 차트까지 주장 검증에 들어오면 도구가 어떻게 달라질까?</h3><p>텍스트·이미지 주장을 여러 검색 도구와 동적 조사 깊이로 검증한다.</p>
+<div class="architecture"><span>구조</span>계획 → 웹·이미지·역이미지·지리 도구 실행 → 근거 정리·평가 → 판정·멀티모달 보고서</div>
+<div class="paper-result"><strong>논문 결과</strong><p>VERITE·AVeriTeC·MOCHEG와 저자들의 CLAIMREVIEW2024+에서 기존 방법·baseline 대비 개선을 보고했다.</p></div>
+<div class="paper-apply"><strong>우리 적용</strong><p>텍스트 중심 MVP 이후 사진 맥락·차트 검증으로 확장할 때 도구 선택의 설계를 읽기 좋다.</p></div>
+<details class="read-details"><summary>원문에서 읽을 곳과 가져올 것</summary><p><b>읽을 곳</b> 6단계 구조 → planner의 도구 선택 → benchmark별 결과</p><p><b>읽고 남길 것</b> 텍스트 주장과 이미지 주장에서 달라지는 도구 목록.</p><p class="full-title">DEFAME: Dynamic Evidence-based FAct-checking with Multimodal Experts</p></details>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC18_2025_DEFAME_Dynamic_Evidence-based_FAct-checking_with_Multimodal_Experts.pdf" target="_blank" rel="noreferrer">저장소 PDF · 35쪽 ↗</a><a href="https://proceedings.mlr.press/v267/braun25b.html" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></article>
+</div>
+
+</section><section id="four-cases"><h2>05. 진짜/가짜 주장 × 진짜/가짜 근거: 네 가지 시나리오</h2>
+<p><strong>연구 질문:</strong> 그럴듯한 가짜 근거가 주어졌을 때도 Agent가 원출처를 다시 찾아 올바른 판정을 회복할 수 있는가? 이 비교 축을 T1·T2·T4·T5에 공통으로 적용할 수 있다.</p>
+<div class="matrix-demo"><h3>네 조합을 눌러 보기</h3><div class="matrix-options" role="group" aria-label="주장과 근거 조합"><button data-case="tt" class="selected" aria-pressed="true">① 진짜 주장 · 진짜 근거</button><button data-case="tf" aria-pressed="false">② 진짜 주장 · 가짜 근거</button><button data-case="ff" aria-pressed="false">③ 가짜 주장 · 가짜 근거</button><button data-case="ft" aria-pressed="false">④ 가짜 주장 · 진짜 근거</button></div><div id="case-output" aria-live="polite"></div></div><h3>같은 사실에서 네 입력을 만든다</h3>
+<p>먼저 사람이 확인한 기준 자료를 고정한다. 아래 설명용 기준 자료의 값은 <strong>2024년 100, 2025년 110</strong>, 실제 증가율은 <strong>10%</strong>다.</p>
+<ul>
+<li>진짜 주장 Cₜ: “2025년 값은 전년 대비 10% 증가했다.”</li>
+<li>가짜 주장 C𝒻: “2025년 값은 전년 대비 20% 증가했다.”</li>
+<li>진짜 근거 Eₜ: 원자료 구간 “2024=100, 2025=110”.</li>
+<li>가짜 근거 E𝒻: 실험용으로 바꾼 구간 “2024=100, 2025=120”.</li>
+</ul>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>시나리오</th>
+<th>모델에게 주는 주장·근거</th>
+<th>제공 문맥만 계산하면</th>
+<th>기준 자료에 따른 주장 판정</th>
+<th>재검증 Agent의 목표</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>① 진짜 주장 + 진짜 근거</td>
+<td>10% 주장 + 100→110</td>
+<td>지지</td>
+<td><strong>지지</strong></td>
+<td>올바른 값·출처를 유지해 설명</td>
+</tr>
+<tr>
+<td>② 진짜 주장 + 가짜 근거</td>
+<td>10% 주장 + 100→120</td>
+<td>반박</td>
+<td><strong>지지</strong></td>
+<td>조작 값을 원출처와 대조해 판정 회복</td>
+</tr>
+<tr>
+<td>③ 가짜 주장 + 가짜 근거</td>
+<td>20% 주장 + 100→120</td>
+<td>지지</td>
+<td><strong>반박</strong></td>
+<td>주장과 근거가 함께 속이는 상황에서 원출처 확인</td>
+</tr>
+<tr>
+<td>④ 가짜 주장 + 진짜 근거</td>
+<td>20% 주장 + 100→110</td>
+<td>반박</td>
+<td><strong>반박</strong></td>
+<td>근거에 따라 거짓 주장 반박</td>
+</tr>
+</tbody>
+</table>
+</div><p>이 표의 흥미로운 부분은 <strong>②·③에서 제공된 문맥의 결론과 기준 자료의 결론이 서로 달라진다</strong>는 점이다. ‘문맥에 충실한 답변’과 ‘현실을 확인한 답변’을 따로 측정할 수 있다.</p>
+<h3>세 개의 정답 필드를 따로 둔다</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>필드</th>
+<th>무엇의 정답인가?</th>
+<th>위 ③의 값</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>claim_truth</code></td>
+<td>기준 자료에 대한 주장의 사실 여부</td>
+<td>false</td>
+</tr>
+<tr>
+<td><code>evidence_integrity</code></td>
+<td>제공 근거가 검증한 원자료와 일치하는가?</td>
+<td>altered</td>
+</tr>
+<tr>
+<td><code>context_relation</code></td>
+<td>제공 근거의 내용만으로 주장을 지지·반박하는가?</td>
+<td>supports</td>
+</tr>
+</tbody>
+</table>
+</div><p>Agent가 읽는 입력에는 이 정답 필드를 넣지 않고, 검수 파일에서만 보관한다. 원자료 Eₜ와 가공본 E𝒻를 연결하는 <code>source_id</code>, 변경 위치, 변경 전후 값도 기록한다.</p>
+<h3>무엇을 비교하고 어떻게 채점할까?</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>비교 조건</th>
+<th>모델에게 주는 접근 범위</th>
+<th>평가하는 능력</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>문맥 판정기</td>
+<td>주장 + 제공 근거</td>
+<td><code>context_relation</code> 정확도</td>
+</tr>
+<tr>
+<td>고정 재검증</td>
+<td>위 입력 + 원출처를 한 번 조회하는 절차</td>
+<td>현실 판정·출처 확인의 기본 효과</td>
+</tr>
+<tr>
+<td>적응적 재검증 Agent</td>
+<td>같은 검색 도구·예산, 관측에 따라 원출처·반대 근거·계산 선택</td>
+<td>조작 근거 탐지·판정 회복·비용</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>주 지표:</strong> 네 시나리오별 판정 정확도, 조작 근거 탐지 F1, 원출처 재확인 성공률, 그룹 전체 정답률, 재검증 호출 수. 가짜 근거에서 오답을 내던 사례 중 재검증 후 정답으로 돌아온 비율을 <strong>회복률</strong>로 기록한다.</p>
+<h3>50개와 네 시나리오를 함께 구성하는 방법</h3>
+<p><strong>기준 사실 50개 × 4조합 = 시스템별 입력 200개</strong>로 설계할 수 있다. 독립 사례 단위는 원 사실 50개이며, 같은 사실에서 파생한 네 입력은 동일 <code>group_id</code>로 묶는다. 시작은 개발용 기준 사실 5개 × 4조합으로 잡으면 네 칸의 정답과 동작을 함께 점검하기 좋다.</p>
+<p>팀원이 제시한 왜곡 조사와 연결하면, E𝒻가 ‘무엇이 바뀐 근거인지’도 출력하게 할 수 있다. <strong>숫자 변경 → 계산 도구, 조건 생략 → 원문 문맥 읽기, 시점 변경 → 과거 버전 조회</strong>처럼 오염 유형에 따라 조사 행동이 달라지는지가 연구 포인트다.</p>
+<p>관련 읽기: VitaminC P02(근거의 작은 차이), CrossAug E06·FEVER Symmetric P01(대조 평가), Fact2Fiction P04(Agent가 읽는 근거 오염), LoCal FC17(분해·종합 검증), FactLens P15·TRACER P16(왜곡 위치·맥락).</p>
+</section><section id="evaluation"><h2>06. 50개 평가 사례와 metric을 만드는 법</h2>
+<h3>한 사례의 정답을 먼저 직접 작성한다</h3>
+<p>각자 <strong>17개·17개·16개</strong>를 작성하고, 다음 사람이 원문과 판정 이유를 교차 검수한다. 처음 6개는 두 개씩 가져와 세 사람이 함께 판정 기준을 맞춘다. 개발용 5개는 별도로 두고, 평가 50개의 구성은 선택한 태스크 표에 맞춘다.</p>
+<pre><code class="language-json">{
+  "id": "T1-001",
+  "claim": "A시의 2025년 대출량은 전년 대비 20% 늘었다.",
+  "as_of": "2026-01-31",
+  "required_slots": ["A시", "대출 건수", "2024", "2025", "동일 집계 범위"],
+  "gold_verdict": "refuted",
+  "gold_evidence_sets": [["table-2024-row-a", "table-2025-row-a"]],
+  "gold_calculation": "(110-100)/100*100 = 10",
+  "reason": "동일 단위의 두 값으로 계산한 증가율은 10%다."
+}
+</code></pre>
+<p>모델 입력은 주장·기준일·도구 사양으로 구성하고, <code>gold_*</code>와 검수 메모는 평가 파일에 둔다. 각 근거에는 원문 URL, 인용 구간, 발행·효력 시점, 수집일을 연결한다.</p>
+<h3>최소 네 가지 숫자로 첫 결과를 설명한다</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>지표</th>
+<th>정확히 세는 것</th>
+<th>50개에서 읽는 법</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>판정 Macro-F1</td>
+<td>지지·반박·근거 부족 각각의 F1 평균</td>
+<td>자주 나오는 라벨에만 강한지 확인</td>
+</tr>
+<tr>
+<td>근거집합 완성률</td>
+<td>정답을 뒷받침할 최소 근거집합을 모두 회수한 사례 비율</td>
+<td>35/50이면 70%; 한 문서만 찾은 경우를 구분</td>
+</tr>
+<tr>
+<td>인용 지지율</td>
+<td>설명의 각 인용이 연결된 주장을 실제로 뒷받침하는 비율</td>
+<td>참인 설명에도 틀린 인용이 붙는지 확인</td>
+</tr>
+<tr>
+<td>실행당 자원</td>
+<td>LLM·검색·도구 횟수, token, 시간</td>
+<td>같은 판정 점수에서 얼마의 자원을 쓰는지 비교</td>
+</tr>
+</tbody>
+</table>
+</div><p>T1은 계산·단위, T2는 조건 보존·종합, T3는 시점 정합성, T4는 Recall@k, T5는 왜곡 문구의 Span F1과 원문 연결 정확도, T6는 Mission 선택 Macro-F1과 실행 성공률을 추가한다. <strong>정답 판정과 좋은 근거를 각각 점수화하면, 개선할 모듈이 보인다.</strong></p>
+<h3>분석은 곧 다음 실험의 설계다</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>첫 실행에서 볼 오류</th>
+<th>수정할 한 가지</th>
+<th>다시 비교할 지표</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>관련 기사는 찾지만 정작 표를 놓침</td>
+<td>검색 질의에 지표·연도 추가</td>
+<td>근거 회수·판정·검색 수</td>
+</tr>
+<tr>
+<td>값은 맞고 단위가 다름</td>
+<td>도구 관측에 단위·집계 범위 필드 추가</td>
+<td>단위 오류·계산 정확도</td>
+</tr>
+<tr>
+<td>분해하며 ‘모두’ 또는 예외가 사라짐</td>
+<td>원래 조건과 하위 주장 대조 단계 추가</td>
+<td>조건 보존·종합 오류</td>
+</tr>
+<tr>
+<td>근거가 모자라는데 확정 판정</td>
+<td>충분성 체크에 따라 재검색/보류 선택</td>
+<td>오답률·coverage·호출 수</td>
+</tr>
+</tbody>
+</table>
+</div><p>기말 발표에서는 <strong>어떤 오류를 발견했는가 → 무엇을 바꿨는가 → 어떤 지표가 얼마나 바뀌었는가</strong>를 실제 실행 기록으로 설명한다.</p>
+</section><section id="team"><h2>07. 세 사람이 어떻게 시작할까?</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>역할</th>
+<th>처음 맡을 일</th>
+<th>공통 산출물과 연결</th>
+<th>교차 검수</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A · 태스크·데이터</td>
+<td>주장 유형, 원문 수집, gold 기준</td>
+<td>직접 작성 사례 17개, annotation guide</td>
+<td>B의 검색 근거 점검</td>
+</tr>
+<tr>
+<td>B · 검색·도구</td>
+<td>Kiwi/BM25·dense, 원문·표 도구</td>
+<td>직접 작성 사례 17개, 도구 입출력·색인</td>
+<td>C의 도구 로그 점검</td>
+</tr>
+<tr>
+<td>C · Agent·평가</td>
+<td>행동 선택 loop, 결과 집계, 실패 기록</td>
+<td>직접 작성 사례 16개, 평가 스크립트·비교표</td>
+<td>A의 사례·판정 점검</td>
+</tr>
+</tbody>
+</table>
+</div><p>역할은 회의에서 이름을 배정한다. 세 사람 모두 공통 사례를 설명하고 서로의 코드를 한 번 실행해 보는 방식으로 작업 흐름을 공유한다.</p>
+<h3>다음 회의 45분</h3>
+<ol>
+<li><strong>10분:</strong> 도입 사례를 함께 읽고 입력·출력을 한 문장씩 설명한다.</li>
+<li><strong>15분:</strong> T1–T6 중 두 후보와 2×2 적용 여부를 비교한다. 데이터 50개를 직접 만들기 쉬운지, 행동 선택이 어디에 있는지 본다.</li>
+<li><strong>10분:</strong> 한 후보와 주 지표 3–5개, 비교 시스템 2–3개를 선택한다.</li>
+<li><strong>10분:</strong> 각자 읽을 논문 두 편, 수집할 예시 두 개, 다음 공유 시간을 정한다.</li>
+</ol>
+<h3>첫 일주일의 완료 기준</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>순서</th>
+<th>완료할 결과물</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>task.md</code>: 입력·출력·Agent 행동·실패 조건을 한 페이지로 작성</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>reading/</code>: 각자 두 편을 읽고 구조 그림·결과표·적용 아이디어 공유</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>dev_examples.jsonl</code>: 개발용 5개와 정답 근거 작성</td>
+</tr>
+<tr>
+<td>4</td>
+<td>한 사례의 검색→도구→판정을 끝까지 실행하고 로그 저장</td>
+</tr>
+<tr>
+<td>5</td>
+<td>고정 baseline과 Agent를 같은 사례에 적용해 처음 비교</td>
+</tr>
+</tbody>
+</table>
+</div><h3>GitHub에서 합의와 변경을 남기는 법</h3>
+<p><a href="https://github.com/CJI0718/uos-nlp-2026-team5">NLP 5조 공개 저장소</a>에서 문서를 읽고, Issue에 태스크 후보·선택 이유·담당 작업을 적는다. 변경은 작업 branch에서 commit하고 PR로 검토한 뒤 합친다. 새 팀원은 GitHub 사용자명을 공유하고 협업 초대를 수락하면 함께 수정할 수 있다.</p>
+</section><section id="library"><h2>08. 지금 읽을 논문을 찾기</h2>
+<p><strong>첫 독서는 공통 6편의 소개와, 선택한 태스크에 연결된 논문 두 편부터 시작한다.</strong> 각 소개에서 문제·구조·결과를 확인하고, 원문에서는 Method의 그림과 Results의 비교 조건을 읽는다.</p>
+<p>전체 111편은 이름·태스크·용도로 검색하는 자료실에 정리했다. 자료실에서 저장소 PDF와 공식 서지·원문을 열 수 있다. 전체 원문 경로와 확보 방법은 <code>원문_다운로드_현황.md</code>에 정리했다.</p>
+<details class="library-drawer"><summary><span>전체 문헌 자료실</span><b>111편</b><small>제목·ID·용도로 찾기</small></summary><div class="library-content"><div class="library-filters"><label>검색<input type="search" id="paper-search" placeholder="예: LoCal, 한국어, CrossAug"></label><label>용도<select id="paper-group"><option value="all">모든 용도</option><option>Agent·적응 제어</option><option>검색·재순위화</option><option>기반·확장 방법</option><option>대조 평가·편향</option><option>멀티모달</option><option>벤치마크·데이터</option><option>분야 개관</option><option>시간·수치·표</option><option>주장 선별·분해</option><option>충돌·오염·누출</option><option>평가·인용</option><option>평가·인용·보류</option><option>한국어·다국어</option></select></label></div><p id="library-count" aria-live="polite">111편 표시</p><div id="library-list">
+<details class="library-row" id="paper-E01" data-search="e01 e01 towards effective extraction and evaluation of factual claims (claimify)  주장 선별·분해 모호성을 처리하면서 검증 가능한 주장을 추출하고, coverage·decontextualization을 포함한 추출 평가 체계를 제시한다." data-group="주장 선별·분해"><summary><span>E01</span>Towards Effective Extraction and Evaluation of Factual Claims (Claimify)</summary><div class="library-body"><p class="tag">주장 선별·분해</p>
+<p>모호성을 처리하면서 검증 가능한 주장을 추출하고, coverage·decontextualization을 포함한 추출 평가 체계를 제시한다.</p>
+<p class="filename">E01_2025_Towards_Effective_Extraction_and_Evaluation_of_Factual_Claims_(Claimify).pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E01_2025_Towards_Effective_Extraction_and_Evaluation_of_Factual_Claims_%28Claimify%29.pdf" target="_blank" rel="noreferrer">저장소 PDF · 50쪽 ↗</a><a href="https://aclanthology.org/2025.acl-long.348/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E02" data-search="e02 e02 claim extraction for fact-checking: data, models, and automated metrics  주장 선별·분해 feverfact와 atomicity·fluency·decontextualization·faithfulness·focus·coverage 평가 틀을 제시한다." data-group="주장 선별·분해"><summary><span>E02</span>Claim Extraction for Fact-Checking: Data, Models, and Automated Metrics</summary><div class="library-body"><p class="tag">주장 선별·분해</p>
+<p>FEVERFact와 atomicity·fluency·decontextualization·faithfulness·focus·coverage 평가 틀을 제시한다.</p>
+<p class="filename">E02_2025_Claim_Extraction_for_Fact-Checking_Data,_Models,_and_Automated_Metrics.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E02_2025_Claim_Extraction_for_Fact-Checking_Data%2C_Models%2C_and_Automated_Metrics.pdf" target="_blank" rel="noreferrer">저장소 PDF · 14쪽 ↗</a><a href="https://arxiv.org/abs/2502.04955" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E03" data-search="e03 e03 claimrank: detecting check-worthy claims in arabic and english  주장 선별·분해 팩트체커가 먼저 확인할 주장을 순위화하는 시스템이다." data-group="주장 선별·분해"><summary><span>E03</span>ClaimRank: Detecting Check-Worthy Claims in Arabic and English</summary><div class="library-body"><p class="tag">주장 선별·분해</p>
+<p>팩트체커가 먼저 확인할 주장을 순위화하는 시스템이다.</p>
+<p class="filename">E03_2018_ClaimRank_Detecting_Check-Worthy_Claims_in_Arabic_and_English.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E03_2018_ClaimRank_Detecting_Check-Worthy_Claims_in_Arabic_and_English.pdf" target="_blank" rel="noreferrer">저장소 PDF · 5쪽 ↗</a><a href="https://aclanthology.org/N18-5006/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E04" data-search="e04 e04 a closer look at claim decomposition  주장 선별·분해 분해 방식만 바꿔도 factscore가 달라지는 문제를 분석하고 decompscore를 제안한다." data-group="주장 선별·분해"><summary><span>E04</span>A Closer Look at Claim Decomposition</summary><div class="library-body"><p class="tag">주장 선별·분해</p>
+<p>분해 방식만 바꿔도 FActScore가 달라지는 문제를 분석하고 DecompScore를 제안한다.</p>
+<p class="filename">E04_2024_A_Closer_Look_at_Claim_Decomposition.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E04_2024_A_Closer_Look_at_Claim_Decomposition.pdf" target="_blank" rel="noreferrer">저장소 PDF · 23쪽 ↗</a><a href="https://aclanthology.org/2024.starsem-1.13/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E05" data-search="e05 e05 decomposition dilemmas: does claim decomposition boost or burden fact-checking performance?  주장 선별·분해 분해가 주는 이득과 새로 유입되는 잡음 사이의 상충을 분석한다." data-group="주장 선별·분해"><summary><span>E05</span>Decomposition Dilemmas: Does Claim Decomposition Boost or Burden Fact-Checking Performance?</summary><div class="library-body"><p class="tag">주장 선별·분해</p>
+<p>분해가 주는 이득과 새로 유입되는 잡음 사이의 상충을 분석한다.</p>
+<p class="filename">E05_2025_Decomposition_Dilemmas_Does_Claim_Decomposition_Boost_or_Burden_Fact-Checking_Performance.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E05_2025_Decomposition_Dilemmas_Does_Claim_Decomposition_Boost_or_Burden_Fact-Checking_Performance.pdf" target="_blank" rel="noreferrer">저장소 PDF · 23쪽 ↗</a><a href="https://arxiv.org/abs/2411.02400" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E06" data-search="e06 e06 crossaug: a contrastive data augmentation method for debiasing fact verification models  대조 평가·편향 주장·근거를 각각 변형한 뒤 원본과 교차 조합하는 2단계 증강으로 편향을 줄인다." data-group="대조 평가·편향"><summary><span>E06</span>CrossAug: A Contrastive Data Augmentation Method for Debiasing Fact Verification Models</summary><div class="library-body"><p class="tag">대조 평가·편향</p>
+<p>주장·근거를 각각 변형한 뒤 원본과 교차 조합하는 2단계 증강으로 편향을 줄인다.</p>
+<p class="filename">E06_2021_CrossAug_A_Contrastive_Data_Augmentation_Method_for_Debiasing_Fact_Verification_Models.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E06_2021_CrossAug_A_Contrastive_Data_Augmentation_Method_for_Debiasing_Fact_Verification_Models.pdf" target="_blank" rel="noreferrer">저장소 PDF · 5쪽 ↗</a><a href="https://arxiv.org/abs/2109.15107" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E07" data-search="e07 e07 annotation artifacts in natural language inference data  대조 평가·편향 근거를 보지 않고 가설의 표현만으로 라벨을 예측할 수 있는 주석 편향을 보인다." data-group="대조 평가·편향"><summary><span>E07</span>Annotation Artifacts in Natural Language Inference Data</summary><div class="library-body"><p class="tag">대조 평가·편향</p>
+<p>근거를 보지 않고 가설의 표현만으로 라벨을 예측할 수 있는 주석 편향을 보인다.</p>
+<p class="filename">E07_2018_Annotation_Artifacts_in_Natural_Language_Inference_Data.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E07_2018_Annotation_Artifacts_in_Natural_Language_Inference_Data.pdf" target="_blank" rel="noreferrer">저장소 PDF · 6쪽 ↗</a><a href="https://aclanthology.org/N18-2017/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E08" data-search="e08 e08 hypothesis only baselines in natural language inference  대조 평가·편향 여러 nli 데이터에서 가설만 사용하는 baseline을 진단 도구로 제안한다." data-group="대조 평가·편향"><summary><span>E08</span>Hypothesis Only Baselines in Natural Language Inference</summary><div class="library-body"><p class="tag">대조 평가·편향</p>
+<p>여러 NLI 데이터에서 가설만 사용하는 baseline을 진단 도구로 제안한다.</p>
+<p class="filename">E08_2018_Hypothesis_Only_Baselines_in_Natural_Language_Inference.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E08_2018_Hypothesis_Only_Baselines_in_Natural_Language_Inference.pdf" target="_blank" rel="noreferrer">저장소 PDF · 12쪽 ↗</a><a href="https://aclanthology.org/S18-2023/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E09" data-search="e09 e09 counterfactual debiasing for fact verification (clever)  대조 평가·편향 claim-evidence 모델과 claim-only 모델을 따로 학습한 후 출력을 보정한다." data-group="대조 평가·편향"><summary><span>E09</span>Counterfactual Debiasing for Fact Verification (CLEVER)</summary><div class="library-body"><p class="tag">대조 평가·편향</p>
+<p>claim-evidence 모델과 claim-only 모델을 따로 학습한 후 출력을 보정한다.</p>
+<p class="filename">E09_2023_Counterfactual_Debiasing_for_Fact_Verification_(CLEVER).pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E09_2023_Counterfactual_Debiasing_for_Fact_Verification_%28CLEVER%29.pdf" target="_blank" rel="noreferrer">저장소 PDF · 13쪽 ↗</a><a href="https://aclanthology.org/2023.acl-long.374/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E10" data-search="e10 e10 faviq: fact verification from information-seeking questions  대조 평가·편향 모호한 질문과 그 해소 결과에서 타당·부당 qa 조합을 만들고 주장으로 변환한다." data-group="대조 평가·편향"><summary><span>E10</span>FaVIQ: FAct Verification from Information-seeking Questions</summary><div class="library-body"><p class="tag">대조 평가·편향</p>
+<p>모호한 질문과 그 해소 결과에서 타당·부당 QA 조합을 만들고 주장으로 변환한다.</p>
+<p class="filename">E10_2022_FaVIQ_FAct_Verification_from_Information-seeking_Questions.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E10_2022_FaVIQ_FAct_Verification_from_Information-seeking_Questions.pdf" target="_blank" rel="noreferrer">저장소 PDF · 13쪽 ↗</a><a href="https://aclanthology.org/2022.acl-long.354/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E11" data-search="e11 e11 beyond accuracy: behavioral testing of nlp models with checklist  대조 평가·편향 능력별·검사 유형별로 nlp 모델의 행동을 진단한다." data-group="대조 평가·편향"><summary><span>E11</span>Beyond Accuracy: Behavioral Testing of NLP Models with CheckList</summary><div class="library-body"><p class="tag">대조 평가·편향</p>
+<p>능력별·검사 유형별로 NLP 모델의 행동을 진단한다.</p>
+<p class="filename">E11_2020_Beyond_Accuracy_Behavioral_Testing_of_NLP_Models_with_CheckList.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E11_2020_Beyond_Accuracy_Behavioral_Testing_of_NLP_Models_with_CheckList.pdf" target="_blank" rel="noreferrer">저장소 PDF · 11쪽 ↗</a><a href="https://aclanthology.org/2020.acl-main.442/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E12" data-search="e12 e12 beir: a heterogenous benchmark for zero-shot evaluation of information retrieval models  검색·재순위화 여러 도메인의 lexical·sparse·dense·late interaction·reranking을 비교하는 retrieval benchmark다." data-group="검색·재순위화"><summary><span>E12</span>BEIR: A Heterogenous Benchmark for Zero-shot Evaluation of Information Retrieval Models</summary><div class="library-body"><p class="tag">검색·재순위화</p>
+<p>여러 도메인의 lexical·sparse·dense·late interaction·reranking을 비교하는 retrieval benchmark다.</p>
+<p class="filename">E12_2021_BEIR_A_Heterogenous_Benchmark_for_Zero-shot_Evaluation_of_Information_Retrieval_Models.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E12_2021_BEIR_A_Heterogenous_Benchmark_for_Zero-shot_Evaluation_of_Information_Retrieval_Models.pdf" target="_blank" rel="noreferrer">저장소 PDF · 24쪽 ↗</a><a href="https://arxiv.org/abs/2104.08663" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E13" data-search="e13 e13 dense passage retrieval for open-domain question answering (dpr)  검색·재순위화 질문·문단을 각각 인코딩하는 dual encoder로 검색한다." data-group="검색·재순위화"><summary><span>E13</span>Dense Passage Retrieval for Open-Domain Question Answering (DPR)</summary><div class="library-body"><p class="tag">검색·재순위화</p>
+<p>질문·문단을 각각 인코딩하는 dual encoder로 검색한다.</p>
+<p class="filename">E13_2020_Dense_Passage_Retrieval_for_Open-Domain_Question_Answering_(DPR).pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E13_2020_Dense_Passage_Retrieval_for_Open-Domain_Question_Answering_%28DPR%29.pdf" target="_blank" rel="noreferrer">저장소 PDF · 13쪽 ↗</a><a href="https://aclanthology.org/2020.emnlp-main.550/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E14" data-search="e14 e14 splade: sparse lexical and expansion model for first stage ranking  검색·재순위화 신경망으로 희소 lexical 표현과 term expansion을 학습한다." data-group="검색·재순위화"><summary><span>E14</span>SPLADE: Sparse Lexical and Expansion Model for First Stage Ranking</summary><div class="library-body"><p class="tag">검색·재순위화</p>
+<p>신경망으로 희소 lexical 표현과 term expansion을 학습한다.</p>
+<p class="filename">E14_2021_SPLADE_Sparse_Lexical_and_Expansion_Model_for_First_Stage_Ranking.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E14_2021_SPLADE_Sparse_Lexical_and_Expansion_Model_for_First_Stage_Ranking.pdf" target="_blank" rel="noreferrer">저장소 PDF · 5쪽 ↗</a><a href="https://arxiv.org/abs/2107.05720" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E15" data-search="e15 e15 colbertv2: effective and efficient retrieval via lightweight late interaction  검색·재순위화 토큰 수준 multi-vector 매칭에 residual compression·denoised supervision을 결합한다." data-group="검색·재순위화"><summary><span>E15</span>ColBERTv2: Effective and Efficient Retrieval via Lightweight Late Interaction</summary><div class="library-body"><p class="tag">검색·재순위화</p>
+<p>토큰 수준 multi-vector 매칭에 residual compression·denoised supervision을 결합한다.</p>
+<p class="filename">E15_2022_ColBERTv2_Effective_and_Efficient_Retrieval_via_Lightweight_Late_Interaction.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E15_2022_ColBERTv2_Effective_and_Efficient_Retrieval_via_Lightweight_Late_Interaction.pdf" target="_blank" rel="noreferrer">저장소 PDF · 20쪽 ↗</a><a href="https://aclanthology.org/2022.naacl-main.272/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E16" data-search="e16 e16 m3-embedding: multi-linguality, multi-functionality, multi-granularity text embeddings through self-knowledge distillation (bge-m3)  검색·재순위화 한 계열에서 multilingual·dense·sparse·multi-vector 기능을 제공한다." data-group="검색·재순위화"><summary><span>E16</span>M3-Embedding: Multi-Linguality, Multi-Functionality, Multi-Granularity Text Embeddings Through Self-Knowledge Distillation (BGE-M3)</summary><div class="library-body"><p class="tag">검색·재순위화</p>
+<p>한 계열에서 multilingual·dense·sparse·multi-vector 기능을 제공한다.</p>
+<p class="filename">E16_2024_M3-Embedding_Multi-Linguality,_Multi-Functionality,_Multi-Granularity_Text_Embeddings_Through_Self-Knowledge_Distillation_(BGE-M3).pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E16_2024_M3-Embedding_Multi-Linguality%2C_Multi-Functionality%2C_Multi-Granularity_Text_Embeddings_Through_Self-Knowledge_Distillation_%28BGE-M3%29.pdf" target="_blank" rel="noreferrer">저장소 PDF · 18쪽 ↗</a><a href="https://arxiv.org/abs/2402.03216" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E17" data-search="e17 e17 unsupervised dense information retrieval with contrastive learning (contriever)  검색·재순위화 비지도 대조학습 dense retriever와 다국어 검색을 연구한다." data-group="검색·재순위화"><summary><span>E17</span>Unsupervised Dense Information Retrieval with Contrastive Learning (Contriever)</summary><div class="library-body"><p class="tag">검색·재순위화</p>
+<p>비지도 대조학습 dense retriever와 다국어 검색을 연구한다.</p>
+<p class="filename">E17_2021_Unsupervised_Dense_Information_Retrieval_with_Contrastive_Learning_(Contriever).pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E17_2021_Unsupervised_Dense_Information_Retrieval_with_Contrastive_Learning_%28Contriever%29.pdf" target="_blank" rel="noreferrer">저장소 PDF · 21쪽 ↗</a><a href="https://arxiv.org/abs/2112.09118" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E18" data-search="e18 e18 precise zero-shot dense retrieval without relevance labels (hyde)  검색·재순위화 질문에 대한 가상 문서를 생성해 임베딩하고 실제 문서를 검색한다." data-group="검색·재순위화"><summary><span>E18</span>Precise Zero-Shot Dense Retrieval without Relevance Labels (HyDE)</summary><div class="library-body"><p class="tag">검색·재순위화</p>
+<p>질문에 대한 가상 문서를 생성해 임베딩하고 실제 문서를 검색한다.</p>
+<p class="filename">E18_2023_Precise_Zero-Shot_Dense_Retrieval_without_Relevance_Labels_(HyDE).pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E18_2023_Precise_Zero-Shot_Dense_Retrieval_without_Relevance_Labels_%28HyDE%29.pdf" target="_blank" rel="noreferrer">저장소 PDF · 16쪽 ↗</a><a href="https://aclanthology.org/2023.acl-long.99/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E19" data-search="e19 e19 contrastive learning to improve retrieval for real-world fact checking (cfr)  검색·재순위화 하위 질문·답과 여러 감독 신호로 contriever를 학습해 간접적으로 유용한 근거를 검색한다." data-group="검색·재순위화"><summary><span>E19</span>Contrastive Learning to Improve Retrieval for Real-World Fact Checking (CFR)</summary><div class="library-body"><p class="tag">검색·재순위화</p>
+<p>하위 질문·답과 여러 감독 신호로 Contriever를 학습해 간접적으로 유용한 근거를 검색한다.</p>
+<p class="filename">E19_2024_Contrastive_Learning_to_Improve_Retrieval_for_Real-World_Fact_Checking_(CFR).pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E19_2024_Contrastive_Learning_to_Improve_Retrieval_for_Real-World_Fact_Checking_%28CFR%29.pdf" target="_blank" rel="noreferrer">저장소 PDF · 16쪽 ↗</a><a href="https://aclanthology.org/2024.fever-1.28/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E20" data-search="e20 e20 adaptive-rag: learning to adapt retrieval-augmented large language models through question complexity  agent·적응 제어 작은 분류기가 질의 복잡도에 따라 무검색·단일 검색·반복 검색 전략을 고른다." data-group="Agent·적응 제어"><summary><span>E20</span>Adaptive-RAG: Learning to Adapt Retrieval-Augmented Large Language Models through Question Complexity</summary><div class="library-body"><p class="tag">Agent·적응 제어</p>
+<p>작은 분류기가 질의 복잡도에 따라 무검색·단일 검색·반복 검색 전략을 고른다.</p>
+<p class="filename">E20_2024_Adaptive-RAG_Learning_to_Adapt_Retrieval-Augmented_Large_Language_Models_through_Question_Complexity.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E20_2024_Adaptive-RAG_Learning_to_Adapt_Retrieval-Augmented_Large_Language_Models_through_Question_Complexity.pdf" target="_blank" rel="noreferrer">저장소 PDF · 15쪽 ↗</a><a href="https://aclanthology.org/2024.naacl-long.389/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E21" data-search="e21 e21 qacheck: a demonstration system for question-guided multi-hop fact-checking  agent·적응 제어 충분성 판정·질문 생성·qa·qa 검증·최종 추론의 다섯 모듈로 여러 단계의 검증을 수행한다." data-group="Agent·적응 제어"><summary><span>E21</span>QACheck: A Demonstration System for Question-Guided Multi-Hop Fact-Checking</summary><div class="library-body"><p class="tag">Agent·적응 제어</p>
+<p>충분성 판정·질문 생성·QA·QA 검증·최종 추론의 다섯 모듈로 여러 단계의 검증을 수행한다.</p>
+<p class="filename">E21_2023_QACheck_A_Demonstration_System_for_Question-Guided_Multi-Hop_Fact-Checking.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E21_2023_QACheck_A_Demonstration_System_for_Question-Guided_Multi-Hop_Fact-Checking.pdf" target="_blank" rel="noreferrer">저장소 PDF · 10쪽 ↗</a><a href="https://aclanthology.org/2023.emnlp-demo.23/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E22" data-search="e22 e22 sufficient context: a new lens on retrieval augmented generation systems  agent·적응 제어 근거가 충분한가와 모델이 근거를 제대로 사용하는가를 분리해 오류를 분석한다." data-group="Agent·적응 제어"><summary><span>E22</span>Sufficient Context: A New Lens on Retrieval Augmented Generation Systems</summary><div class="library-body"><p class="tag">Agent·적응 제어</p>
+<p>근거가 충분한가와 모델이 근거를 제대로 사용하는가를 분리해 오류를 분석한다.</p>
+<p class="filename">E22_2025_Sufficient_Context_A_New_Lens_on_Retrieval_Augmented_Generation_Systems.pdf</p>
+<div class="paper-links"><a href="https://proceedings.iclr.cc/paper_files/paper/2025/file/33dffa2e3d2ab74a783d1a8c292f66d9-Paper-Conference.pdf" target="_blank" rel="noreferrer">원출처 PDF · 25쪽 ↗</a><a href="https://proceedings.iclr.cc/paper_files/paper/2025/hash/33dffa2e3d2ab74a783d1a8c292f66d9-Abstract-Conference.html" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E23" data-search="e23 e23 corrective retrieval augmented generation (crag)  agent·적응 제어 검색 결과 품질을 평가해 다른 retrieval 행동을 선택하고 관련 정보를 정제한다." data-group="Agent·적응 제어"><summary><span>E23</span>Corrective Retrieval Augmented Generation (CRAG)</summary><div class="library-body"><p class="tag">Agent·적응 제어</p>
+<p>검색 결과 품질을 평가해 다른 retrieval 행동을 선택하고 관련 정보를 정제한다.</p>
+<p class="filename">E23_2024_Corrective_Retrieval_Augmented_Generation_(CRAG).pdf</p>
+<div class="paper-links"><a href="https://arxiv.org/pdf/2401.15884v3" target="_blank" rel="noreferrer">원출처 PDF · 16쪽 ↗</a><a href="https://arxiv.org/abs/2401.15884" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E24" data-search="e24 e24 chain-of-verification reduces hallucination in large language models (cove)  agent·적응 제어 초안→검증 질문→독립 답변→수정 답변의 절차를 사용한다." data-group="Agent·적응 제어"><summary><span>E24</span>Chain-of-Verification Reduces Hallucination in Large Language Models (CoVe)</summary><div class="library-body"><p class="tag">Agent·적응 제어</p>
+<p>초안→검증 질문→독립 답변→수정 답변의 절차를 사용한다.</p>
+<p class="filename">E24_2024_Chain-of-Verification_Reduces_Hallucination_in_Large_Language_Models_(CoVe).pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E24_2024_Chain-of-Verification_Reduces_Hallucination_in_Large_Language_Models_%28CoVe%29.pdf" target="_blank" rel="noreferrer">저장소 PDF · 16쪽 ↗</a><a href="https://aclanthology.org/2024.findings-acl.212/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E25" data-search="e25 e25 adaptive retrieval without self-knowledge? bringing uncertainty back home  agent·적응 제어 여러 적응 retrieval 방식과 uncertainty 추정법을 성능·자기지식·효율 측면에서 비교한다." data-group="Agent·적응 제어"><summary><span>E25</span>Adaptive Retrieval without Self-Knowledge? Bringing Uncertainty Back Home</summary><div class="library-body"><p class="tag">Agent·적응 제어</p>
+<p>여러 적응 retrieval 방식과 uncertainty 추정법을 성능·자기지식·효율 측면에서 비교한다.</p>
+<p class="filename">E25_2025_Adaptive_Retrieval_without_Self-Knowledge_Bringing_Uncertainty_Back_Home.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E25_2025_Adaptive_Retrieval_without_Self-Knowledge_Bringing_Uncertainty_Back_Home.pdf" target="_blank" rel="noreferrer">저장소 PDF · 29쪽 ↗</a><a href="https://arxiv.org/abs/2501.12835" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E26" data-search="e26 e26 complex claim verification with evidence retrieved in the wild  시간·수치·표 주장 당시 이전 문서로 retrieval을 제한한 분해·검색·요약·판정 파이프라인을 연구한다." data-group="시간·수치·표"><summary><span>E26</span>Complex Claim Verification with Evidence Retrieved in the Wild</summary><div class="library-body"><p class="tag">시간·수치·표</p>
+<p>주장 당시 이전 문서로 retrieval을 제한한 분해·검색·요약·판정 파이프라인을 연구한다.</p>
+<p class="filename">E26_2024_Complex_Claim_Verification_with_Evidence_Retrieved_in_the_Wild.pdf</p>
+<div class="paper-links"><a href="https://arxiv.org/pdf/2305.11859v2" target="_blank" rel="noreferrer">원출처 PDF · 19쪽 ↗</a><a href="https://arxiv.org/abs/2305.11859" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E27" data-search="e27 e27 time-aware language models as temporal knowledge bases  시간·수치·표 시간에 따라 달라지는 사실을 평가하고 텍스트와 timestamp를 함께 모델링한다." data-group="시간·수치·표"><summary><span>E27</span>Time-Aware Language Models as Temporal Knowledge Bases</summary><div class="library-body"><p class="tag">시간·수치·표</p>
+<p>시간에 따라 달라지는 사실을 평가하고 텍스트와 timestamp를 함께 모델링한다.</p>
+<p class="filename">E27_2022_Time-Aware_Language_Models_as_Temporal_Knowledge_Bases.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E27_2022_Time-Aware_Language_Models_as_Temporal_Knowledge_Bases.pdf" target="_blank" rel="noreferrer">저장소 PDF · 17쪽 ↗</a><a href="https://direct.mit.edu/tacl/article/doi/10.1162/tacl_a_00459/110012/Time-Aware-Language-Models-as-Temporal-Knowledge" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E28" data-search="e28 e28 freshllms: refreshing large language models with search engine augmentation  시간·수치·표 변하는 세계 지식과 거짓 전제를 가진 질문을 평가하고 검색 기반 freshprompt를 제안한다." data-group="시간·수치·표"><summary><span>E28</span>FreshLLMs: Refreshing Large Language Models with Search Engine Augmentation</summary><div class="library-body"><p class="tag">시간·수치·표</p>
+<p>변하는 세계 지식과 거짓 전제를 가진 질문을 평가하고 검색 기반 FreshPrompt를 제안한다.</p>
+<p class="filename">E28_2023_FreshLLMs_Refreshing_Large_Language_Models_with_Search_Engine_Augmentation.pdf</p>
+<div class="paper-links"><a href="https://arxiv.org/pdf/2310.03214v2" target="_blank" rel="noreferrer">원출처 PDF · 26쪽 ↗</a><a href="https://arxiv.org/abs/2310.03214" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E29" data-search="e29 e29 finqa: a dataset of numerical reasoning over financial data  시간·수치·표 재무 문서의 수치 질문에 답하고 정답 reasoning program을 제공한다." data-group="시간·수치·표"><summary><span>E29</span>FinQA: A Dataset of Numerical Reasoning over Financial Data</summary><div class="library-body"><p class="tag">시간·수치·표</p>
+<p>재무 문서의 수치 질문에 답하고 정답 reasoning program을 제공한다.</p>
+<p class="filename">E29_2021_FinQA_A_Dataset_of_Numerical_Reasoning_over_Financial_Data.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E29_2021_FinQA_A_Dataset_of_Numerical_Reasoning_over_Financial_Data.pdf" target="_blank" rel="noreferrer">저장소 PDF · 14쪽 ↗</a><a href="https://aclanthology.org/2021.emnlp-main.300/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E30" data-search="e30 e30 tat-qa: a question answering benchmark on a hybrid of tabular and textual content in finance  시간·수치·표 표 셀과 텍스트 span을 함께 추출해 symbolic operator로 계산한다." data-group="시간·수치·표"><summary><span>E30</span>TAT-QA: A Question Answering Benchmark on a Hybrid of Tabular and Textual Content in Finance</summary><div class="library-body"><p class="tag">시간·수치·표</p>
+<p>표 셀과 텍스트 span을 함께 추출해 symbolic operator로 계산한다.</p>
+<p class="filename">E30_2021_TAT-QA_A_Question_Answering_Benchmark_on_a_Hybrid_of_Tabular_and_Textual_Content_in_Finance.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E30_2021_TAT-QA_A_Question_Answering_Benchmark_on_a_Hybrid_of_Tabular_and_Textual_Content_in_Finance.pdf" target="_blank" rel="noreferrer">저장소 PDF · 11쪽 ↗</a><a href="https://aclanthology.org/2021.acl-long.254/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E31" data-search="e31 e31 m2-tabfact: multi-document multi-modal fact verification with visual and textual representations of tabular data  시간·수치·표 표를 시각적·텍스트 근거로 변환하고 여러 문서를 함께 써야 하는 주장 검증을 평가한다." data-group="시간·수치·표"><summary><span>E31</span>M2-TabFact: Multi-Document Multi-Modal Fact Verification with Visual and Textual Representations of Tabular Data</summary><div class="library-body"><p class="tag">시간·수치·표</p>
+<p>표를 시각적·텍스트 근거로 변환하고 여러 문서를 함께 써야 하는 주장 검증을 평가한다.</p>
+<p class="filename">E31_2025_M2-TabFact_Multi-Document_Multi-Modal_Fact_Verification_with_Visual_and_Textual_Representations_of_Tabular_Data.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E31_2025_M2-TabFact_Multi-Document_Multi-Modal_Fact_Verification_with_Visual_and_Textual_Representations_of_Tabular_Data.pdf" target="_blank" rel="noreferrer">저장소 PDF · 18쪽 ↗</a><a href="https://aclanthology.org/2025.findings-acl.1345/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E32" data-search="e32 e32 x-fact: a new benchmark dataset for multilingual fact checking  한국어·다국어 다국어의 실제 주장과 전문가 라벨로 domain/generalization을 평가한다." data-group="한국어·다국어"><summary><span>E32</span>X-Fact: A New Benchmark Dataset for Multilingual Fact Checking</summary><div class="library-body"><p class="tag">한국어·다국어</p>
+<p>다국어의 실제 주장과 전문가 라벨로 domain/generalization을 평가한다.</p>
+<p class="filename">E32_2021_X-Fact_A_New_Benchmark_Dataset_for_Multilingual_Fact_Checking.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E32_2021_X-Fact_A_New_Benchmark_Dataset_for_Multilingual_Fact_Checking.pdf" target="_blank" rel="noreferrer">저장소 PDF · 8쪽 ↗</a><a href="https://aclanthology.org/2021.acl-short.86/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E33" data-search="e33 e33 multifc: a real-world multi-domain dataset for evidence-based fact checking of claims  한국어·다국어 여러 팩트체크 사이트의 주장·근거·metadata를 모아 평가한다." data-group="한국어·다국어"><summary><span>E33</span>MultiFC: A Real-World Multi-Domain Dataset for Evidence-Based Fact Checking of Claims</summary><div class="library-body"><p class="tag">한국어·다국어</p>
+<p>여러 팩트체크 사이트의 주장·근거·metadata를 모아 평가한다.</p>
+<p class="filename">E33_2019_MultiFC_A_Real-World_Multi-Domain_Dataset_for_Evidence-Based_Fact_Checking_of_Claims.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E33_2019_MultiFC_A_Real-World_Multi-Domain_Dataset_for_Evidence-Based_Fact_Checking_of_Claims.pdf" target="_blank" rel="noreferrer">저장소 PDF · 13쪽 ↗</a><a href="https://aclanthology.org/D19-1475/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E34" data-search="e34 e34 concrete: improving cross-lingual fact-checking with cross-lingual retrieval  한국어·다국어 여러 언어의 상보적 근거를 수집하고 cross-lingual retriever를 학습한다." data-group="한국어·다국어"><summary><span>E34</span>CONCRETE: Improving Cross-lingual Fact-checking with Cross-lingual Retrieval</summary><div class="library-body"><p class="tag">한국어·다국어</p>
+<p>여러 언어의 상보적 근거를 수집하고 cross-lingual retriever를 학습한다.</p>
+<p class="filename">E34_2022_CONCRETE_Improving_Cross-lingual_Fact-checking_with_Cross-lingual_Retrieval.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E34_2022_CONCRETE_Improving_Cross-lingual_Fact-checking_with_Cross-lingual_Retrieval.pdf" target="_blank" rel="noreferrer">저장소 PDF · 12쪽 ↗</a><a href="https://aclanthology.org/2022.coling-1.86/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E35" data-search="e35 e35 언어모델과 검색기를 활용한 한국어 생성 문서의 사실성 평가 연구 (korfactscore)  한국어·다국어 한국어 생성 문서를 단일 사실로 나누고 lm과 검색기를 결합해 사실성을 평가한다." data-group="한국어·다국어"><summary><span>E35</span>언어모델과 검색기를 활용한 한국어 생성 문서의 사실성 평가 연구 (KorFactScore)</summary><div class="library-body"><p class="tag">한국어·다국어</p>
+<p>한국어 생성 문서를 단일 사실로 나누고 LM과 검색기를 결합해 사실성을 평가한다.</p>
+<p class="filename">E35_2024_언어모델과_검색기를_활용한_한국어_생성_문서의_사실성_평가_연구_(KorFactScore).pdf</p>
+<div class="paper-links"><a href="https://koreascience.kr:443/article/CFKO202404272002627.pdf" target="_blank" rel="noreferrer">원출처 PDF · 4쪽 ↗</a><a href="https://koreascience.kr/article/CFKO202404272002627.page" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E36" data-search="e36 e36 korquad1.0: korean qa dataset for machine reading comprehension  한국어·다국어 한국어 wikipedia에서 사람이 만든 추출형 qa 데이터셋이다." data-group="한국어·다국어"><summary><span>E36</span>KorQuAD1.0: Korean QA Dataset for Machine Reading Comprehension</summary><div class="library-body"><p class="tag">한국어·다국어</p>
+<p>한국어 Wikipedia에서 사람이 만든 추출형 QA 데이터셋이다.</p>
+<p class="filename">E36_2019_KorQuAD1.0_Korean_QA_Dataset_for_Machine_Reading_Comprehension.pdf</p>
+<div class="paper-links"><a href="https://arxiv.org/pdf/1909.07005" target="_blank" rel="noreferrer">원출처 PDF · 5쪽 ↗</a><a href="https://arxiv.org/abs/1909.07005" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E37" data-search="e37 e37 evaluating evidence attribution in generated fact checking explanations  평가·인용·보류 citation masking and recovery로 설명과 근거의 attribution을 평가한다." data-group="평가·인용·보류"><summary><span>E37</span>Evaluating Evidence Attribution in Generated Fact Checking Explanations</summary><div class="library-body"><p class="tag">평가·인용·보류</p>
+<p>citation masking and recovery로 설명과 근거의 attribution을 평가한다.</p>
+<p class="filename">E37_2025_Evaluating_Evidence_Attribution_in_Generated_Fact_Checking_Explanations.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E37_2025_Evaluating_Evidence_Attribution_in_Generated_Fact_Checking_Explanations.pdf" target="_blank" rel="noreferrer">저장소 PDF · 22쪽 ↗</a><a href="https://aclanthology.org/2025.naacl-long.282/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E38" data-search="e38 e38 rarr: researching and revising what language models say, using language models  평가·인용·보류 생성물의 근거를 찾아 unsupported 내용을 최소 수정하는 후처리 시스템이다." data-group="평가·인용·보류"><summary><span>E38</span>RARR: Researching and Revising What Language Models Say, Using Language Models</summary><div class="library-body"><p class="tag">평가·인용·보류</p>
+<p>생성물의 근거를 찾아 unsupported 내용을 최소 수정하는 후처리 시스템이다.</p>
+<p class="filename">E38_2023_RARR_Researching_and_Revising_What_Language_Models_Say,_Using_Language_Models.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E38_2023_RARR_Researching_and_Revising_What_Language_Models_Say%2C_Using_Language_Models.pdf" target="_blank" rel="noreferrer">저장소 PDF · 32쪽 ↗</a><a href="https://aclanthology.org/2023.acl-long.910/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E39" data-search="e39 e39 eraser: a benchmark to evaluate rationalized nlp models  평가·인용·보류 사람 rationale과 일치하는가와 실제 모델 예측에 영향을 주는가를 구분한다." data-group="평가·인용·보류"><summary><span>E39</span>ERASER: A Benchmark to Evaluate Rationalized NLP Models</summary><div class="library-body"><p class="tag">평가·인용·보류</p>
+<p>사람 rationale과 일치하는가와 실제 모델 예측에 영향을 주는가를 구분한다.</p>
+<p class="filename">E39_2020_ERASER_A_Benchmark_to_Evaluate_Rationalized_NLP_Models.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E39_2020_ERASER_A_Benchmark_to_Evaluate_Rationalized_NLP_Models.pdf" target="_blank" rel="noreferrer">저장소 PDF · 16쪽 ↗</a><a href="https://aclanthology.org/2020.acl-main.408/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E40" data-search="e40 e40 refchecker: reference-based fine-grained hallucination checker and benchmark for large language models  평가·인용·보류 응답에서 claim triplet을 추출하고 reference와 대조해 세밀한 hallucination을 검사한다." data-group="평가·인용·보류"><summary><span>E40</span>RefChecker: Reference-based Fine-grained Hallucination Checker and Benchmark for Large Language Models</summary><div class="library-body"><p class="tag">평가·인용·보류</p>
+<p>응답에서 claim triplet을 추출하고 reference와 대조해 세밀한 hallucination을 검사한다.</p>
+<p class="filename">E40_2024_RefChecker_Reference-based_Fine-grained_Hallucination_Checker_and_Benchmark_for_Large_Language_Models.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E40_2024_RefChecker_Reference-based_Fine-grained_Hallucination_Checker_and_Benchmark_for_Large_Language_Models.pdf" target="_blank" rel="noreferrer">저장소 PDF · 24쪽 ↗</a><a href="https://arxiv.org/abs/2405.14486" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E41" data-search="e41 e41 citeme: can language models accurately cite scientific claims?  평가·인용·보류 인용 문구가 가리키는 논문을 식별하는 benchmark와 검색·열람 agent를 제시한다." data-group="평가·인용·보류"><summary><span>E41</span>CiteME: Can Language Models Accurately Cite Scientific Claims?</summary><div class="library-body"><p class="tag">평가·인용·보류</p>
+<p>인용 문구가 가리키는 논문을 식별하는 benchmark와 검색·열람 Agent를 제시한다.</p>
+<p class="filename">E41_2024_CiteME_Can_Language_Models_Accurately_Cite_Scientific_Claims.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E41_2024_CiteME_Can_Language_Models_Accurately_Cite_Scientific_Claims.pdf" target="_blank" rel="noreferrer">저장소 PDF · 29쪽 ↗</a><a href="https://arxiv.org/abs/2407.12861" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E42" data-search="e42 e42 abstentionbench: reasoning llms fail on unanswerable questions  평가·인용·보류 정보 부족·거짓 전제·모호성·시효 경과 등 다양한 답변 불가능 상황의 보류를 평가한다." data-group="평가·인용·보류"><summary><span>E42</span>AbstentionBench: Reasoning LLMs Fail on Unanswerable Questions</summary><div class="library-body"><p class="tag">평가·인용·보류</p>
+<p>정보 부족·거짓 전제·모호성·시효 경과 등 다양한 답변 불가능 상황의 보류를 평가한다.</p>
+<p class="filename">E42_2025_AbstentionBench_Reasoning_LLMs_Fail_on_Unanswerable_Questions.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E42_2025_AbstentionBench_Reasoning_LLMs_Fail_on_Unanswerable_Questions.pdf" target="_blank" rel="noreferrer">저장소 PDF · 43쪽 ↗</a><a href="https://arxiv.org/abs/2506.09038" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E43" data-search="e43 e43 detecting hallucinations in large language models using semantic entropy  평가·인용·보류 여러 답의 단어 차이보다 의미적 불확실성을 이용해 confabulation을 탐지한다." data-group="평가·인용·보류"><summary><span>E43</span>Detecting hallucinations in large language models using semantic entropy</summary><div class="library-body"><p class="tag">평가·인용·보류</p>
+<p>여러 답의 단어 차이보다 의미적 불확실성을 이용해 confabulation을 탐지한다.</p>
+<p class="filename">E43_2024_Detecting_hallucinations_in_large_language_models_using_semantic_entropy.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E43_2024_Detecting_hallucinations_in_large_language_models_using_semantic_entropy.pdf" target="_blank" rel="noreferrer">저장소 PDF · 12쪽 ↗</a><a href="https://www.nature.com/articles/s41586-024-07421-0" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E44" data-search="e44 e44 “knowing when you don’t know”: a multilingual relevance assessment dataset for robust retrieval-augmented generation (nomiracl)  충돌·오염·누출 관련 근거가 있는 상황과 전혀 없는 상황을 나눠 rag의 무리한 답변·근거 인식 실패를 평가한다." data-group="충돌·오염·누출"><summary><span>E44</span>“Knowing When You Don’t Know”: A Multilingual Relevance Assessment Dataset for Robust Retrieval-Augmented Generation (NoMIRACL)</summary><div class="library-body"><p class="tag">충돌·오염·누출</p>
+<p>관련 근거가 있는 상황과 전혀 없는 상황을 나눠 RAG의 무리한 답변·근거 인식 실패를 평가한다.</p>
+<p class="filename">E44_2024_“Knowing_When_You_Don’t_Know”_A_Multilingual_Relevance_Assessment_Dataset_for_Robust_Retrieval-Augmented_Generation_(NoMIRACL).pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E44_2024_%E2%80%9CKnowing_When_You_Don%E2%80%99t_Know%E2%80%9D_A_Multilingual_Relevance_Assessment_Dataset_for_Robust_Retrieval-Augmented_Generation_%28NoMIRACL%29.pdf" target="_blank" rel="noreferrer">저장소 PDF · 19쪽 ↗</a><a href="https://aclanthology.org/2024.findings-emnlp.730/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E45" data-search="e45 e45 faitheval: can your language model stay faithful to context, even if “the moon is made of marshmallows”  충돌·오염·누출 unanswerable·inconsistent·counterfactual 문맥에서 context faithfulness를 평가한다." data-group="충돌·오염·누출"><summary><span>E45</span>FaithEval: Can Your Language Model Stay Faithful to Context, Even If “The Moon is Made of Marshmallows”</summary><div class="library-body"><p class="tag">충돌·오염·누출</p>
+<p>unanswerable·inconsistent·counterfactual 문맥에서 context faithfulness를 평가한다.</p>
+<p class="filename">E45_2025_FaithEval_Can_Your_Language_Model_Stay_Faithful_to_Context,_Even_If_“The_Moon_is_Made_of_Marshmallows”.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E45_2025_FaithEval_Can_Your_Language_Model_Stay_Faithful_to_Context%2C_Even_If_%E2%80%9CThe_Moon_is_Made_of_Marshmallows%E2%80%9D.pdf" target="_blank" rel="noreferrer">저장소 PDF · 27쪽 ↗</a><a href="https://arxiv.org/abs/2410.03727" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E46" data-search="e46 e46 knowledge conflicts for llms: a survey  충돌·오염·누출 context-memory·inter-context·intra-memory 충돌을 구분한다." data-group="충돌·오염·누출"><summary><span>E46</span>Knowledge Conflicts for LLMs: A Survey</summary><div class="library-body"><p class="tag">충돌·오염·누출</p>
+<p>context-memory·inter-context·intra-memory 충돌을 구분한다.</p>
+<p class="filename">E46_2024_Knowledge_Conflicts_for_LLMs_A_Survey.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E46_2024_Knowledge_Conflicts_for_LLMs_A_Survey.pdf" target="_blank" rel="noreferrer">저장소 PDF · 27쪽 ↗</a><a href="https://arxiv.org/abs/2403.08319" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E47" data-search="e47 e47 entity-based knowledge conflicts in question answering  충돌·오염·누출 parametric knowledge와 문맥을 충돌시켜 모델의 기억 의존을 분석한다." data-group="충돌·오염·누출"><summary><span>E47</span>Entity-Based Knowledge Conflicts in Question Answering</summary><div class="library-body"><p class="tag">충돌·오염·누출</p>
+<p>parametric knowledge와 문맥을 충돌시켜 모델의 기억 의존을 분석한다.</p>
+<p class="filename">E47_2021_Entity-Based_Knowledge_Conflicts_in_Question_Answering.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E47_2021_Entity-Based_Knowledge_Conflicts_in_Question_Answering.pdf" target="_blank" rel="noreferrer">저장소 PDF · 12쪽 ↗</a><a href="https://aclanthology.org/2021.emnlp-main.565/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E48" data-search="e48 e48 no hindsight for llm fact-checkers: measuring leakage channels in misinformation detection  충돌·오염·누출 사전학습에 기억된 미래 결과와 주장 이후 검색 문서의 누출을 분리해 분석한다." data-group="충돌·오염·누출"><summary><span>E48</span>No Hindsight for LLM Fact-Checkers: Measuring Leakage Channels in Misinformation Detection</summary><div class="library-body"><p class="tag">충돌·오염·누출</p>
+<p>사전학습에 기억된 미래 결과와 주장 이후 검색 문서의 누출을 분리해 분석한다.</p>
+<p class="filename">E48_2026_No_Hindsight_for_LLM_Fact-Checkers_Measuring_Leakage_Channels_in_Misinformation_Detection.pdf</p>
+<div class="paper-links"><a href="https://arxiv.org/pdf/2610.04888v1" target="_blank" rel="noreferrer">원출처 PDF · 11쪽 ↗</a><a href="https://arxiv.org/abs/2610.04888" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E49" data-search="e49 e49 reading and reasoning over chart images for evidence-based automated fact-checking (chartfc)  멀티모달 차트 이미지를 근거로 텍스트 주장을 검증하는 chartbert·chartfc를 제안한다." data-group="멀티모달"><summary><span>E49</span>Reading and Reasoning over Chart Images for Evidence-based Automated Fact-Checking (ChartFC)</summary><div class="library-body"><p class="tag">멀티모달</p>
+<p>차트 이미지를 근거로 텍스트 주장을 검증하는 ChartBERT·ChartFC를 제안한다.</p>
+<p class="filename">E49_2023_Reading_and_Reasoning_over_Chart_Images_for_Evidence-based_Automated_Fact-Checking_(ChartFC).pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E49_2023_Reading_and_Reasoning_over_Chart_Images_for_Evidence-based_Automated_Fact-Checking_%28ChartFC%29.pdf" target="_blank" rel="noreferrer">저장소 PDF · 15쪽 ↗</a><a href="https://arxiv.org/abs/2301.11843" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E50" data-search="e50 e50 newsclippings: automatic generation of out-of-context multimodal media  멀티모달 각각 진짜인 이미지·텍스트를 부적절하게 연결한 상황을 만든다." data-group="멀티모달"><summary><span>E50</span>NewsCLIPpings: Automatic Generation of Out-of-Context Multimodal Media</summary><div class="library-body"><p class="tag">멀티모달</p>
+<p>각각 진짜인 이미지·텍스트를 부적절하게 연결한 상황을 만든다.</p>
+<p class="filename">E50_2021_NewsCLIPpings_Automatic_Generation_of_Out-of-Context_Multimodal_Media.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E50_2021_NewsCLIPpings_Automatic_Generation_of_Out-of-Context_Multimodal_Media.pdf" target="_blank" rel="noreferrer">저장소 PDF · 17쪽 ↗</a><a href="https://aclanthology.org/2021.emnlp-main.545/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E51" data-search="e51 e51 verite: a robust benchmark for multimodal misinformation detection accounting for unimodal bias  멀티모달 modality balancing으로 한 모달의 shortcut을 통제하는 benchmark를 제시한다." data-group="멀티모달"><summary><span>E51</span>VERITE: a Robust benchmark for multimodal misinformation detection accounting for unimodal bias</summary><div class="library-body"><p class="tag">멀티모달</p>
+<p>modality balancing으로 한 모달의 shortcut을 통제하는 benchmark를 제시한다.</p>
+<p class="filename">E51_2024_VERITE_a_Robust_benchmark_for_multimodal_misinformation_detection_accounting_for_unimodal_bias.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E51_2024_VERITE_a_Robust_benchmark_for_multimodal_misinformation_detection_accounting_for_unimodal_bias.pdf" target="_blank" rel="noreferrer">저장소 PDF · 15쪽 ↗</a><a href="https://link.springer.com/article/10.1007/s13735-023-00312-6" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E52" data-search="e52 e52 end-to-end multimodal fact-checking and explanation generation: a challenging dataset and models (mocheg)  멀티모달 근거 검색·진위 판정·설명 생성 세 단계를 포함하는 multimodal benchmark다." data-group="멀티모달"><summary><span>E52</span>End-to-End Multimodal Fact-Checking and Explanation Generation: A Challenging Dataset and Models (MOCHEG)</summary><div class="library-body"><p class="tag">멀티모달</p>
+<p>근거 검색·진위 판정·설명 생성 세 단계를 포함하는 multimodal benchmark다.</p>
+<p class="filename">E52_2023_End-to-End_Multimodal_Fact-Checking_and_Explanation_Generation_A_Challenging_Dataset_and_Models_(MOCHEG).pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E52_2023_End-to-End_Multimodal_Fact-Checking_and_Explanation_Generation_A_Challenging_Dataset_and_Models_%28MOCHEG%29.pdf" target="_blank" rel="noreferrer">저장소 PDF · 11쪽 ↗</a><a href="https://arxiv.org/abs/2205.12487" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E53" data-search="e53 e53 multimodal automated fact-checking: a survey  멀티모달 텍스트·이미지·오디오·영상의 팩트체크 하위 문제와 benchmark를 체계화한다." data-group="멀티모달"><summary><span>E53</span>Multimodal Automated Fact-Checking: A Survey</summary><div class="library-body"><p class="tag">멀티모달</p>
+<p>텍스트·이미지·오디오·영상의 팩트체크 하위 문제와 benchmark를 체계화한다.</p>
+<p class="filename">E53_2023_Multimodal_Automated_Fact-Checking_A_Survey.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E53_2023_Multimodal_Automated_Fact-Checking_A_Survey.pdf" target="_blank" rel="noreferrer">저장소 PDF · 19쪽 ↗</a><a href="https://aclanthology.org/2023.findings-emnlp.361/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E54" data-search="e54 e54 chartqa: a benchmark for question answering about charts with visual and logical reasoning  멀티모달 차트의 시각 정보·논리·산술을 함께 요구하는 qa benchmark다." data-group="멀티모달"><summary><span>E54</span>ChartQA: A Benchmark for Question Answering about Charts with Visual and Logical Reasoning</summary><div class="library-body"><p class="tag">멀티모달</p>
+<p>차트의 시각 정보·논리·산술을 함께 요구하는 QA benchmark다.</p>
+<p class="filename">E54_2022_ChartQA_A_Benchmark_for_Question_Answering_about_Charts_with_Visual_and_Logical_Reasoning.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/E54_2022_ChartQA_A_Benchmark_for_Question_Answering_about_Charts_with_Visual_and_Logical_Reasoning.pdf" target="_blank" rel="noreferrer">저장소 PDF · 17쪽 ↗</a><a href="https://arxiv.org/abs/2203.10244" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E55" data-search="e55 e55 cosmos: catching out-of-context image misuse using self-supervised learning  멀티모달 이미지 객체와 caption의 관계를 학습해 문맥이 맞지 않는 이미지 사용을 탐지한다." data-group="멀티모달"><summary><span>E55</span>COSMOS: Catching Out-of-Context Image Misuse Using Self-Supervised Learning</summary><div class="library-body"><p class="tag">멀티모달</p>
+<p>이미지 객체와 caption의 관계를 학습해 문맥이 맞지 않는 이미지 사용을 탐지한다.</p>
+<p class="filename">E55_2021_COSMOS_Catching_Out-of-Context_Misinformation_with_Self-Supervised_Learning_manuscript.pdf</p>
+<div class="paper-links"><a href="https://arxiv.org/pdf/2101.06278v3" target="_blank" rel="noreferrer">원출처 PDF · 16쪽 ↗</a><a href="https://ojs.aaai.org/index.php/AAAI/article/view/26648" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-E56" data-search="e56 e56 veritas: the first dynamic benchmark for multimodal automated fact-checking  멀티모달 시간에 따라 새 주장과 multimodal 자료를 추가하는 동적 benchmark를 제시한다." data-group="멀티모달"><summary><span>E56</span>VeriTaS: The First Dynamic Benchmark for Multimodal Automated Fact-Checking</summary><div class="library-body"><p class="tag">멀티모달</p>
+<p>시간에 따라 새 주장과 multimodal 자료를 추가하는 동적 benchmark를 제시한다.</p>
+<p class="filename">E56_2026_VeriTaS_The_First_Dynamic_Benchmark_for_Multimodal_Automated_Fact-Checking.pdf</p>
+<div class="paper-links"><a href="https://arxiv.org/pdf/2601.08611v2" target="_blank" rel="noreferrer">원출처 PDF · 35쪽 ↗</a><a href="https://arxiv.org/abs/2601.08611" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC01" data-search="fc01 fc01 a survey on automated fact-checking  분야 개관 검증 대상 탐지·증거 수집·판정 등 서로 다른 과제를 정리한다." data-group="분야 개관"><summary><span>FC01</span>A Survey on Automated Fact-Checking</summary><div class="library-body"><p class="tag">분야 개관</p>
+<p>검증 대상 탐지·증거 수집·판정 등 서로 다른 과제를 정리한다.</p>
+<p class="filename">FC01_2022_A_Survey_on_Automated_Fact-Checking.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC01_2022_A_Survey_on_Automated_Fact-Checking.pdf" target="_blank" rel="noreferrer">저장소 PDF · 29쪽 ↗</a><a href="https://aclanthology.org/2022.tacl-1.11/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC02" data-search="fc02 fc02 p20 fever: a large-scale dataset for fact extraction and verification  벤치마크·데이터 wikipedia 기반 주장에 지지·반박·정보 부족과 근거 문장을 제공한다." data-group="벤치마크·데이터"><summary><span>FC02</span>FEVER: a Large-scale Dataset for Fact Extraction and VERification</summary><div class="library-body"><p class="tag">벤치마크·데이터</p>
+<p>Wikipedia 기반 주장에 지지·반박·정보 부족과 근거 문장을 제공한다.</p>
+<p class="filename">FC02_2018_FEVER_a_Large-scale_Dataset_for_Fact_Extraction_and_VERification.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC02_2018_FEVER_a_Large-scale_Dataset_for_Fact_Extraction_and_VERification.pdf" target="_blank" rel="noreferrer">저장소 PDF · 11쪽 ↗</a><a href="https://aclanthology.org/N18-1074/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC03" data-search="fc03 fc03 p21 averitec: a dataset for real-world claim verification with evidence from the web  벤치마크·데이터 실제 주장 4,568개를 웹 근거·질문/답변·판정 설명과 연결한다." data-group="벤치마크·데이터"><summary><span>FC03</span>AVeriTeC: A Dataset for Real-world Claim Verification with Evidence from the Web</summary><div class="library-body"><p class="tag">벤치마크·데이터</p>
+<p>실제 주장 4,568개를 웹 근거·질문/답변·판정 설명과 연결한다.</p>
+<p class="filename">FC03_2023_AVeriTeC_A_Dataset_for_Real-world_Claim_Verification_with_Evidence_from_the_Web.pdf</p>
+<div class="paper-links"><a href="https://proceedings.neurips.cc/paper_files/paper/2023/file/cd86a30526cd1aff61d6f89f107634e4-Paper-Datasets_and_Benchmarks.pdf" target="_blank" rel="noreferrer">원출처 PDF · 40쪽 ↗</a><a href="https://proceedings.neurips.cc/paper_files/paper/2023/hash/cd86a30526cd1aff61d6f89f107634e4-Abstract-Datasets_and_Benchmarks.html" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC04" data-search="fc04 fc04 p22 the automated verification of textual claims (averitec) shared task  평가·인용 증거 품질 기준을 충족하고 판정도 맞을 때 인정하는 shared task를 소개한다." data-group="평가·인용"><summary><span>FC04</span>The Automated Verification of Textual Claims (AVeriTeC) Shared Task</summary><div class="library-body"><p class="tag">평가·인용</p>
+<p>증거 품질 기준을 충족하고 판정도 맞을 때 인정하는 shared task를 소개한다.</p>
+<p class="filename">FC04_2024_The_Automated_Verification_of_Textual_Claims_(AVeriTeC)_Shared_Task.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC04_2024_The_Automated_Verification_of_Textual_Claims_%28AVeriTeC%29_Shared_Task.pdf" target="_blank" rel="noreferrer">저장소 PDF · 26쪽 ↗</a><a href="https://aclanthology.org/2024.fever-1.1/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC05" data-search="fc05 fc05 p23 the 2nd automated verification of textual claims (averitec) shared task: open-weights, reproducible and efficient systems  평가·인용 open-weight·사전 knowledge store·제한된 gpu/추론시간 아래의 비교를 다룬다." data-group="평가·인용"><summary><span>FC05</span>The 2nd Automated Verification of Textual Claims (AVeriTeC) Shared Task: Open-weights, Reproducible and Efficient Systems</summary><div class="library-body"><p class="tag">평가·인용</p>
+<p>open-weight·사전 knowledge store·제한된 GPU/추론시간 아래의 비교를 다룬다.</p>
+<p class="filename">FC05_2025_The_2nd_Automated_Verification_of_Textual_Claims_(AVeriTeC)_Shared_Task_Open-weights,_Reproducible_and_Efficient_Systems.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC05_2025_The_2nd_Automated_Verification_of_Textual_Claims_%28AVeriTeC%29_Shared_Task_Open-weights%2C_Reproducible_and_Efficient_Systems.pdf" target="_blank" rel="noreferrer">저장소 PDF · 23쪽 ↗</a><a href="https://aclanthology.org/2025.fever-1.15/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC06" data-search="fc06 fc06 feverous: fact extraction and verification over unstructured and structured information  벤치마크·데이터 문장과 표 셀을 함께 증거로 사용하는 87,026개 검증 주장을 제시한다." data-group="벤치마크·데이터"><summary><span>FC06</span>FEVEROUS: Fact Extraction and VERification Over Unstructured and Structured information</summary><div class="library-body"><p class="tag">벤치마크·데이터</p>
+<p>문장과 표 셀을 함께 증거로 사용하는 87,026개 검증 주장을 제시한다.</p>
+<p class="filename">FC06_2021_FEVEROUS_Fact_Extraction_and_VERification_Over_Unstructured_and_Structured_information.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC06_2021_FEVEROUS_Fact_Extraction_and_VERification_Over_Unstructured_and_Structured_information.pdf" target="_blank" rel="noreferrer">저장소 PDF · 32쪽 ↗</a><a href="https://arxiv.org/abs/2106.05707" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC07" data-search="fc07 fc07 hover: a dataset for many-hop fact extraction and claim verification  벤치마크·데이터 여러 wikipedia 문서에서 근거를 모으는 many-hop 검증을 다룬다." data-group="벤치마크·데이터"><summary><span>FC07</span>HoVer: A Dataset for Many-Hop Fact Extraction And Claim Verification</summary><div class="library-body"><p class="tag">벤치마크·데이터</p>
+<p>여러 Wikipedia 문서에서 근거를 모으는 many-hop 검증을 다룬다.</p>
+<p class="filename">FC07_2020_HoVer_A_Dataset_for_Many-Hop_Fact_Extraction_And_Claim_Verification.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC07_2020_HoVer_A_Dataset_for_Many-Hop_Fact_Extraction_And_Claim_Verification.pdf" target="_blank" rel="noreferrer">저장소 PDF · 20쪽 ↗</a><a href="https://aclanthology.org/2020.findings-emnlp.309/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC08" data-search="fc08 fc08 tabfact: a large-scale dataset for table-based fact verification  벤치마크·데이터 표를 근거로 자연어 주장을 판정하며 신경망과 프로그램 실행 접근을 비교한다." data-group="벤치마크·데이터"><summary><span>FC08</span>TabFact: A Large-scale Dataset for Table-based Fact Verification</summary><div class="library-body"><p class="tag">벤치마크·데이터</p>
+<p>표를 근거로 자연어 주장을 판정하며 신경망과 프로그램 실행 접근을 비교한다.</p>
+<p class="filename">FC08_2019_TabFact_A_Large-scale_Dataset_for_Table-based_Fact_Verification.pdf</p>
+<div class="paper-links"><a href="https://arxiv.org/pdf/1909.02164v5" target="_blank" rel="noreferrer">원출처 PDF · 25쪽 ↗</a><a href="https://arxiv.org/abs/1909.02164" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC09" data-search="fc09 fc09 fact or fiction: verifying scientific claims  벤치마크·데이터 scifact는 과학 주장과 논문 초록·근거 구간을 연결한다." data-group="벤치마크·데이터"><summary><span>FC09</span>Fact or Fiction: Verifying Scientific Claims</summary><div class="library-body"><p class="tag">벤치마크·데이터</p>
+<p>SciFact는 과학 주장과 논문 초록·근거 구간을 연결한다.</p>
+<p class="filename">FC09_2020_Fact_or_Fiction_Verifying_Scientific_Claims.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC09_2020_Fact_or_Fiction_Verifying_Scientific_Claims.pdf" target="_blank" rel="noreferrer">저장소 PDF · 17쪽 ↗</a><a href="https://aclanthology.org/2020.emnlp-main.609/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC10" data-search="fc10 fc10 p07 react: synergizing reasoning and acting in language models  agent·적응 제어 행동과 관찰을 교대로 사용해 다음 행동을 갱신하고 fever 등에서 평가한다." data-group="Agent·적응 제어"><summary><span>FC10</span>ReAct: Synergizing Reasoning and Acting in Language Models</summary><div class="library-body"><p class="tag">Agent·적응 제어</p>
+<p>행동과 관찰을 교대로 사용해 다음 행동을 갱신하고 FEVER 등에서 평가한다.</p>
+<p class="filename">FC10_2023_ReAct_Synergizing_Reasoning_and_Acting_in_Language_Models.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC10_2023_ReAct_Synergizing_Reasoning_and_Acting_in_Language_Models.pdf" target="_blank" rel="noreferrer">저장소 PDF · 33쪽 ↗</a><a href="https://react-lm.github.io/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC11" data-search="fc11 fc11 fact-checking complex claims with program-guided reasoning  주장 선별·분해 programfc는 복잡한 주장을 전문 함수가 해결할 작은 과제로 분해한다." data-group="주장 선별·분해"><summary><span>FC11</span>Fact-Checking Complex Claims with Program-Guided Reasoning</summary><div class="library-body"><p class="tag">주장 선별·분해</p>
+<p>ProgramFC는 복잡한 주장을 전문 함수가 해결할 작은 과제로 분해한다.</p>
+<p class="filename">FC11_2023_Fact-Checking_Complex_Claims_with_Program-Guided_Reasoning.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC11_2023_Fact-Checking_Complex_Claims_with_Program-Guided_Reasoning.pdf" target="_blank" rel="noreferrer">저장소 PDF · 24쪽 ↗</a><a href="https://aclanthology.org/2023.acl-long.386/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC12" data-search="fc12 fc12 explainable claim verification via knowledge-grounded reasoning with large language models  주장 선별·분해 folk는 논리 형태와 근거 기반 qa를 이용해 복합 주장을 검증한다." data-group="주장 선별·분해"><summary><span>FC12</span>Explainable Claim Verification via Knowledge-Grounded Reasoning with Large Language Models</summary><div class="library-body"><p class="tag">주장 선별·분해</p>
+<p>FOLK는 논리 형태와 근거 기반 QA를 이용해 복합 주장을 검증한다.</p>
+<p class="filename">FC12_2023_Explainable_Claim_Verification_via_Knowledge-Grounded_Reasoning_with_Large_Language_Models.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC12_2023_Explainable_Claim_Verification_via_Knowledge-Grounded_Reasoning_with_Large_Language_Models.pdf" target="_blank" rel="noreferrer">저장소 PDF · 17쪽 ↗</a><a href="https://arxiv.org/abs/2310.05253" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC13" data-search="fc13 fc13 large language model agent for fake news detection  agent·적응 제어 factagent는 전문가가 설계한 workflow와 도구를 이용해 뉴스를 검증한다." data-group="Agent·적응 제어"><summary><span>FC13</span>Large Language Model Agent for Fake News Detection</summary><div class="library-body"><p class="tag">Agent·적응 제어</p>
+<p>FactAgent는 전문가가 설계한 workflow와 도구를 이용해 뉴스를 검증한다.</p>
+<p class="filename">FC13_2024_Large_Language_Model_Agent_for_Fake_News_Detection.pdf</p>
+<div class="paper-links"><a href="https://arxiv.org/pdf/2405.01593v1" target="_blank" rel="noreferrer">원출처 PDF · 8쪽 ↗</a><a href="https://arxiv.org/abs/2405.01593" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC14" data-search="fc14 fc14 web retrieval agents for evidence-based misinformation detection  agent·적응 제어 주 agent와 웹 검색 agent를 결합하고 검색 도구·근거와 성능 관계를 분석한다." data-group="Agent·적응 제어"><summary><span>FC14</span>Web Retrieval Agents for Evidence-Based Misinformation Detection</summary><div class="library-body"><p class="tag">Agent·적응 제어</p>
+<p>주 Agent와 웹 검색 Agent를 결합하고 검색 도구·근거와 성능 관계를 분석한다.</p>
+<p class="filename">FC14_2024_Web_Retrieval_Agents_for_Evidence-Based_Misinformation_Detection.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC14_2024_Web_Retrieval_Agents_for_Evidence-Based_Misinformation_Detection.pdf" target="_blank" rel="noreferrer">저장소 PDF · 27쪽 ↗</a><a href="https://arxiv.org/abs/2409.00009" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC15" data-search="fc15 fc15 fire: fact-checking with iterative retrieval and verification  agent·적응 제어 판정과 추가 질의 생성을 반복적으로 선택하는 fact-checking framework다." data-group="Agent·적응 제어"><summary><span>FC15</span>FIRE: Fact-checking with Iterative Retrieval and Verification</summary><div class="library-body"><p class="tag">Agent·적응 제어</p>
+<p>판정과 추가 질의 생성을 반복적으로 선택하는 fact-checking framework다.</p>
+<p class="filename">FC15_2025_FIRE_Fact-checking_with_Iterative_Retrieval_and_Verification.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC15_2025_FIRE_Fact-checking_with_Iterative_Retrieval_and_Verification.pdf" target="_blank" rel="noreferrer">저장소 PDF · 14쪽 ↗</a><a href="https://aclanthology.org/2025.findings-naacl.158/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC16" data-search="fc16 fc16 emulate: a multi-agent framework for determining the veracity of atomic claims by emulating human actions  agent·적응 제어 질의 생성·검색 결과 판단·증거 평가 등을 여러 역할로 분리한다." data-group="Agent·적응 제어"><summary><span>FC16</span>EMULATE: A Multi-Agent Framework for Determining the Veracity of Atomic Claims by Emulating Human Actions</summary><div class="library-body"><p class="tag">Agent·적응 제어</p>
+<p>질의 생성·검색 결과 판단·증거 평가 등을 여러 역할로 분리한다.</p>
+<p class="filename">FC16_2025_EMULATE_A_Multi-Agent_Framework_for_Determining_the_Veracity_of_Atomic_Claims_by_Emulating_Human_Actions.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC16_2025_EMULATE_A_Multi-Agent_Framework_for_Determining_the_Veracity_of_Atomic_Claims_by_Emulating_Human_Actions.pdf" target="_blank" rel="noreferrer">저장소 PDF · 5쪽 ↗</a><a href="https://aclanthology.org/2025.fever-1.13/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC17" data-search="fc17 fc17 local: logical and causal fact-checking with llm-based multi-agents  주장 선별·분해 주장 분해·추론과 논리/인과 검토를 분리하는 framework다." data-group="주장 선별·분해"><summary><span>FC17</span>LoCal: Logical and Causal Fact-Checking with LLM-Based Multi-Agents</summary><div class="library-body"><p class="tag">주장 선별·분해</p>
+<p>주장 분해·추론과 논리/인과 검토를 분리하는 framework다.</p>
+<p class="filename">FC17_2025_LoCal_Logical_and_Causal_Fact-Checking_with_LLM-Based_Multi-Agents.pdf</p>
+<div class="paper-links"><a href="https://dl.acm.org/doi/10.1145/3696410.3714748" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC18" data-search="fc18 fc18 p10 defame: dynamic evidence-based fact-checking with multimodal experts  멀티모달 텍스트/이미지 근거에 대해 도구와 검색 깊이를 동적으로 선택하고 구조적 보고서를 생성한다." data-group="멀티모달"><summary><span>FC18</span>DEFAME: Dynamic Evidence-based FAct-checking with Multimodal Experts</summary><div class="library-body"><p class="tag">멀티모달</p>
+<p>텍스트/이미지 근거에 대해 도구와 검색 깊이를 동적으로 선택하고 구조적 보고서를 생성한다.</p>
+<p class="filename">FC18_2025_DEFAME_Dynamic_Evidence-based_FAct-checking_with_Multimodal_Experts.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC18_2025_DEFAME_Dynamic_Evidence-based_FAct-checking_with_Multimodal_Experts.pdf" target="_blank" rel="noreferrer">저장소 PDF · 35쪽 ↗</a><a href="https://proceedings.mlr.press/v267/braun25b.html" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC19" data-search="fc19 fc19 factsearch: an interactive agentic fact search system for verifying large language model outputs  agent·적응 제어 검색 인프라와 검증 단계를 구성 가능하게 하여 재현성을 강조한다." data-group="Agent·적응 제어"><summary><span>FC19</span>FactSearch: An Interactive Agentic Fact Search System for Verifying Large Language Model Outputs</summary><div class="library-body"><p class="tag">Agent·적응 제어</p>
+<p>검색 인프라와 검증 단계를 구성 가능하게 하여 재현성을 강조한다.</p>
+<p class="filename">FC19_2026_FactSearch_An_Interactive_Agentic_Fact_Search_System_for_Verifying_Large_Language_Model_Outputs.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC19_2026_FactSearch_An_Interactive_Agentic_Fact_Search_System_for_Verifying_Large_Language_Model_Outputs.pdf" target="_blank" rel="noreferrer">저장소 PDF · 7쪽 ↗</a><a href="https://aclanthology.org/2026.acl-demo.36/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC20" data-search="fc20 fc20 p18 evidence retrieval for fact verification using multi-stage reranking  검색·재순위화 feverous의 문장·표 근거 검색에 multi-stage reranking을 사용한다." data-group="검색·재순위화"><summary><span>FC20</span>Evidence Retrieval for Fact Verification using Multi-stage Reranking</summary><div class="library-body"><p class="tag">검색·재순위화</p>
+<p>FEVEROUS의 문장·표 근거 검색에 multi-stage reranking을 사용한다.</p>
+<p class="filename">FC20_2024_Evidence_Retrieval_for_Fact_Verification_using_Multi-stage_Reranking.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC20_2024_Evidence_Retrieval_for_Fact_Verification_using_Multi-stage_Reranking.pdf" target="_blank" rel="noreferrer">저장소 PDF · 14쪽 ↗</a><a href="https://aclanthology.org/2024.findings-emnlp.428/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC21" data-search="fc21 fc21 p19 fathom: a fast and modular rag pipeline for fact-checking  검색·재순위화 질문 생성, bm25+semantic retrieval, 작은 모델 판정의 모듈형 pipeline이다." data-group="검색·재순위화"><summary><span>FC21</span>Fathom: A Fast and Modular RAG Pipeline for Fact-Checking</summary><div class="library-body"><p class="tag">검색·재순위화</p>
+<p>질문 생성, BM25+semantic retrieval, 작은 모델 판정의 모듈형 pipeline이다.</p>
+<p class="filename">FC21_2025_Fathom_A_Fast_and_Modular_RAG_Pipeline_for_Fact-Checking.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC21_2025_Fathom_A_Fast_and_Modular_RAG_Pipeline_for_Fact-Checking.pdf" target="_blank" rel="noreferrer">저장소 PDF · 8쪽 ↗</a><a href="https://aclanthology.org/2025.fever-1.20/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC22" data-search="fc22 fc22 team humane at averitec 2025: hero 2 for efficient fact verification  검색·재순위화 문서 요약·답변 재구성·양자화 등을 통해 근거와 효율을 개선한다." data-group="검색·재순위화"><summary><span>FC22</span>Team HUMANE at AVeriTeC 2025: HerO 2 for Efficient Fact Verification</summary><div class="library-body"><p class="tag">검색·재순위화</p>
+<p>문서 요약·답변 재구성·양자화 등을 통해 근거와 효율을 개선한다.</p>
+<p class="filename">FC22_2025_Team_HUMANE_at_AVeriTeC_2025_HerO_2_for_Efficient_Fact_Verification.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC22_2025_Team_HUMANE_at_AVeriTeC_2025_HerO_2_for_Efficient_Fact_Verification.pdf" target="_blank" rel="noreferrer">저장소 PDF · 5쪽 ↗</a><a href="https://aclanthology.org/2025.fever-1.16/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC23" data-search="fc23 fc23 quantemp: a real-world open-domain benchmark for fact-checking numerical claims  시간·수치·표 통계·시간 표현을 포함하는 실제 수치 주장과 근거를 다룬다." data-group="시간·수치·표"><summary><span>FC23</span>QuanTemp: A real-world open-domain benchmark for fact-checking numerical claims</summary><div class="library-body"><p class="tag">시간·수치·표</p>
+<p>통계·시간 표현을 포함하는 실제 수치 주장과 근거를 다룬다.</p>
+<p class="filename">FC23_2024_QuanTemp_A_real-world_open-domain_benchmark_for_fact-checking_numerical_claims.pdf</p>
+<div class="paper-links"><a href="https://arxiv.org/pdf/2403.17169v3" target="_blank" rel="noreferrer">원출처 PDF · 11쪽 ↗</a><a href="https://arxiv.org/abs/2403.17169" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC24" data-search="fc24 fc24 time matters: an end-to-end solution for temporal claim verification  시간·수치·표 시간 정보를 반영한 근거 검색과 temporal reasoning을 결합한다." data-group="시간·수치·표"><summary><span>FC24</span>Time Matters: An End-to-End Solution for Temporal Claim Verification</summary><div class="library-body"><p class="tag">시간·수치·표</p>
+<p>시간 정보를 반영한 근거 검색과 temporal reasoning을 결합한다.</p>
+<p class="filename">FC24_2024_Time_Matters_An_End-to-End_Solution_for_Temporal_Claim_Verification.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC24_2024_Time_Matters_An_End-to-End_Solution_for_Temporal_Claim_Verification.pdf" target="_blank" rel="noreferrer">저장소 PDF · 8쪽 ↗</a><a href="https://aclanthology.org/2024.emnlp-industry.48/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC25" data-search="fc25 fc25 chronofact: timeline-based temporal fact verification  시간·수치·표 주장과 근거의 사건을 timeline으로 정리해 시간 관계를 검증한다." data-group="시간·수치·표"><summary><span>FC25</span>ChronoFact: Timeline-based Temporal Fact Verification</summary><div class="library-body"><p class="tag">시간·수치·표</p>
+<p>주장과 근거의 사건을 timeline으로 정리해 시간 관계를 검증한다.</p>
+<p class="filename">FC25_2025_ChronoFact_Timeline-based_Temporal_Fact_Verification.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC25_2025_ChronoFact_Timeline-based_Temporal_Fact_Verification.pdf" target="_blank" rel="noreferrer">저장소 PDF · 9쪽 ↗</a><a href="https://www.ijcai.org/proceedings/2025/893" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC26" data-search="fc26 fc26 tsver: a benchmark for fact verification against time-series evidence  시간·수치·표 실제 주장 304개와 시계열 400개를 연결하고 관련 구간·판정 설명을 제공한다." data-group="시간·수치·표"><summary><span>FC26</span>TSVer: A Benchmark for Fact Verification Against Time-Series Evidence</summary><div class="library-body"><p class="tag">시간·수치·표</p>
+<p>실제 주장 304개와 시계열 400개를 연결하고 관련 구간·판정 설명을 제공한다.</p>
+<p class="filename">FC26_2025_TSVer_A_Benchmark_for_Fact_Verification_Against_Time-Series_Evidence.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC26_2025_TSVer_A_Benchmark_for_Fact_Verification_Against_Time-Series_Evidence.pdf" target="_blank" rel="noreferrer">저장소 PDF · 21쪽 ↗</a><a href="https://aclanthology.org/2025.emnlp-main.1519/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC27" data-search="fc27 fc27 p24 enabling large language models to generate text with citations (alce)  평가·인용 alce는 생성 답의 정확성과 인용 품질 등을 구분해 평가한다." data-group="평가·인용"><summary><span>FC27</span>Enabling Large Language Models to Generate Text with Citations (ALCE)</summary><div class="library-body"><p class="tag">평가·인용</p>
+<p>ALCE는 생성 답의 정확성과 인용 품질 등을 구분해 평가한다.</p>
+<p class="filename">FC27_2023_Enabling_Large_Language_Models_to_Generate_Text_with_Citations_(ALCE).pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC27_2023_Enabling_Large_Language_Models_to_Generate_Text_with_Citations_%28ALCE%29.pdf" target="_blank" rel="noreferrer">저장소 PDF · 24쪽 ↗</a><a href="https://aclanthology.org/2023.emnlp-main.398/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC28" data-search="fc28 fc28 long-form factuality in large language models  평가·인용 safe는 생성된 장문을 개별 사실로 나눠 검색으로 검증한다." data-group="평가·인용"><summary><span>FC28</span>Long-form factuality in large language models</summary><div class="library-body"><p class="tag">평가·인용</p>
+<p>SAFE는 생성된 장문을 개별 사실로 나눠 검색으로 검증한다.</p>
+<p class="filename">FC28_2024_Long-form_factuality_in_large_language_models.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC28_2024_Long-form_factuality_in_large_language_models.pdf" target="_blank" rel="noreferrer">저장소 PDF · 72쪽 ↗</a><a href="https://arxiv.org/abs/2403.18802" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC29" data-search="fc29 fc29 ev2r: evaluating evidence retrieval in automated fact-checking  평가·인용 참조 근거와의 정합성과 판정 지원을 함께 보는 evidence 평가를 제안한다." data-group="평가·인용"><summary><span>FC29</span>Ev2R: Evaluating Evidence Retrieval in Automated Fact-Checking</summary><div class="library-body"><p class="tag">평가·인용</p>
+<p>참조 근거와의 정합성과 판정 지원을 함께 보는 evidence 평가를 제안한다.</p>
+<p class="filename">FC29_2025_Ev2R_Evaluating_Evidence_Retrieval_in_Automated_Fact-Checking.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC29_2025_Ev2R_Evaluating_Evidence_Retrieval_in_Automated_Fact-Checking.pdf" target="_blank" rel="noreferrer">저장소 PDF · 32쪽 ↗</a><a href="https://arxiv.org/abs/2411.05375" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC30" data-search="fc30 fc30 한국어 팩트체크 필요성 탐지 모델 및 rag 기반 팩트체크 자동화 시스템 개발: 대선 후보자 토론회 적용  한국어·다국어 한국어 검증 필요성 탐지·다중 검색·llm 판정 pipeline과 토론회 적용을 보고한다." data-group="한국어·다국어"><summary><span>FC30</span>한국어 팩트체크 필요성 탐지 모델 및 RAG 기반 팩트체크 자동화 시스템 개발: 대선 후보자 토론회 적용</summary><div class="library-body"><p class="tag">한국어·다국어</p>
+<p>한국어 검증 필요성 탐지·다중 검색·LLM 판정 pipeline과 토론회 적용을 보고한다.</p>
+<p class="filename">FC30_2026_한국어_팩트체크_필요성_탐지_모델_및_RAG_기반_팩트체크_자동화_시스템_개발_대선_후보자_토론회_적용.pdf</p>
+<div class="paper-links"><a href="https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART003331812" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC31" data-search="fc31 fc31 a contrastive learning method for automated fact-checking  한국어·다국어 한국어 fact-checking의 근거 문장 선택에 대조학습을 적용한다." data-group="한국어·다국어"><summary><span>FC31</span>A Contrastive Learning Method for Automated Fact-Checking</summary><div class="library-body"><p class="tag">한국어·다국어</p>
+<p>한국어 fact-checking의 근거 문장 선택에 대조학습을 적용한다.</p>
+<p class="filename">FC31_2023_A_Contrastive_Learning_Method_for_Automated_Fact-Checking.pdf</p>
+<div class="paper-links"><a href="https://jok.kiise.or.kr/digital-library/manuscript/file/100849/NODE11495796.pdf" target="_blank" rel="noreferrer">원출처 PDF · 8쪽 ↗</a><a href="https://doi.org/10.5626/jok.2023.50.8.680" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC32" data-search="fc32 fc32 kosimpleqa: a korean factuality benchmark with an analysis of reasoning llms  한국어·다국어 한국 문화 사실 질문에서 모델의 factuality와 보류를 평가한다." data-group="한국어·다국어"><summary><span>FC32</span>KoSimpleQA: A Korean Factuality Benchmark with an Analysis of Reasoning LLMs</summary><div class="library-body"><p class="tag">한국어·다국어</p>
+<p>한국 문화 사실 질문에서 모델의 factuality와 보류를 평가한다.</p>
+<p class="filename">FC32_2025_KoSimpleQA_A_Korean_Factuality_Benchmark_with_an_Analysis_of_Reasoning_LLMs.pdf</p>
+<div class="paper-links"><a href="https://arxiv.org/pdf/2510.18368v2" target="_blank" rel="noreferrer">원출처 PDF · 24쪽 ↗</a><a href="https://arxiv.org/abs/2510.18368" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC33" data-search="fc33 fc33 자동화된 팩트체크 과정에서 딥러닝을 이용한 주장(claim) 판별 기법 연구  한국어·다국어 주장의 검증가능성과 검증중요성을 별도 label로 다룬다." data-group="한국어·다국어"><summary><span>FC33</span>자동화된 팩트체크 과정에서 딥러닝을 이용한 주장(claim) 판별 기법 연구</summary><div class="library-body"><p class="tag">한국어·다국어</p>
+<p>주장의 검증가능성과 검증중요성을 별도 label로 다룬다.</p>
+<p class="filename">FC33_2022_자동화된_팩트체크_과정에서_딥러닝을_이용한_주장(claim)_판별_기법_연구.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC33_2022_%EC%9E%90%EB%8F%99%ED%99%94%EB%90%9C_%ED%8C%A9%ED%8A%B8%EC%B2%B4%ED%81%AC_%EA%B3%BC%EC%A0%95%EC%97%90%EC%84%9C_%EB%94%A5%EB%9F%AC%EB%8B%9D%EC%9D%84_%EC%9D%B4%EC%9A%A9%ED%95%9C_%EC%A3%BC%EC%9E%A5%28claim%29_%ED%8C%90%EB%B3%84_%EA%B8%B0%EB%B2%95_%EC%97%B0%EA%B5%AC.pdf" target="_blank" rel="noreferrer">저장소 PDF · 82쪽 ↗</a><a href="https://s-space.snu.ac.kr/handle/10371/183453" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC34" data-search="fc34 fc34 averimatec: a dataset for automatic verification of image-text claims with evidence from the web  멀티모달 실제 이미지–텍스트 주장 1,297개와 멀티모달 근거 qa를 제시한다." data-group="멀티모달"><summary><span>FC34</span>AVerImaTeC: A Dataset for Automatic Verification of Image-Text Claims with Evidence from the Web</summary><div class="library-body"><p class="tag">멀티모달</p>
+<p>실제 이미지–텍스트 주장 1,297개와 멀티모달 근거 QA를 제시한다.</p>
+<p class="filename">FC34_2025_AVerImaTeC_A_Dataset_for_Automatic_Verification_of_Image-Text_Claims_with_Evidence_from_the_Web.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC34_2025_AVerImaTeC_A_Dataset_for_Automatic_Verification_of_Image-Text_Claims_with_Evidence_from_the_Web.pdf" target="_blank" rel="noreferrer">저장소 PDF · 34쪽 ↗</a><a href="https://arxiv.org/abs/2505.17978" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-FC35" data-search="fc35 fc35 selective multimodal retrieval for automated verification of image–text claims  멀티모달 질문 유형에 따라 모달리티를 선택적으로 활용하고 최종 판정에는 텍스트 근거를 사용한다." data-group="멀티모달"><summary><span>FC35</span>Selective Multimodal Retrieval for Automated Verification of Image–Text Claims</summary><div class="library-body"><p class="tag">멀티모달</p>
+<p>질문 유형에 따라 모달리티를 선택적으로 활용하고 최종 판정에는 텍스트 근거를 사용한다.</p>
+<p class="filename">FC35_2026_Selective_Multimodal_Retrieval_for_Automated_Verification_of_Image–Text_Claims.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/FC35_2026_Selective_Multimodal_Retrieval_for_Automated_Verification_of_Image%E2%80%93Text_Claims.pdf" target="_blank" rel="noreferrer">저장소 PDF · 9쪽 ↗</a><a href="https://aclanthology.org/2026.fever-1.10/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P01" data-search="p01 p01 towards debiasing fact verification models  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P01</span>Towards Debiasing Fact Verification Models</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P01_2019_Towards_Debiasing_Fact_Verification_Models.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P01_2019_Towards_Debiasing_Fact_Verification_Models.pdf" target="_blank" rel="noreferrer">저장소 PDF · 7쪽 ↗</a><a href="https://aclanthology.org/D19-1341/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P02" data-search="p02 p02 get your vitamin c! robust fact verification with contrastive evidence  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P02</span>Get Your Vitamin C! Robust Fact Verification with Contrastive Evidence</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P02_2021_Get_Your_Vitamin_C!_Robust_Fact_Verification_with_Contrastive_Evidence.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P02_2021_Get_Your_Vitamin_C%21_Robust_Fact_Verification_with_Contrastive_Evidence.pdf" target="_blank" rel="noreferrer">저장소 PDF · 20쪽 ↗</a><a href="https://aclanthology.org/2021.naacl-main.52/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P03" data-search="p03 p03 synthetic disinformation attacks on automated fact verification systems  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P03</span>Synthetic Disinformation Attacks on Automated Fact Verification Systems</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P03_2022_Synthetic_Disinformation_Attacks_on_Automated_Fact_Verification_Systems.pdf</p>
+<div class="paper-links"><a href="https://ojs.aaai.org/index.php/AAAI/article/download/21302/21051" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P04" data-search="p04 p04 fact2fiction: targeted poisoning attack to agentic fact-checking system  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P04</span>Fact2Fiction: Targeted Poisoning Attack to Agentic Fact-checking System</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P04_2026_Fact2Fiction_Targeted_Poisoning_Attack_to_Agentic_Fact-checking_System.pdf</p>
+<div class="paper-links"><a href="https://ojs.aaai.org/index.php/AAAI/article/download/40353/44314" target="_blank" rel="noreferrer">원출처 PDF · 8쪽 ↗</a><a href="https://ojs.aaai.org/index.php/AAAI/article/view/40353" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P05" data-search="p05 p05 trusting your evidence: hallucinate less with context-aware decoding  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P05</span>Trusting Your Evidence: Hallucinate Less with Context-aware Decoding</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P05_2024_Trusting_Your_Evidence_Hallucinate_Less_with_Context-aware_Decoding.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P05_2024_Trusting_Your_Evidence_Hallucinate_Less_with_Context-aware_Decoding.pdf" target="_blank" rel="noreferrer">저장소 PDF · 9쪽 ↗</a><a href="https://aclanthology.org/2024.naacl-short.69/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P06" data-search="p06 p06 retrieval-augmented generation for knowledge-intensive nlp tasks  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P06</span>Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P06_2020_Retrieval-Augmented_Generation_for_Knowledge-Intensive_NLP_Tasks.pdf</p>
+<div class="paper-links"><a href="https://arxiv.org/pdf/2005.11401v4" target="_blank" rel="noreferrer">원출처 PDF · 19쪽 ↗</a><a href="https://arxiv.org/html/2005.11401" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P08" data-search="p08 p08 llatrieval: llm-verified retrieval for verifiable generation  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P08</span>LLatrieval: LLM-Verified Retrieval for Verifiable Generation</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P08_2024_LLatrieval_LLM-Verified_Retrieval_for_Verifiable_Generation.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P08_2024_LLatrieval_LLM-Verified_Retrieval_for_Verifiable_Generation.pdf" target="_blank" rel="noreferrer">저장소 PDF · 19쪽 ↗</a><a href="https://aclanthology.org/2024.naacl-long.305/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P09" data-search="p09 p09 interleaving retrieval with chain-of-thought reasoning for knowledge-intensive multi-step questions (ircot)  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P09</span>Interleaving Retrieval with Chain-of-Thought Reasoning for Knowledge-Intensive Multi-Step Questions (IRCoT)</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P09_2023_Interleaving_Retrieval_with_Chain-of-Thought_Reasoning_for_Knowledge-Intensive_Multi-Step_Questions_(IRCoT).pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P09_2023_Interleaving_Retrieval_with_Chain-of-Thought_Reasoning_for_Knowledge-Intensive_Multi-Step_Questions_%28IRCoT%29.pdf" target="_blank" rel="noreferrer">저장소 PDF · 24쪽 ↗</a><a href="https://aclanthology.org/2023.acl-long.557/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P11" data-search="p11 p11 trafilatura: a web scraping library and command-line tool for text discovery and extraction  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P11</span>Trafilatura: A Web Scraping Library and Command-Line Tool for Text Discovery and Extraction</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P11_2021_Trafilatura_A_Web_Scraping_Library_and_Command-Line_Tool_for_Text_Discovery_and_Extraction.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P11_2021_Trafilatura_A_Web_Scraping_Library_and_Command-Line_Tool_for_Text_Discovery_and_Extraction.pdf" target="_blank" rel="noreferrer">저장소 PDF · 10쪽 ↗</a><a href="https://aclanthology.org/2021.acl-demo.15/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P12" data-search="p12 p12 document-level claim extraction and decontextualisation for fact-checking  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P12</span>Document-level Claim Extraction and Decontextualisation for Fact-Checking</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P12_2024_Document-level_Claim_Extraction_and_Decontextualisation_for_Fact-Checking.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P12_2024_Document-level_Claim_Extraction_and_Decontextualisation_for_Fact-Checking.pdf" target="_blank" rel="noreferrer">저장소 PDF · 12쪽 ↗</a><a href="https://aclanthology.org/2024.acl-long.645/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P13" data-search="p13 p13 decontextualization: making sentences stand-alone  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P13</span>Decontextualization: Making Sentences Stand-Alone</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P13_2021_Decontextualization_Making_Sentences_Stand-Alone.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P13_2021_Decontextualization_Making_Sentences_Stand-Alone.pdf" target="_blank" rel="noreferrer">저장소 PDF · 15쪽 ↗</a><a href="https://aclanthology.org/2021.tacl-1.27/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P14" data-search="p14 p14 generating literal and implied subquestions to fact-check complex claims (claimdecomp)  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P14</span>Generating Literal and Implied Subquestions to Fact-check Complex Claims (ClaimDecomp)</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P14_2022_Generating_Literal_and_Implied_Subquestions_to_Fact-check_Complex_Claims_(ClaimDecomp).pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P14_2022_Generating_Literal_and_Implied_Subquestions_to_Fact-check_Complex_Claims_%28ClaimDecomp%29.pdf" target="_blank" rel="noreferrer">저장소 PDF · 22쪽 ↗</a><a href="https://aclanthology.org/2022.emnlp-main.229/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P15" data-search="p15 p15 factlens: benchmarking fine-grained fact verification  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P15</span>FactLens: Benchmarking Fine-Grained Fact Verification</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P15_2025_FactLens_Benchmarking_Fine-Grained_Fact_Verification.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P15_2025_FactLens_Benchmarking_Fine-Grained_Fact_Verification.pdf" target="_blank" rel="noreferrer">저장소 PDF · 12쪽 ↗</a><a href="https://aclanthology.org/2025.findings-acl.929/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P16" data-search="p16 p16 the missing parts: augmenting fact verification with half truth detection (tracer)  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P16</span>The Missing Parts: Augmenting Fact Verification with Half Truth Detection (TRACER)</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P16_2025_The_Missing_Parts_Augmenting_Fact_Verification_with_Half_Truth_Detection_(TRACER).pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P16_2025_The_Missing_Parts_Augmenting_Fact_Verification_with_Half_Truth_Detection_%28TRACER%29.pdf" target="_blank" rel="noreferrer">저장소 PDF · 18쪽 ↗</a><a href="https://aclanthology.org/2025.emnlp-main.1724/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P17" data-search="p17 p17 dense x retrieval: what retrieval granularity should we use?  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P17</span>Dense X Retrieval: What Retrieval Granularity Should We Use?</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P17_2024_Dense_X_Retrieval_What_Retrieval_Granularity_Should_We_Use.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P17_2024_Dense_X_Retrieval_What_Retrieval_Granularity_Should_We_Use.pdf" target="_blank" rel="noreferrer">저장소 PDF · 19쪽 ↗</a><a href="https://aclanthology.org/2024.emnlp-main.845/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P25" data-search="p25 p25 factscore: fine-grained atomic evaluation of factual precision in long form text generation  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P25</span>FActScore: Fine-grained Atomic Evaluation of Factual Precision in Long Form Text Generation</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P25_2023_FActScore_Fine-grained_Atomic_Evaluation_of_Factual_Precision_in_Long_Form_Text_Generation.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P25_2023_FActScore_Fine-grained_Atomic_Evaluation_of_Factual_Precision_in_Long_Form_Text_Generation.pdf" target="_blank" rel="noreferrer">저장소 PDF · 25쪽 ↗</a><a href="https://aclanthology.org/2023.emnlp-main.741/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P26" data-search="p26 p26 self-rag: learning to retrieve, generate, and critique through self-reflection  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P26</span>Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P26_2023_Self-RAG_Learning_to_Retrieve,_Generate,_and_Critique_through_Self-Reflection_arXiv-v1.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P26_2023_Self-RAG_Learning_to_Retrieve%2C_Generate%2C_and_Critique_through_Self-Reflection_arXiv-v1.pdf" target="_blank" rel="noreferrer">저장소 PDF · 30쪽 ↗</a><a href="https://selfrag.github.io/" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P27" data-search="p27 p27 late chunking: contextual chunk embeddings using long-context embedding models  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P27</span>Late Chunking: Contextual Chunk Embeddings Using Long-Context Embedding Models</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P27_2025_Late_Chunking_Contextual_Chunk_Embeddings_Using_Long-Context_Embedding_Models_arXiv-v3.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P27_2025_Late_Chunking_Contextual_Chunk_Embeddings_Using_Long-Context_Embedding_Models_arXiv-v3.pdf" target="_blank" rel="noreferrer">저장소 PDF · 14쪽 ↗</a><a href="https://arxiv.org/html/2409.04701v3" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P28" data-search="p28 p28 poisonedrag: knowledge corruption attacks to retrieval-augmented generation of large language models  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P28</span>PoisonedRAG: Knowledge Corruption Attacks to Retrieval-Augmented Generation of Large Language Models</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P28_2025_PoisonedRAG_Knowledge_Corruption_Attacks_to_Retrieval-Augmented_Generation_of_Large_Language_Models.pdf</p>
+<div class="paper-links"><a href="https://www.usenix.org/system/files/usenixsecurity25-zou-poisonedrag.pdf" target="_blank" rel="noreferrer">원출처 PDF · 19쪽 ↗</a><a href="https://www.usenix.org/conference/usenixsecurity25/presentation/zou-poisonedrag" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+<details class="library-row" id="paper-P29" data-search="p29 p29 admit: few-shot knowledge poisoning attacks on rag-based fact checking  기반·확장 방법 " data-group="기반·확장 방법"><summary><span>P29</span>ADMIT: Few-shot Knowledge Poisoning Attacks on RAG-based Fact Checking</summary><div class="library-body"><p class="tag">기반·확장 방법</p>
+<p class="filename">P29_2026_ADMIT_Few-shot_Knowledge_Poisoning_Attacks_on_RAG-based_Fact_Checking_arXiv-v2.pdf</p>
+<div class="paper-links"><a href="https://raw.githubusercontent.com/CJI0718/uos-nlp-2026-team5/main/docs/research/fact_checking/team_guide/papers/P29_2026_ADMIT_Few-shot_Knowledge_Poisoning_Attacks_on_RAG-based_Fact_Checking_arXiv-v2.pdf" target="_blank" rel="noreferrer">저장소 PDF · 42쪽 ↗</a><a href="https://arxiv.org/abs/2510.13842" target="_blank" rel="noreferrer">공식 서지·원문 ↗</a></div></div></details>
+</div><p id="library-empty" hidden>검색어 또는 용도를 바꾸어 보자.</p></div></details>
+
+</section><section id="notes"><h2>09. 문서의 범위·출처·실험 시 유의사항</h2>
+<p>이 장에 문헌 확인 범위, 아직 결정하거나 실행하지 않은 사항, 해석·평가·공유상의 주의를 모았다.</p>
+<h3>확인한 것과 앞으로 선택할 것</h3>
+<ul>
+<li>팀의 큰 방향은 팩트체크 Agent이며, T1–T6와 역할표는 선택을 위한 설계안이다. 이번 개편은 실제 모델 실험·학습·평가 실행을 포함하지 않는다.</li>
+<li>최신 팀원 자료는 <code>docs/factcheck-details</code> 브랜치 <code>912c0d0f31222c46a80b383f968ddea316c8794e</code>(2026-10-27)의 README 8절이다. <code>main</code>의 <code>cbd2c37</code>과 분리해 읽고, 자율 수집·왜곡 조사·Mission·Tracking을 반영했다. 이번 공유 패킷은 해당 커밋의 원문을 함께 포함한다. 후보를 최종 연구 태스크로 확정한 것은 아니다.</li>
+<li>과제 요구는 제공된 <code>main.pdf</code> 2–3쪽에 근거한다. ‘50개’는 평가데이터 수이고 ‘관련 논문 15장’은 슬라이드 분량이다. 이후 공지·마감·유료 실험 모델 허용 여부는 최신 수업 안내로 확인한다.</li>
+<li>후보 예시의 A시·시설과 숫자는 구조 설명용으로 작성했다. 실제 평가 사례는 원문 근거와 검수를 갖추어 작성한다.</li>
+</ul>
+<h3>논문 소개의 근거</h3>
+<ul>
+<li>상세 소개의 문헌은 확보한 논문 PDF의 초록과 해당 방법·결과 구간을 확인해 요약했다. 소개의 ‘논문 결과’와 ‘우리 적용’은 서로 구분된 항목이다. 수치는 그 논문의 데이터·모델·평가 조건에 속하며 우리 실험의 예상 성적이 아니다.</li>
+<li>전체 자료실 111편의 짧은 소개는 기존 공식 초록·서지 검증 자료와 Liner 회수 문서를 바탕으로 편집했다. 전문 정독·코드 재현을 모두 완료했다는 뜻은 아니다. Liner 표·종합 문서는 초록·메타데이터 확인을 명시한다.</li>
+<li>로컬 PDF는 111편: 공개 경로 109편, 기존 기관 접속 FC30 1편, 사용자 제공 LoCal FC17 1편이다. LoCal의 이전 HTTP 403은 현재 확보 상태와 구분되는 과거 이력이다.</li>
+<li>E55는 2021 저자 원고로 2023 게재본과 제목·판본이 다르다. P26은 2023 arXiv v1, P27은 2025 v3, P29는 2026 v2다. 파일명·로컬 확보 목록에 판본을 기록했다.</li>
+<li>Fathom의 dev/test 수치는 별도 split이다. FIRE의 비용 감소 배수, TAT-QA의 F1, QuanTemp의 Macro-F1, TSVer의 점수는 동일한 척도·태스크가 아니므로 한 순위로 합치지 않는다. ReAct의 외부 상호작용 효과는 모델·태스크별 차이가 있고, LoCal의 causal 명칭은 일반적인 인과 추론 보장을 뜻하지 않는다.</li>
+<li>공개본은 재배포 라이선스를 확인한 PDF 90편과 111편 전체의 공식 원문 경로를 제공한다. 원문 내용은 변경하지 않고 출처·라이선스를 <code>THIRD_PARTY_NOTICES.md</code>에 기록했다. 나머지 21편은 원출처에서 열람하며, LoCal의 서버 재게시 제한과 FC30의 기관 접근 조건을 보존한다.</li>
+</ul>
+<h3>평가에서 고정할 조건</h3>
+<ul>
+<li>비교군의 모델·도구·문서 모음·검색 상한·token 상한·sampling 설정을 고정한다. 기능 ablation과 자원 상한을 맞춘 비교를 구분하고 실제 소비량도 보고한다.</li>
+<li>50개 평가 문항과 개발 예시는 분리한다. 변형 문항은 원 주장·사건의 그룹을 보존해 분할하고, 평가를 보고 수정했다면 그 절차를 기록한다. 평가 50개에서 한 사례의 accuracy 차이는 2%p다.</li>
+<li>T1의 수치 허용 오차·반올림·단위 규칙, T2의 AND/OR·부분 지지·NEI 종합표, T3의 기준일·효력일·문서 접근 가능 시점, T4의 근거 단위를 사전에 정의한다. ‘주말’처럼 범위가 모호한 사례는 입력 문맥을 보완하거나 별도의 모호성 유형으로 처리한다.</li>
+<li>2×2에서 ‘가짜 근거’는 실험용으로 내용을 조작한 문서 구간을 뜻한다. 실제 출처의 진위·내용의 사실성·주장과의 관계는 서로 다른 변수다. 아무 진짜 주장과 아무 진짜 근거를 짝지으면 지지 관계가 보장되지 않으므로, 같은 기준 사실에서 대응 쌍을 만든다.</li>
+<li>위 네 칸의 지지/반박 관계는 숫자를 통제해 만든 예시다. 일반적인 문서 쌍에는 관련 없음·근거 부족도 있다. 원출처 접근이 막힌 조건에서는 조작 탐지·현실 정답을 무조건 기대하지 않고 보류와 문맥 관계를 별도로 채점한다.</li>
+<li>2×2 구조 자체의 최초성은 주장하지 않는다. 한국어·오류 위치·오염 유형별 조사 정책·원출처 재검증 비용의 조합에서 차이를 구체화한다. 모방한 가짜 URL·문서는 닫힌 실험 자료로 관리하며 실제 웹에 게시하지 않는다.</li>
+<li>T6의 작은 실행 평가는 테스트 환경을 사용한다. 실제 외부 신청·발송·결제·계정 변경은 권한과 승인을 갖춘 별도 실행 범위다. Mission 중심의 연구를 택하면 전용 선행연구를 더 조사한다.</li>
+<li>지지·반박·근거 부족의 3분류는 우리 기본 설계다. AVeriTeC의 라벨 체계와 변환해 비교할 때는 대응 규칙을 명시한다. 상충 근거는 질·시점·범위를 점검하고, 확정 근거가 부족하면 보류로 처리한다.</li>
+<li>gold·판정 기사의 결론·미래 문서가 모델 입력에 새는지 검사한다. T3는 모델 내부 지식의 시간 누출까지 완전히 제거한다고 주장하지 않는다. 동일 뉴스의 재전송은 독립 근거로 중복 계산하지 않는다.</li>
+<li>API 오류·빈 응답·형식 실패는 실행 상태로 따로 남긴다. semantic NEI와 실행 오류를 같은 라벨로 합치지 않는다. LLM Judge는 사람 검수 표본과 대조한다.</li>
+<li>risk=확정 답변 중 오답 비율, coverage=전체 중 확정 답변 비율을 함께 보고한다. 확정 답변이 0개인 risk는 N/A다. 새롭게 발견한 타당한 근거는 gold 검수 절차로 반영한다.</li>
+<li>무료 모델의 가용성·검색 API 이용조건·GPU 자원은 실행 전에 확인하고, 호출 상한·재시도 정책을 정한다. ChatGPT 구독과 외부 API 사용 비용은 별개다.</li>
+</ul>
+<h3>출처와 보관</h3>
+<p>문헌의 개별 출처는 각 논문 소개와 자료실에 연결했다. 로컬 원문 파일·이름 변경 이력은 <code>원문_다운로드_현황.md</code>와 <code>파일명_변경기록.md</code>에서 확인할 수 있다. 이전 조사 문서는 탐색 이력으로 보존하며, 이 팀 공유 안내를 온보딩의 출발점으로 사용한다.</p></section>
+<footer class="footer"><span>NLP 5조 · 3인 팀 공유 문서 · 2026-10-29</span><button class="print" type="button" onclick="window.print()">인쇄 / PDF로 저장</button></footer></main>
+<script>
+const TASKS=[{"id": "T1", "title": "T1 · 공식 수치 주장을 계산으로 검증하기", "fields": {"입력": "“A시의 2025년 대출량은 전년 대비 20% 증가했다.” + 지역·기준일.", "출력": "지지/반박/근거 부족, 지표·기간·단위, 사용한 값, 계산식, 근거 ID.", "Agent의 선택": "지표를 선택한다 → 부족한 연도나 주석을 더 찾는다 → 계산 함수를 고른다 → 결과를 비교하고 종료한다.", "도구": "문서 검색, 공식 표/시계열 조회, 단위·증감률 계산, 원문 구간 열기.", "50개 구성": "단일 수치 확인 10 / 증감률 15 / 비율·분모 10 / 기간·단위·집계 범위 10 / 범위 안에서 근거 부족 5.", "비교군": "고정 검색→LLM 판정 / 고정 검색→계산 도구→판정 / 관측에 따라 추가 조회하는 Agent. 마지막 두 조건의 차이로 행동 선택 효과를 본다.", "주 지표": "판정 Macro-F1, 계산에 쓸 지표·기간·단위의 정확 일치율, 계산 정확도, 사례당 도구 수.", "채점 예": "100→110이면 “10%, 반박”이 정답이다. 수치만 맞고 다른 지역의 표를 인용했다면 판정 점수와 근거 선택 점수를 따로 기록한다.", "핵심 논문": "QuanTemp FC23, TSVer FC26, TAT-QA E30, ProgramFC FC11.", "구현 규모": "중간. 공식 자료 공급원을 하나 정하고 표 형식을 고정하면 작은 계산 함수로 시작할 수 있다. GPU는 선택한 검색 모델에 따라 사용한다.", "배울 것": "숫자 연산보다 어려운 ‘무엇을 계산할 것인가’를 언어 이해·retrieval·tool use로 연결하기."}, "definition": "Task 정의: 한국어 수치 주장과 기준 기간을 입력받아, 공식 표·통계 자료에서 비교할 값을 찾아 계산하고, 주장과의 일치 여부 및 근거를 출력한다."}, {"id": "T2", "title": "T2 · 여러 조건이 붙은 주장을 나누고 다시 합치기", "fields": {"입력": "“A시설과 B시설은 모두 2024년에 개관했고 주말에도 운영한다.”", "출력": "하위 주장 목록, 각 판정·근거, AND/OR 등 종합 관계, 전체 판정.", "Agent의 선택": "직접 판정할지 분해할지, 어느 조건을 먼저 확인할지, 누락된 조건을 다시 검사할지 선택한다.", "도구": "근거 검색, 문서 구간 읽기, 하위 주장 상태표, 종합 규칙 실행.", "50개 구성": "단일 주장 10 / 두 조건 AND 15 / 세 조건 이상 10 / 부정·예외 10 / 일부 조건의 근거 부족 5.", "비교군": "직접 판정 / 항상 분해 / 선택적 분해와 종합 점검 Agent. 같은 근거 검색기와 모델을 사용한다.", "주 지표": "전체 판정 Macro-F1, 필수 조건 보존율, 하위 주장 판정 정확도, 종합 오류율, LLM 호출 수.", "채점 예": "A는 2024년, B는 2023년에 개관했다면 AND 주장은 반박이다. A만 조사해 전체를 지지하면 ‘검증 범위 누락’으로 분류한다.", "핵심 논문": "LoCal FC17, ProgramFC FC11, Claimify E01, Decomposition Dilemmas E05, VitaminC P02.", "구현 규모": "중간. 프롬프트·상태표로 구현할 수 있고, 조건 누락·논리 관계의 사람 검수가 주요 작업이다.", "배울 것": "divide and conquer가 도움이 되는 조건과, 나누는 과정에서 의미가 달라지는 조건을 실험하기."}, "definition": "Task 정의: 두 개 이상의 사실 조건이 포함된 한국어 주장을 입력받아, 검증할 하위 주장을 만들고 각각의 근거를 수집한 뒤 원래 문장의 논리 관계에 맞춰 종합 판정한다."}, {"id": "T3", "title": "T3 · 특정 시점에 참인 주장을 검증하기", "fields": {"입력": "“A시설은 6월 20일 현재 무료로 이용할 수 있다.”", "자료 예": "6월 1일 공지에 “7월 1일부터 무료 전환”, 이전 요금표에는 유료라고 적혀 있다.", "출력": "반박, 기준일 6월 20일, 무료 전환 효력일 7월 1일, 공지·이전 요금표 인용.", "Agent의 선택": "최신 공지를 볼지 과거 버전을 볼지, 날짜가 충돌하면 원문이나 변경 이력을 더 읽을지 선택한다.", "도구": "날짜 필터 검색, 문서 버전 조회, 날짜·기간 비교, 시간선 구성.", "50개 구성": "특정 시점의 상태 15 / 발표일과 시행일 15 / 변경 전후 10 / 기간 중첩·반복 5 / 시간 근거 부족 5.", "비교군": "날짜 없는 의미 검색+판정 / 고정 날짜 필터+판정 / 시점·효력일을 확인하는 Agent.", "주 지표": "판정 Macro-F1, 유효 시점 근거 선택률, 시간 조건 정확도, 미래 근거 사용률, 호출 수.", "채점 예": "최신 문서에 ‘무료’가 있어도 적용일이 7월 1일이면 6월 20일 주장은 반박이다. 이 사례는 검색 성공과 시간 해석 성공을 분리해서 채점한다.", "핵심 논문": "Time Matters FC24, ChronoFact FC25, TSVer FC26, AVeriTeC FC03.", "구현 규모": "중간~높음. 버전과 날짜가 명확한 공지·정책 자료를 모으는 작업 비중이 크다.", "배울 것": "시의성 있는 검색, temporal reasoning, ‘지금 아는 정보’와 ‘당시 이용 가능한 정보’의 평가 설계."}, "definition": "Task 정의: 주장과 as_of 날짜를 입력받아, 문서의 발표일·효력일·변경 이력을 대조하고 그 날짜에 맞는 사실 여부와 시간 근거를 출력한다."}, {"id": "T4", "title": "T4 · 한국어 주장에 결정적인 근거를 찾아 검증하기", "fields": {"입력": "“A시설은 주말에도 이용할 수 있다.”", "자료 예": "검색 상위에는 시설 소개가, 다른 문서에는 ‘토요일 운영·일요일 휴관’ 시간표가 있다.", "출력": "문맥에 맞춰 명확히 한 주장 조건, 지지/반박/근거 부족, 시간표의 근거 구간, 사용한 검색 질의.", "Agent의 선택": "현재 문서가 질문에 답하는지 검사하고, ‘이용 안내→운영시간→휴관일’로 질의를 구체화하거나 종료한다.", "도구": "Kiwi+BM25 검색, dense/hybrid 검색, 문서 구간 읽기, 근거 충분성 상태표.", "50개 구성": "직접 어휘 일치 15 / 표현 차이 15 / 두 문서 결합 10 / 유사하지만 틀린 문서 5 / 문서 모음에 답이 없음 5.", "비교군": "1차 실험은 같은 고정 판정기에 BM25·dense·hybrid를 연결한다. 2차 실험은 한 검색기를 고정하고 한 번 검색 vs Agent 재검색을 비교한다.", "주 지표": "근거 Recall@k, 최소 근거집합 완성률, 판정 Macro-F1, 추가 검색 1회당 회복한 사례 수, 지연·색인 용량.", "채점 예": "운영시간 문서를 찾았는지, 정확한 요일 구간을 인용했는지, ‘주말’의 범위를 판정에 반영했는지를 나눠 기록한다.", "핵심 논문": "CFR E19, Dense X Retrieval P17, 한국어 대조학습 FC31, Fathom FC21, FIRE FC15, Sufficient Context E22.", "구현 규모": "중간. 기존 Kiwi 실습을 직접 확장하기 좋다. Colab은 embedding·reranker에 활용한다.", "배울 것": "검색 점수가 좋은 문서와 판정에 결정적인 근거의 차이, 검색 최적화가 최종 답에 주는 효과."}, "definition": "Task 정의: 한국어 주장과 고정된 문서 모음에 대해, 근거를 검색하고 필요하면 질문을 바꿔 재검색하여 판정과 근거 묶음을 반환한다."}, {"id": "T5", "title": "T5 · 기사·게시물의 왜곡 위치를 원문과 짝지어 찾기", "fields": {"입력": "원논문은 “실험 A에서 처리량 40% 증가”, 게시물은 “모든 작업의 성능이 40% 향상됐다”.", "출력": "게시물의 ‘모든 작업의 성능’ ↔ 원문 ‘실험 A의 처리량’, 유형=범위 확대·지표 일반화, 판정과 설명, 출처.", "Agent의 선택": "숫자·표를 다시 확인할지, 조건·예외 구간을 더 읽을지, 인용 관계를 찾아볼지 선택한다.", "도구": "문구 검색, 원문·표 읽기, 조건/지표 대조, 수치 계산.", "50개 구성": "정확한 전달 10 / 수치·단위 변경 10 / 조건 누락 10 / 범위 확대 10 / 인용·시간 맥락 변경 10.", "비교군": "한 번에 원문 대조 / 고정 분해·대조 / 오류 유형에 맞춰 추가 조사하는 Agent.", "주 지표": "오류 유형 Macro-F1, 왜곡 span token-F1, 원문↔게시물 대응 쌍 정확도, 근거 있는 설명 비율, 조사 비용.", "채점 예": "단순히 ‘과장’이라고 쓰는 것과, 바뀐 문구·원문 조건을 정확히 짝지어 제시하는 것을 따로 채점한다.", "핵심 논문": "FactLens P15, TRACER P16, Claimify E01, LoCal FC17, Evidence Attribution E37.", "구현 규모": "중간~높음. span과 생략 조건의 사람 annotation이 핵심이다. 원자료와 기사/게시물의 쌍을 먼저 확보하면 실험 단위를 작게 고정할 수 있다.", "배울 것": "참거짓 분류를 넘어 ‘어디가 어떻게 달라졌는가’를 설명하는 검증, 오류 유형별 적응적 조사."}, "definition": "Task 정의: 기사 또는 게시물의 주장과 연결된 원자료를 입력받아, 원자료에 비해 바뀐 수치·조건·범위·인용 부분을 찾아 문구 쌍과 오류 유형으로 출력한다. 추가 원자료가 필요한 경우 Agent가 찾아 대조한다."}, {"id": "T6", "title": "T6 · 검증된 소식에서 후속 업무를 선택하고 상태를 갱신하기", "fields": {"입력": "‘행사 일정이 11월 10일에서 12일로 변경됨’이라는 검증 결과 + 해당 행사 추적 상태 + 일정 관리 권한.", "출력": "Mission=일정 갱신, 기존 항목 ID, 변경 필드, 실행 후 확인 상태, 브리핑 항목.", "Agent의 선택": "새 업무/기존 업무 수정/추가 조사/추적 등록/행동 없음 중 선택한다.", "도구": "추적 상태 읽기, 공식 공지 검색, 테스트 일정·파일 생성/수정, 실행 결과 재조회.", "50개 구성": "행사·일정 10 / 활용 기회 10 / 자료 제작 10 / 변경·취소 10 / 정보 부족·중복·행동 없음 10.", "비교군": "키워드 규칙 / 단발 LLM 분류 / 검증·상태 조회를 결합한 Agent. 실행형 표본은 로컬 테스트 일정과 파일로 채점한다.", "주 지표": "Mission 유형 Macro-F1, 실행 성공률, 중복 작업률, 상태 갱신 정확도, 범위 밖 행동률.", "채점 예": "이미 등록된 행사를 새로 추가하면 중복 오류다. 날짜를 바꾸고 다시 조회해 새 값이 확인되면 실행 성공이다.", "핵심 연결": "헌수님의 STEP 3–4·Tracking, ReAct FC10, Time Matters FC24. 연구의 중심을 후속 업무 선택에 둘 때 직접적인 Mission benchmark도 추가로 읽는다.", "구현 규모": "높음. 실행형 기능은 일정 관리 한 종류로 시작하면 상태 전후를 자동 채점하기 좋다.", "배울 것": "검증 결과를 실제 행동으로 연결하기, 정보의 참거짓과 업무의 완료 여부를 각각 평가하기."}, "definition": "Task 정의: 검증 결과·사용자 관심·위임된 업무 범위를 입력받아, 후속 Mission의 생성 여부와 유형을 선택하고 작은 실행 환경에서 결과와 변경 상태를 확인한다."}];
+function selectReading(tag){let count=0;document.querySelectorAll('.paper-card').forEach(card=>{const show=tag==='all'||(tag==='core'?card.dataset.core==='true':card.dataset.tags.split(' ').includes(tag));card.hidden=!show;if(show)count++});document.querySelectorAll('[data-reading-filter]').forEach(btn=>{const active=btn.dataset.readingFilter===tag;btn.classList.toggle('selected',active);btn.setAttribute('aria-pressed',String(active))});document.getElementById('reading-count').textContent=count+'편 표시 · 원문에서 읽을 부분을 펼쳐보자.'}
+document.querySelectorAll('[data-reading-filter]').forEach(btn=>btn.addEventListener('click',()=>selectReading(btn.dataset.readingFilter)));
+document.querySelectorAll('[data-select-task]').forEach(btn=>btn.addEventListener('click',()=>{selectReading(btn.dataset.selectTask);document.querySelector('.reading-intro').scrollIntoView({behavior:'smooth',block:'start'})}));
+function renderComparison(){const target=document.getElementById('task-comparison');target.replaceChildren();const row=document.createElement('div');row.className='compare-pair';['compare-a','compare-b'].forEach(id=>{const item=TASKS.find(t=>t.id===document.getElementById(id).value);const box=document.createElement('article');const heading=document.createElement('h4');heading.textContent=item.title;box.append(heading);['Agent의 선택','50개 구성','비교군','주 지표','구현 규모'].forEach(key=>{const p=document.createElement('p');const b=document.createElement('b');b.textContent=key;p.append(b,document.createTextNode(item.fields[key]||''));box.append(p)});row.append(box)});target.append(row)}
+document.getElementById('compare-b').value='T5';['compare-a','compare-b'].forEach(id=>document.getElementById(id).addEventListener('change',renderComparison));renderComparison();
+const CASES={tt:{claim:10,value:110,relation:'지지',world:'지지',integrity:'원자료와 일치',goal:'같은 지표·기간·단위를 확인하고 10% 계산과 출처를 설명한다.'},tf:{claim:10,value:120,relation:'반박',world:'지지',integrity:'2025년 값 조작',goal:'제공 근거의 120을 공식 원자료의 110과 대조해, 진짜 주장이 맞다는 판정을 회복한다.'},ff:{claim:20,value:120,relation:'지지',world:'반박',integrity:'2025년 값 조작',goal:'주장과 가짜 근거가 서로 맞아도 원출처를 재확인해, 실제 증가율 10%를 근거로 반박한다.'},ft:{claim:20,value:110,relation:'반박',world:'반박',integrity:'원자료와 일치',goal:'진짜 근거로 10%를 계산하고 가짜 주장 20%를 반박한다.'}};
+function showCase(key){const c=CASES[key];document.querySelectorAll('[data-case]').forEach(b=>{const active=b.dataset.case===key;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active))});const out=document.getElementById('case-output');out.replaceChildren();const heading=document.createElement('p');heading.className='case-explanation';heading.textContent='입력 주장: '+c.claim+'% 증가 / 제공 근거: 100 → '+c.value+' / 기준 원자료: 100 → 110';out.append(heading);const grid=document.createElement('div');grid.className='case-grid';[['제공 문맥의 결론',c.relation],['기준 자료의 실제 판정',c.world]].forEach(([label,value])=>{const d=document.createElement('div');const s=document.createElement('span');s.textContent=label;const b=document.createElement('b');b.textContent=value;d.append(s,b);grid.append(d)});out.append(grid);const p=document.createElement('p');p.className='case-explanation';p.textContent='근거 상태: '+c.integrity;const goal=document.createElement('div');goal.className='case-goal';goal.textContent='Agent의 목표 · '+c.goal;out.append(p,goal)}
+document.querySelectorAll('[data-case]').forEach(b=>b.addEventListener('click',()=>showCase(b.dataset.case)));showCase('tt');
+function filterLibrary(){const q=document.getElementById('paper-search').value.trim().toLowerCase();const group=document.getElementById('paper-group').value;let n=0;document.querySelectorAll('.library-row').forEach(row=>{const show=(!q||row.dataset.search.includes(q))&&(group==='all'||row.dataset.group===group);row.hidden=!show;if(show)n++});document.getElementById('library-count').textContent=n+' / 111편 표시';document.getElementById('library-empty').hidden=n>0}
+document.getElementById('paper-search').addEventListener('input',filterLibrary);document.getElementById('paper-group').addEventListener('change',filterLibrary);
+document.querySelectorAll('a[href^="#paper-"]').forEach(link=>link.addEventListener('click',()=>{const target=document.getElementById(link.hash.slice(1));if(target){document.querySelector('.library-drawer').open=true;target.open=true}}));
+</script></body></html>
