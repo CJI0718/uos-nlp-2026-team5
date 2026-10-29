@@ -46,3 +46,6 @@ logs/
 *.onnx
 *.zip
 *.7z
+
+# Personal and project-specific files
+heonsu/
