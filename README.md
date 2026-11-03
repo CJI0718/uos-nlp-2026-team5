@@ -7,7 +7,9 @@
 
 ## 지금 함께 볼 자료
 
-- **[세 사람을 위한 최신 팀 공유 안내](docs/research/fact_checking/team_guide/README.md)**: Task 6개·평가 50개 설계·진짜/가짜 주장과 근거의 4조합
+- **[팩트체크 연구 가이드 · 11월 3일](docs/research/fact_checking/knowledge-revision/README.md)** · [논문 업데이트 6편과 전체 31편 원문](docs/research/fact_checking/knowledge-revision/논문_업데이트와_원문.md) · [Task와 문헌 슬라이드 16장](docs/research/fact_checking/knowledge-revision/Team5_Slides_EN.md)
+
+- **[세 사람을 위한 초기 주제 비교 안내](docs/research/fact_checking/team_guide/README.md)**: Task 6개·평가 50개 설계·진짜/가짜 주장과 근거의 4조합
 - **[팀공유 HTML](docs/research/fact_checking/team_guide/팀공유.html)** · [GitHub에서 바로 읽기](docs/research/fact_checking/team_guide/팀공유.md): 논문 28편 소개·태스크 비교·전체 자료실
 - **[전체 111편 원문 목록](docs/research/fact_checking/team_guide/원문_다운로드_현황.md)**: PDF 90편 포함, 21편은 공식 원문 경로 제공
 - [문서 작성 지침](docs/documentation-guidelines.md): 처음 읽는 팀원에게 구체적인 Task·논문·평가를 연결하는 방식
@@ -22,7 +24,7 @@
 ## 처음 오셨다면
 
 1. [협업 안내](CONTRIBUTING.md)를 읽습니다. Git 명령어를 몰라도 웹에서 시작할 수 있습니다.
-2. [최신 팀 공유 안내](docs/research/fact_checking/team_guide/팀공유.md)를 먼저 읽습니다. [현재 팩트체크 구상](docs/research/fact_checking/README.md)은 팀원 제안 원문이며, [49개 후보](docs/research/candidates.md)와 [HTML Research Atlas](docs/research/research_catalog.html)는 이전 탐색과 관련 개념을 확인하는 기록입니다.
+2. [초기 팀 공유 안내](docs/research/fact_checking/team_guide/팀공유.md)를 먼저 읽습니다. [현재 팩트체크 구상](docs/research/fact_checking/README.md)은 팀원 제안 원문이며, [49개 후보](docs/research/candidates.md)와 [HTML Research Atlas](docs/research/research_catalog.html)는 이전 탐색과 관련 개념을 확인하는 기록입니다.
 3. 새 작업은 Issue로 목적과 완료 기준을 정한 뒤, 작업용 branch에서 진행합니다.
 4. 변경은 PR로 제안하고 다른 팀원이 확인한 뒤 main에 합칩니다.
 
