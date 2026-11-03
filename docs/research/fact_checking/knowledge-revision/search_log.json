@@ -1,0 +1,391 @@
+{
+  "date": "2026-11-02",
+  "timezone": "Asia/Seoul",
+  "purpose": "Prior-knowledge / initial-evidence / actively-acquired-evidence conflicts: literature-grounded research design",
+  "search_workstreams": [
+    "parametric_context_conflict_and_measurement",
+    "tool_assisted_correction_and_active_verification",
+    "false_consensus_and_closest_followup_methods"
+  ],
+  "search_call_count": 9,
+  "sources_reviewed_requested_results": 48,
+  "returned_result_entries": 48,
+  "unique_exact_result_urls": 45,
+  "queries": [
+    {
+      "query": "Research papers on conflicts between parametric knowledge and retrieved evidence in language models, distinguishing preserving correct prior answers from updating incorrect prior beliefs, controlled counterfactual evidence experiments",
+      "objective": "Prioritize original papers ACL Anthology arXiv OpenReview. Find empirical manipulations, metrics for knowledge retention and update, and limits of measuring prior knowledge. Include foundational and follow-up work available by 2026-11-02.",
+      "numResults": 6
+    },
+    {
+      "query": "Research papers on tool assisted self correction and active fact verification agents choosing external search to resolve conflicting evidence, compared with intrinsic self correction and fixed retrieval",
+      "objective": "Primary research only. Identify CRITIC, FIRE, later active verification methods, actual baselines and conclusions, published by 2026-11-02. Exclude marketing pages.",
+      "numResults": 6
+    },
+    {
+      "query": "Research papers on LLM agents belief revision confirmation bias adaptive search when initial knowledge and retrieved documents agree but are false source independence evidence laundering",
+      "objective": "Find closest prior work to jointly preserving correct beliefs and correcting false consensus via active source verification. Primary papers through 2026-11-02; seek counterexamples to novelty, protocols with matched budgets and negative correction.",
+      "numResults": 6
+    },
+    {
+      "query": "ClashEval benchmark NeurIPS 2024 context preference correct prior incorrect evidence selective trust calibration, follow-up active retrieval fact verification papers 2025 2026",
+      "objective": "Find original ClashEval publication and nearest research that extends its prior-versus-context setup to active evidence acquisition. Primary sources through 2026-11-02; exclude mere summaries.",
+      "numResults": 5
+    },
+    {
+      "query": "Falsification Verification Alignment RAG 2512.07015 counter evidence active search false premises evaluation datasets results and limitations",
+      "objective": "Verify original paper authors publication status and experimental design. Find nearest work on counterevidence retrieval without assuming contradictory documents are true. Prefer arXiv and peer-reviewed versions available by 2026-11-02.",
+      "numResults": 5
+    },
+    {
+      "query": "2026 research paper evidence sufficiency source trust active fact verification BeliefRAG Stop or Clarify SEAC ClaimCLAIRE probabilistic certainty consistency adaptive retrieval",
+      "objective": "Identify closest existing agents to proposed evidence status guided retrieval. Primary papers only by 2026-11-02. Need action space state design experiments and publication status, not marketing.",
+      "numResults": 5
+    },
+    {
+      "query": "Research papers published in 2025 and 2026 on agentic RAG knowledge conflict resolution active search preserving correct answers harmful overcorrection external misinformation evaluation",
+      "objective": "Find strongest counterexamples to claim of novelty for a factchecking agent that revises selectively under initial and newly retrieved misinformation. Primary papers available by 2026-11-02, including both positive and negative findings. Exclude reviews and marketing.",
+      "numResults": 5
+    },
+    {
+      "query": "Dated Data Tracing Knowledge Cutoffs in Large Language Models stable correct closed book answers parametric knowledge probing training cutoff cannot prove individual factual exposure",
+      "objective": "Find primary methodological evidence on operationalizing prior knowledge using closed-book probes and temporal data, and limits of declared training cutoffs. Prefer original research rather than opinion.",
+      "numResults": 5
+    },
+    {
+      "query": "Studying Large Language Model Behaviors Under Context Memory Conflicts With Real Documents Kortukov Rubinstein Nguyen Oh publication 2024 2025",
+      "objective": "Verify official venue and primary publication URL. Find publication record, not secondary paper summaries.",
+      "numResults": 5
+    }
+  ],
+  "search_results": [
+    {
+      "search_index": 0,
+      "title": "Tug-of-War Between Knowledge: Exploring and Resolving Knowledge Conflicts in Retrieval-Augmented Language Models",
+      "url": "https://doi.org/10.48550/arxiv.2402.14409",
+      "published_metadata": "2024-02-22T00:00:00.000Z"
+    },
+    {
+      "search_index": 0,
+      "title": "Adaptive Chameleon or Stubborn Sloth: Revealing the Behavior of Large Language Models in Knowledge Conflicts",
+      "url": "https://doi.org/10.48550/arxiv.2305.13300",
+      "published_metadata": "2023-05-22T00:00:00.000Z"
+    },
+    {
+      "search_index": 0,
+      "title": "Studying Large Language Model Behaviors Under Context-Memory Conflicts With Real Documents",
+      "url": "https://doi.org/10.48550/arxiv.2404.16032",
+      "published_metadata": "2024-04-24T00:00:00.000Z"
+    },
+    {
+      "search_index": 0,
+      "title": "Deciphering the Interplay of Parametric and Non-parametric Memory in Retrieval-augmented Language Models",
+      "url": "https://aclanthology.org/2024.emnlp-main.943.pdf",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 0,
+      "title": "Rich Knowledge Sources Bring Complex Knowledge Conflicts: Recalibrating Models to Reflect Conflicting Evidence",
+      "url": "https://doi.org/10.18653/v1/2022.emnlp-main.146",
+      "published_metadata": "2022-01-01T00:00:00.000Z"
+    },
+    {
+      "search_index": 0,
+      "title": "Adaptive Chameleon or Stubborn Sloth: Revealing the Behavior of Large Language Models in Knowledge Conflicts",
+      "url": "https://arxiv.org/html/2305.13300v4",
+      "published_metadata": "2024-02-27T00:00:00.000Z"
+    },
+    {
+      "search_index": 1,
+      "title": "Comparing Self-Verification, Multi-Agent Verification and ...",
+      "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7276823",
+      "published_metadata": "2026-08-11T21:59:23.000Z"
+    },
+    {
+      "search_index": 1,
+      "title": ": Fact-checking with Iterative Retrieval and Verification",
+      "url": "https://aclanthology.org/2025.findings-naacl.158.pdf",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 1,
+      "title": "FACT-CHECKING WITH LARGE LANGUAGE MODELS VIA PROBABILISTIC CERTAINTY AND CONSISTENCY",
+      "url": "https://openreview.net/pdf?id=AHZN2NoyrH",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 1,
+      "title": "LARGE LANGUAGE MODELS HAVE INTRINSIC SELF- ...",
+      "url": "https://openreview.net/pdf?id=pTyEnkuSQ0",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 1,
+      "title": "Tool-MAD: A Multi-Agent Debate Framework for Fact Verification with Diverse Tool Augmentation and Adaptive Retrieval",
+      "url": "https://arxiv.org/html/2601.04742",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 1,
+      "title": "Large Language Models Can Self-Correct with Key Condition Verification | alphaXiv",
+      "url": "https://www.alphaxiv.org/abs/2405.14092",
+      "published_metadata": "2024-10-03T02:00:53.000Z"
+    },
+    {
+      "search_index": 2,
+      "title": "Evidence Laundering: Deep Research Agents Mistake Correlated Sources for Independent Evidence",
+      "url": "https://aclanthology.org/2026.emnlp-main.509.pdf",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 2,
+      "title": "Tug-of-War between Knowledge: Exploring and Resolving Knowledge Conflicts in Retrieval-Augmented Language Models",
+      "url": "https://aclanthology.org/2024.lrec-main.1466.pdf",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 2,
+      "title": "N/A",
+      "url": "https://arxiv.org/pdf/2404.10198",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 2,
+      "title": "Adaptive Chameleon or Stubborn Sloth: Revealing the Behavior of Large Language Models in Knowledge Conflicts",
+      "url": "https://doi.org/10.48550/arxiv.2305.13300",
+      "published_metadata": "2023-05-22T00:00:00.000Z"
+    },
+    {
+      "search_index": 2,
+      "title": "ClashEval: Quantifying the tug-of-war between an LLM’s internal prior and external evidence",
+      "url": "https://proceedings.neurips.cc/paper_files/paper/2024/file/3aa291abc426d7a29fb08418c1244177-Paper-Datasets_and_Benchmarks_Track.pdf",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 2,
+      "title": "N/A",
+      "url": "https://arxiv.org/pdf/2512.07015",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 3,
+      "title": "ClashEval: Quantifying the tug-of-war between an LLM’s internal prior and external evidence",
+      "url": "https://proceedings.neurips.cc/paper_files/paper/2024/file/3aa291abc426d7a29fb08418c1244177-Paper-Datasets_and_Benchmarks_Track.pdf",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 3,
+      "title": "ClashEval: Quantifying the tug-of-war between an LLM’s internal prior and external evidence",
+      "url": "https://proceedings.neurips.cc/paper_files/paper/2024/hash/3aa291abc426d7a29fb08418c1244177-Abstract.html",
+      "published_metadata": "2024-12-16T00:00:00.000Z"
+    },
+    {
+      "search_index": 3,
+      "title": "When to Trust Context: Self-Reflective Debates for Context Reliability",
+      "url": "https://arxiv.org/html/2506.06020",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 3,
+      "title": "ClashEval : Quantifying the tug-of-war between an LLM’s internal prior and external evidence",
+      "url": "https://arxiv.org/html/2404.10198v2",
+      "published_metadata": "2024-06-10T00:00:00.000Z"
+    },
+    {
+      "search_index": 3,
+      "title": "ClashEval: Quantifying the tug-of-war between an LLM's internal prior and external evidence",
+      "url": "https://doi.org/10.48550/arxiv.2404.10198",
+      "published_metadata": "2024-04-16T00:00:00.000Z"
+    },
+    {
+      "search_index": 4,
+      "title": "FVA-RAG: Falsification-Verification Alignment for Mitigating Sycophantic Hallucinations",
+      "url": "https://arxiv.org/html/2512.07015v2",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 4,
+      "title": "FVA-RAG: Falsification-Verification Alignment for Mitigating Sycophantic Hallucinations",
+      "url": "https://arxiv.org/abs/2512.07015",
+      "published_metadata": "2025-12-07T00:00:00.000Z"
+    },
+    {
+      "search_index": 4,
+      "title": "N/A",
+      "url": "https://arxiv.org/pdf/2512.07015",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 4,
+      "title": "FVA-RAG: Falsification-Verification Alignment for Mitigating Sycophantic Hallucinations",
+      "url": "https://arxiv.org/html/2512.07015",
+      "published_metadata": "2025-12-25T00:00:00.000Z"
+    },
+    {
+      "search_index": 4,
+      "title": "FVA-RAG: Falsification-Verification Alignment for Mitigating Sycophantic Hallucinations",
+      "url": "https://arxiv.org/html/2512.07015v1",
+      "published_metadata": "2025-12-07T00:00:00.000Z"
+    },
+    {
+      "search_index": 5,
+      "title": "BeliefRAG: Making Adaptive RAG State-Aware under Evolving Evidence",
+      "url": "https://arxiv.org/html/2609.39139",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 5,
+      "title": "ClaimCLAIRE: A Trust-Aware Multi-Component Fact-Checking Agent for Open-World Claims - ACL Anthology",
+      "url": "https://aclanthology.org/2026.trustnlp-main.6/",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 5,
+      "title": "Stop or Clarify? Experience-Conditioned Active Fact Verification",
+      "url": "https://arxiv.org/abs/2610.34941",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 5,
+      "title": "SURE-RAG: Sufficiency and Uncertainty-Aware Evidence Verification for Selective Retrieval-Augmented Generation",
+      "url": "https://arxiv.org/html/2605.03534",
+      "published_metadata": "2026-07-24T00:00:00.000Z"
+    },
+    {
+      "search_index": 5,
+      "title": "Stop or Clarify? Experience-Conditioned Active Fact Verification",
+      "url": "https://doi.org/10.48550/arxiv.2610.34941",
+      "published_metadata": "2026-10-26T00:00:00.000Z"
+    },
+    {
+      "search_index": 6,
+      "title": "Active Retrieval-Augmented Generation with Conflict-Fused Uncertainty Quantification",
+      "url": "https://doi.org/10.1145/3774904.3792926",
+      "published_metadata": "2026-04-09T00:00:00.000Z"
+    },
+    {
+      "search_index": 6,
+      "title": "Conflict-Aware Soft Prompting for Retrieval-Augmented Generation - ACL Anthology",
+      "url": "https://aclanthology.org/2025.emnlp-main.1371/",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 6,
+      "title": "Search Wisely: Mitigating Sub-optimal Agentic Searches By Reducing Uncertainty",
+      "url": "https://arxiv.org/html/2505.17281",
+      "published_metadata": "2025-10-09T00:00:00.000Z"
+    },
+    {
+      "search_index": 6,
+      "title": "Micro-Act: Mitigating Knowledge Conflict in LLM-based RAG via Actionable Self-Reasoning",
+      "url": "https://arxiv.org/html/2506.05278v2",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 6,
+      "title": "EvidentialRAG: Quantifying and Mitigating Information Conflict in Multi-Source Retrieval-Augmented Generation via Evidential Deep Learning",
+      "url": "https://arxiv.org/pdf/2607.10491",
+      "published_metadata": "2026-07-11T00:00:00.000Z"
+    },
+    {
+      "search_index": 7,
+      "title": "Dated Data: Tracing Knowledge Cutoffs in Large Language Models",
+      "url": "https://arxiv.org/html/2403.12958v2",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 7,
+      "title": "Dated Data: Tracing Knowledge Cutoffs in Large Language Models",
+      "url": "https://arxiv.org/html/2403.12958",
+      "published_metadata": "2024-09-17T00:00:00.000Z"
+    },
+    {
+      "search_index": 7,
+      "title": "[2403.12958] Dated Data: Tracing Knowledge Cutoffs in ...",
+      "url": "https://arxiv.org/abs/2403.12958",
+      "published_metadata": "2024-03-19T03:21:04.000Z"
+    },
+    {
+      "search_index": 7,
+      "title": "Dated Data: Tracing Knowledge Cutoffs in Large Language Models",
+      "url": "https://doi.org/10.48550/arxiv.2403.12958",
+      "published_metadata": "2024-03-19T00:00:00.000Z"
+    },
+    {
+      "search_index": 7,
+      "title": "Dated Data: Tracing Knowledge Cutoffs in Large Language Models",
+      "url": "https://proceedings.colm.cc/paper_files/paper/2024/hash/93b4d708976a1d9b1250c400e7fda811-Abstract-Conference.html",
+      "published_metadata": "2026-10-15T22:28:18.000Z"
+    },
+    {
+      "search_index": 8,
+      "title": "Studying Large Language Model Behaviors Under Context-Memory Conflicts With Real Documents",
+      "url": "https://proceedings.colm.cc/paper_files/paper/2024/hash/4d4e0ab9d8ff180bf5b95c258842d16e-Abstract-Conference.html",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 8,
+      "title": "[2404.16032] Studying Large Language Model Behaviors Under Context-Memory Conflicts With Real Documents",
+      "url": "https://arxiv.org/abs/2404.16032",
+      "published_metadata": "2024-04-24T06:51:04.000Z"
+    },
+    {
+      "search_index": 8,
+      "title": "Studying Large Language Model Behaviors Under Context-Memory Conflicts With Real Documents\n\nAuthors: Evgenii Kortukov, Alexander Rubinstein, Elisa Nguyen, Seong Joon Oh\n\n> Abstract: Retrieval-augmented generation (RAG) mitigates many problems of fully parametric language models, such as temporal degradation, hallucinations, and lack of grounding. In RAG, the model's knowledge can be updated from documents provided in context. This leads to cases of conflict between the model's parametric knowledge and the contextual information, where the model may not always update its knowledge. Previous work studied context-memory knowledge conflicts by creating synthetic documents that contradict the model's correct parametric answers. We present a framework for studying such knowledge conflicts in a realistic setup. We update incorrect parametric knowledge using real conflicting documents. This reflects how knowledge conflicts arise in practice. In this realistic scenario, we find that knowledge updates fail less often than previously reported. In cases where the models still fail to update their answers, we find a parametric bias: the incorrect parametric answer appearing in context makes the knowledge update likelier to fail. These results suggest that the factual parametric knowledge of LLMs can negatively influence their reading abilities and behaviors. Our code is available at this https URL .\n\n---\n\nTitle: Studying Large Language Model Behaviors UnderContext ...",
+      "url": "https://arxiv.org/html/2404.16032v2",
+      "published_metadata": "2024-10-08T00:00:00.000Z"
+    },
+    {
+      "search_index": 8,
+      "title": "N/A",
+      "url": "http://arxiv.org/pdf/2404.16032",
+      "published_metadata": "N/A"
+    },
+    {
+      "search_index": 8,
+      "title": "Studying Large Language Model Behaviors Under Context-Memory Conflicts With Real Documents - Evgenii Kortukov",
+      "url": "https://kortukov.github.io/publication/2024-04-25-realistic-kc",
+      "published_metadata": "2024-04-25T22:09:08.000Z"
+    }
+  ],
+  "direct_fetch_urls": [
+    "https://arxiv.org/html/2404.10198",
+    "https://arxiv.org/html/2404.16032",
+    "https://arxiv.org/html/2512.07015",
+    "https://arxiv.org/html/2305.11738",
+    "https://arxiv.org/html/2310.01798",
+    "https://aclanthology.org/2025.findings-naacl.158.pdf",
+    "https://arxiv.org/html/2410.07176",
+    "https://arxiv.org/html/2609.39139",
+    "https://arxiv.org/html/2610.34941",
+    "https://aclanthology.org/2026.trustnlp-main.6.pdf",
+    "https://aclanthology.org/2026.emnlp-main.509.pdf",
+    "https://proceedings.neurips.cc/paper_files/paper/2024/file/3aa291abc426d7a29fb08418c1244177-Paper-Datasets_and_Benchmarks_Track.pdf",
+    "https://arxiv.org/html/2506.05278v2",
+    "https://arxiv.org/html/2505.17281",
+    "https://arxiv.org/html/2403.12958v2",
+    "https://arxiv.org/html/2305.13300v4"
+  ],
+  "unique_papers_in_direct_fetches": 15,
+  "verification": {
+    "repo": "CJI0718/uos-nlp-2026-team5",
+    "main_commit": "c2dbe3bacbc963bde5628c7184521d68f6ed7d43",
+    "remote_branches_seen": [
+      "main"
+    ],
+    "evaluation_sections_read": [
+      "9.2-9.7",
+      "first case example"
+    ],
+    "local_library_count": 111,
+    "prior_research_folder": "../source-verification-2026-11-02",
+    "source_reading": "Selected methods, results, abstracts and limitations; not exhaustive line-by-line full-text review",
+    "original_code_executed": false,
+    "experimental_model_calls": 0,
+    "live_case_truth_reverification": false,
+    "data_or_gold_modified": false,
+    "committed": false,
+    "pushed": false
+  },
+  "status": "Concept accepted in conversation; detailed design is a recommendation for team decision."
+}
