@@ -1,0 +1,274 @@
+[
+  {
+    "slide": 1,
+    "id": "rag",
+    "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+    "url": "https://arxiv.org/abs/2005.11401",
+    "integrated_id": "D17",
+    "individual": null
+  },
+  {
+    "slide": 1,
+    "id": "react",
+    "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+    "url": "https://arxiv.org/abs/2210.03629",
+    "integrated_id": "D18",
+    "individual": null
+  },
+  {
+    "slide": 2,
+    "id": "fever",
+    "title": "FEVER: a Large-scale Dataset for Fact Extraction and VERification",
+    "url": "https://aclanthology.org/N18-1074/",
+    "integrated_id": "D19",
+    "individual": null
+  },
+  {
+    "slide": 2,
+    "id": "averitec",
+    "title": "AVeriTeC: A Dataset for Real-world Claim Verification with Evidence from the Web",
+    "url": "https://arxiv.org/abs/2305.13117",
+    "integrated_id": "D20",
+    "individual": null
+  },
+  {
+    "slide": 3,
+    "id": "alce",
+    "title": "Enabling Large Language Models to Generate Text with Citations",
+    "url": "https://aclanthology.org/2023.emnlp-main.398/",
+    "integrated_id": "D26",
+    "individual": null
+  },
+  {
+    "slide": 3,
+    "id": "ev2r",
+    "title": "Ev2R: Evaluating Evidence Retrieval in Automated Fact-Checking",
+    "url": "https://arxiv.org/abs/2411.05375v2",
+    "integrated_id": "D27",
+    "individual": null
+  },
+  {
+    "slide": 3,
+    "id": "sufficient",
+    "title": "Sufficient Context: A New Lens on Retrieval Augmented Generation Systems",
+    "url": "https://arxiv.org/abs/2411.06037",
+    "integrated_id": "D23",
+    "individual": null
+  },
+  {
+    "slide": 4,
+    "id": "clash",
+    "title": "ClashEval: Quantifying the Tug-of-War between an LLM’s Internal Prior and External Evidence",
+    "url": "https://proceedings.neurips.cc/paper_files/paper/2024/hash/3aa291abc426d7a29fb08418c1244177-Abstract.html",
+    "integrated_id": "D01",
+    "individual": null
+  },
+  {
+    "slide": 4,
+    "id": "chameleon",
+    "title": "Adaptive Chameleon or Stubborn Sloth: Revealing the Behavior of Large Language Models in Knowledge Conflicts",
+    "url": "https://arxiv.org/abs/2305.13300v4",
+    "integrated_id": "D02",
+    "individual": null
+  },
+  {
+    "slide": 4,
+    "id": "real",
+    "title": "Studying Large Language Model Behaviors Under Context-Memory Conflicts With Real Documents",
+    "url": "https://arxiv.org/abs/2404.16032v2",
+    "integrated_id": "D03",
+    "individual": null
+  },
+  {
+    "slide": 5,
+    "id": "dated",
+    "title": "Dated Data: Tracing Knowledge Cutoffs in Large Language Models",
+    "url": "https://arxiv.org/abs/2403.12958v2",
+    "integrated_id": "D14",
+    "individual": null
+  },
+  {
+    "slide": 5,
+    "id": "fresh",
+    "title": "FreshLLMs: Refreshing Large Language Models with Search Engine Augmentation",
+    "url": "https://arxiv.org/abs/2310.03214",
+    "integrated_id": "D29",
+    "individual": null
+  },
+  {
+    "slide": 6,
+    "id": "decomp",
+    "title": "Generating Literal and Implied Subquestions to Fact-check Complex Claims",
+    "url": "https://aclanthology.org/2022.emnlp-main.229/",
+    "integrated_id": "D30",
+    "individual": null
+  },
+  {
+    "slide": 6,
+    "id": "dilemmas",
+    "title": "Decomposition Dilemmas: Does Claim Decomposition Boost or Burden Fact-Checking Performance?",
+    "url": "https://arxiv.org/abs/2411.02400v2",
+    "integrated_id": "D31",
+    "individual": null
+  },
+  {
+    "slide": 6,
+    "id": "claire",
+    "title": "ClaimCLAIRE: A Trust-Aware Multi-Component Fact-Checking Agent for Open-World Claims",
+    "url": "https://aclanthology.org/2026.trustnlp-main.6/",
+    "integrated_id": "D09",
+    "individual": "ClaimCLAIRE"
+  },
+  {
+    "slide": 7,
+    "id": "vitamin",
+    "title": "Get Your Vitamin C! Robust Fact Verification with Contrastive Evidence",
+    "url": "https://aclanthology.org/2021.naacl-main.52/",
+    "integrated_id": "D21",
+    "individual": null
+  },
+  {
+    "slide": 7,
+    "id": "flip",
+    "title": "Diagnosing Judgment Flip Risk of Large Language Models in Fact Verification under Conflicting Evidence",
+    "url": "https://doi.org/10.4218/etrij.2026-0242",
+    "integrated_id": null,
+    "individual": "Flip_Risk"
+  },
+  {
+    "slide": 8,
+    "id": "faith",
+    "title": "FaithEval: Can Your Language Model Stay Faithful to Context, Even If “The Moon is Made of Marshmallows”",
+    "url": "https://arxiv.org/abs/2410.03727v3",
+    "integrated_id": "D22",
+    "individual": null
+  },
+  {
+    "slide": 8,
+    "id": "hae",
+    "title": "Evaluating Deep-Search Agents under Hierarchical Web Evidence Poisoning",
+    "url": "https://arxiv.org/abs/2609.06027v2",
+    "integrated_id": null,
+    "individual": "HAE_GEO"
+  },
+  {
+    "slide": 9,
+    "id": "laundering",
+    "title": "Evidence Laundering: Deep Research Agents Mistake Correlated Sources for Independent Evidence",
+    "url": "https://aclanthology.org/2026.emnlp-main.509/",
+    "integrated_id": "D10",
+    "individual": null
+  },
+  {
+    "slide": 9,
+    "id": "fact2fiction",
+    "title": "Fact2Fiction: Targeted Poisoning Attack to Agentic Fact-checking System",
+    "url": "https://ojs.aaai.org/index.php/AAAI/article/view/40353",
+    "integrated_id": "D28",
+    "individual": null
+  },
+  {
+    "slide": 10,
+    "id": "raguard",
+    "title": "Worse than Zero-shot? A Fact-Checking Dataset for Evaluating the Robustness of RAG Against Misleading Retrievals",
+    "url": "https://arxiv.org/abs/2502.16101v5",
+    "integrated_id": null,
+    "individual": "RAGuard"
+  },
+  {
+    "slide": 10,
+    "id": "drnoise",
+    "title": "DRNoise: Benchmarking Deep Research Agents in Misleading Evidence Environments",
+    "url": "https://arxiv.org/abs/2607.17291v2",
+    "integrated_id": null,
+    "individual": "DRNoise"
+  },
+  {
+    "slide": 11,
+    "id": "selfcorrect",
+    "title": "Large Language Models Cannot Self-Correct Reasoning Yet",
+    "url": "https://arxiv.org/abs/2310.01798",
+    "integrated_id": "D07",
+    "individual": null
+  },
+  {
+    "slide": 11,
+    "id": "critic",
+    "title": "CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing",
+    "url": "https://arxiv.org/abs/2305.11738",
+    "integrated_id": "D06",
+    "individual": null
+  },
+  {
+    "slide": 12,
+    "id": "astute",
+    "title": "Astute RAG: Overcoming Imperfect Retrieval Augmentation and Knowledge Conflicts for Large Language Models",
+    "url": "https://aclanthology.org/2025.acl-long.1476/",
+    "integrated_id": "D04",
+    "individual": null
+  },
+  {
+    "slide": 12,
+    "id": "crag",
+    "title": "Corrective Retrieval Augmented Generation",
+    "url": "https://arxiv.org/abs/2401.15884v3",
+    "integrated_id": "D24",
+    "individual": "CRAG"
+  },
+  {
+    "slide": 13,
+    "id": "selfrag",
+    "title": "Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection",
+    "url": "https://arxiv.org/abs/2310.11511v1",
+    "integrated_id": "D25",
+    "individual": null
+  },
+  {
+    "slide": 13,
+    "id": "fire",
+    "title": "FIRE: Fact-checking with Iterative Retrieval and Verification",
+    "url": "https://aclanthology.org/2025.findings-naacl.158/",
+    "integrated_id": "D08",
+    "individual": null
+  },
+  {
+    "slide": 14,
+    "id": "belief",
+    "title": "BeliefRAG: Making Adaptive RAG State-Aware under Evolving Evidence",
+    "url": "https://arxiv.org/abs/2609.39139v1",
+    "integrated_id": "D12",
+    "individual": "BeliefRAG"
+  },
+  {
+    "slide": 14,
+    "id": "stop",
+    "title": "Stop-RAG: Value-Based Retrieval Control for Iterative RAG",
+    "url": "https://arxiv.org/abs/2510.14337v1",
+    "integrated_id": null,
+    "individual": "Stop_RAG"
+  },
+  {
+    "slide": 15,
+    "id": "ev2r",
+    "title": "Ev2R: Evaluating Evidence Retrieval in Automated Fact-Checking",
+    "url": "https://arxiv.org/abs/2411.05375v2",
+    "integrated_id": "D27",
+    "individual": null
+  },
+  {
+    "slide": 15,
+    "id": "hae",
+    "title": "Evaluating Deep-Search Agents under Hierarchical Web Evidence Poisoning",
+    "url": "https://arxiv.org/abs/2609.06027v2",
+    "integrated_id": null,
+    "individual": "HAE_GEO"
+  },
+  {
+    "slide": 15,
+    "id": "searchwisely",
+    "title": "Search Wisely: Mitigating Sub-optimal Agentic Searches By Reducing Uncertainty",
+    "url": "https://arxiv.org/abs/2505.17281",
+    "integrated_id": "D15",
+    "individual": null
+  }
+]

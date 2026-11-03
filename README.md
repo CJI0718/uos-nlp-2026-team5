@@ -7,6 +7,8 @@
 
 ## 지금 함께 볼 자료
 
+- **[중간 발표·팀 논의 묶음 · 11월 4일](docs/research/fact_checking/midterm-20261103/README.md)** · [편집 가능한 PPTX 18장](docs/research/fact_checking/midterm-20261103/NLP_Team5_Midterm_18slides.pptx) · [C0/C1/C2·연구 방향·Task 정리](docs/research/fact_checking/midterm-20261103/팀논의_연구방향과_Task.md) · [발표 논문 32편 읽기 지도](docs/research/fact_checking/midterm-20261103/발표논문_읽기지도.md)
+
 - **[팩트체크 연구 가이드 · 11월 3일](docs/research/fact_checking/knowledge-revision/README.md)** · [논문 업데이트 6편과 전체 31편 원문](docs/research/fact_checking/knowledge-revision/논문_업데이트와_원문.md) · [Task와 문헌 슬라이드 16장](docs/research/fact_checking/knowledge-revision/Team5_Slides_EN.md)
 
 - **[세 사람을 위한 초기 주제 비교 안내](docs/research/fact_checking/team_guide/README.md)**: Task 6개·평가 50개 설계·진짜/가짜 주장과 근거의 4조합

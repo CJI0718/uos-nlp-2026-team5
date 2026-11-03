@@ -1,0 +1,342 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>발표 논문 32편 읽기 지도 | NLP Team5</title><style>
+:root{--ink:#18313d;--muted:#526875;--teal:#147a73;--line:#d9e3e5;--paper:#fff;--bg:#f4f6f5;--gold:#ad671c}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:88px}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI","Malgun Gothic",system-ui,sans-serif;font-size:17px;line-height:1.85;word-break:keep-all;overflow-wrap:anywhere}a{color:var(--teal);text-underline-offset:4px}button,input,select{font:inherit}button,select{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #e7a349;outline-offset:3px}.top{position:sticky;top:0;z-index:10;background:#142f3b;color:white;border-bottom:3px solid #31aaa0}.top-inner{max-width:1450px;margin:auto;padding:12px 28px;display:flex;align-items:center;gap:24px}.brand{font-size:13px;letter-spacing:.1em;font-weight:700;color:#fff;text-decoration:none}.top nav{display:flex;flex-wrap:wrap;gap:18px;margin-left:auto}.top nav a{color:#cfdee3;text-decoration:none;font-size:14px}.top nav a.current{color:#fff;border-bottom:2px solid #67dbbf}.progress{height:3px;position:absolute;bottom:-3px;left:0;background:#f2bb69;width:0}.shell{max-width:1450px;margin:auto;display:grid;grid-template-columns:270px minmax(0,1fr);gap:44px;padding:40px 28px 70px}.side{position:sticky;top:90px;align-self:start;max-height:calc(100vh - 110px);overflow:auto;font-size:14px;padding-right:10px}.side h2{font-size:13px;letter-spacing:.14em;margin:5px 0 16px;color:var(--muted)}.side a{display:block;padding:7px 12px;border-left:2px solid var(--line);text-decoration:none;color:var(--muted);line-height:1.6}.side a:hover,.side a.active{border-color:var(--teal);background:#e4eeeb;color:var(--teal)}.side .small{font-size:12px;margin-top:22px;color:var(--muted)}main{min-width:0;max-width:1030px}.hero{padding:20px 0 30px;border-bottom:1px solid var(--line);margin-bottom:30px}.eyebrow{font-size:12px;letter-spacing:.15em;font-weight:800;color:var(--teal)}h1{font-size:clamp(30px,3.6vw,48px);line-height:1.35;letter-spacing:-.045em;max-width:850px;margin:10px 0 24px}.hero p{max-width:850px}.chapter{background:white;border:1px solid var(--line);border-radius:15px;margin:24px 0;padding:32px 36px;box-shadow:0 6px 18px #193c4210}.chapter h2{font-size:25px;line-height:1.5;margin:0 0 25px;letter-spacing:-.025em}.chapter h3{font-size:20px;margin:30px 0 12px;color:#244e58}.chapter p{margin:16px 0}.chapter li{margin:8px 0}strong{font-weight:750}blockquote{margin:24px 0;padding:14px 22px;border-left:4px solid var(--teal);background:#eff7f3;border-radius:0 10px 10px 0}.table-scroll{max-width:100%;overflow-x:auto;margin:25px 0;border:1px solid var(--line);border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px;line-height:1.7;min-width:520px}th{background:#eaf1ef;text-align:left;color:#244b50}th,td{padding:13px 15px;border-bottom:1px solid var(--line);vertical-align:top}tbody tr:last-child td{border-bottom:0}tbody tr:nth-child(even){background:#fafcfb}.reading-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}.reading-cards a{padding:23px;border:1px solid #b6d3cd;border-radius:12px;text-decoration:none;background:#edf5f2;display:flex;flex-direction:column;gap:12px}.reading-cards small{font-size:11px;letter-spacing:.1em}.reading-cards strong{font-size:22px;line-height:1.5}.reading-cards span{font-size:14px;color:var(--muted)}.flow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;margin:24px 0}.flow span{background:#e9f2ef;padding:10px 13px;border:1px solid #d0e0da;border-radius:8px}.paper-scene{margin:28px 0;border:1px solid #c9d8df;border-radius:12px;overflow:hidden;background:#f4f7f8}.scene-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:13px 17px;background:#e7edef;font-size:13px}.scene-top span{color:var(--muted)}.scene-grid{display:grid;grid-template-columns:minmax(180px,.8fr) minmax(220px,1fr);gap:24px;padding:22px}.image-open{border:0;background:transparent;padding:0;align-self:start;text-align:left;display:block;position:relative;max-width:100%}.image-open img{display:block;width:100%;height:auto;box-shadow:0 5px 16px #18313d20}.image-open span{display:block;text-align:center;background:#173f4a;color:#fff;padding:7px;font-size:12px}.scene-grid figcaption{font-size:14px;line-height:1.85}.scene-grid p{margin:5px 0 16px}.scene-grid .scene-label{font-size:12px;font-weight:800;color:var(--teal);margin:0 0 5px}.scene-grid .credit{font-size:11px;color:var(--muted);margin-top:20px}.lab{border:1px solid #d4c397;background:#fffaf0;border-radius:12px;padding:24px;margin:28px 0}.lab h3{margin-top:8px}.controls{display:flex;gap:18px;flex-wrap:wrap}.controls label{flex:1;min-width:150px}.lab input{display:block;width:100%;border:1px solid #bcbda9;padding:8px;border-radius:6px;background:white}.lab select{width:100%;padding:12px;border:1px solid #bcbda9;border-radius:6px;white-space:normal;background:white}.lab output{display:block;padding:15px;margin-top:16px;background:#fff;border:1px solid #e8dfc9;border-radius:8px;font-size:19px;line-height:1.7}.lab .lab-note{font-size:13px;color:#695c40}.bottom{padding:20px;font-size:13px;color:var(--muted)}dialog{border:0;padding:0;border-radius:12px;width:96vw;max-width:1500px;height:94vh;max-height:94vh;background:#e6ecee;color:var(--ink)}dialog::backdrop{background:#0a1d2be0}.viewer-head{height:62px;display:flex;align-items:center;gap:14px;padding:12px 20px;background:white;border-bottom:1px solid var(--line)}.viewer-head b{font-size:14px;flex:1}.viewer-head button{padding:5px 12px;border:1px solid var(--line);border-radius:5px;background:white}.viewer-head a{font-size:13px}.viewer-body{height:calc(100% - 62px);overflow:auto;text-align:center;padding:16px}.viewer-body img{max-width:100%;height:auto;display:block;margin:auto}.viewer-body img.fit{height:100%;width:auto;max-width:100%;object-fit:contain}.no-js{padding:12px;background:#fff6dd}
+@media(max-width:1000px){.shell{grid-template-columns:210px minmax(0,1fr);gap:24px;padding:25px 18px}.chapter{padding:25px}.scene-grid{grid-template-columns:1fr}.image-open{max-width:360px;margin:auto}.reading-cards{grid-template-columns:1fr}}
+@media(max-width:740px){body{font-size:16px}.shell{display:block;padding:16px 12px 40px}.side{position:static;max-height:none;padding:0;margin:12px 0 28px}.side details{background:#e9efed;border-radius:10px;padding:12px}.side summary{cursor:pointer;font-weight:bold}.side a{padding:6px 10px}.top-inner{padding:10px 12px;gap:10px;display:block}.top nav{gap:16px;margin-top:6px}.top nav a{font-size:12px}.hero{padding:12px 10px 22px}.chapter{padding:22px 18px;border-radius:12px}.chapter h2{font-size:22px}.chapter h3{font-size:19px}.scene-grid{padding:15px;gap:18px}.scene-top{font-size:12px}.viewer-head{padding:8px;gap:8px;height:72px}.viewer-head b{font-size:11px}.viewer-head a{display:none}.viewer-head button{font-size:12px;padding:5px 8px}.viewer-body{height:calc(100% - 72px);padding:6px}.table-scroll table{font-size:13px}th,td{padding:10px}}
+@media print{.top,.side,.lab,dialog{display:none}.shell{display:block;padding:0}.chapter{break-inside:auto;box-shadow:none;border:0;padding:10px 0}.hero{padding-top:0}.image-open{max-width:260px}.scene-grid{grid-template-columns:260px 1fr}.chapter h2,.chapter h3{break-after:avoid}body{font-size:11pt;background:white}a{color:inherit}.table-scroll{overflow:visible}table{min-width:0}.reading-cards a{border:1px solid #ddd}}
+
+.search-box{width:100%;padding:9px;margin:10px 0;border:1px solid #b9cccb;border-radius:6px} .chapter[hidden]{display:none} .side a[hidden]{display:none} #search-status{font-size:12px;color:#526875} .scope-label{font-size:13px;color:#526875}
+</style></head><body id="top"><header class="top"><div class="top-inner"><a class="brand" href="팀논의_연구방향과_Task.html">NLP TEAM 5 / MIDTERM</a><nav><a href="팀논의_연구방향과_Task.html">팀 논의·Task</a><a href="발표논문_읽기지도.html">32편 읽기 지도</a><a href="NLP_Team5_Midterm_18slides.pptx">PPTX 18장</a></nav></div><div class="progress" id="progress"></div></header><div class="shell"><aside class="side"><label for="search">이 문서에서 찾기</label><input id="search" class="search-box" type="search" placeholder="예: C0, 회복, Q-network"><p id="search-status" aria-live="polite"></p><details open><summary>읽기 목차</summary><nav><a href="#section-1">먼저 읽을 경로</a><a href="#section-2">발표 순서별 연결</a><a href="#section-3">모든 논문의 정식 제목</a><a href="#section-4">범위·출처·사용 안내</a></nav></details></aside><main><div class="hero"><p class="eyebrow">TEAM DISCUSSION · SOURCE-BASED READING</p><h1 id="발표-논문-읽기-지도-15개-주제-32편">발표 논문 읽기 지도 — 15개 주제, 32편</h1>
+<p>기존 <strong>31편 통합 가이드</strong>를 유지하고, 그 뒤에 나온 개별 해설과 이번에 보강한 <strong>RAGuard·Stop-RAG</strong>를 연결했습니다. 32는 이번 발표에 실제 포함된 서로 다른 논문 수입니다. 기존 31편에서 모두를 사용한 것은 아니며, 중복 등장하는 Ev2R·HAE-GEO는 한 번만 셉니다.</p>
+<p><a href="팀논의_연구방향과_Task.md">팀 논의와 Task</a> · <a href="NLP_Team5_Midterm_18slides.pptx">발표 PPTX</a></p>
+</div><section class="chapter" id="section-1"><h2 id="section-1-title">먼저 읽을 경로</h2>
+<ul>
+<li>연구 질문: Real Documents → VitaminC → Flip Risk → RAGuard → CRAG.</li>
+<li>Agent 행동: ReAct → FIRE → BeliefRAG → Stop-RAG.</li>
+<li>자료와 평가: FEVER/AVeriTeC → ALCE/Ev2R → Dated Data → Evidence Laundering.</li>
+</ul>
+</section><section class="chapter" id="section-2"><h2 id="section-2-title">발표 순서별 연결</h2>
+<div class="table-scroll" tabindex="0"><table>
+<colgroup>
+<col style="width: 20%"/>
+<col style="width: 20%"/>
+<col style="width: 20%"/>
+<col style="width: 20%"/>
+<col style="width: 20%"/>
+</colgroup>
+<thead>
+<tr>
+<th>슬라이드</th>
+<th>주제</th>
+<th>논문</th>
+<th>해설</th>
+<th>공식 원문</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01</td>
+<td>Retrieval and action</td>
+<td>RAG</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D17">통합 D17</a></td>
+<td><a href="https://arxiv.org/abs/2005.11401">2020 · NeurIPS</a></td>
+</tr>
+<tr>
+<td>01</td>
+<td>Retrieval and action</td>
+<td>ReAct</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D18">통합 D18</a></td>
+<td><a href="https://arxiv.org/abs/2210.03629">2023 · ICLR</a></td>
+</tr>
+<tr>
+<td>02</td>
+<td>Claims, verdicts, and evidence</td>
+<td>FEVER</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D19">통합 D19</a></td>
+<td><a href="https://aclanthology.org/N18-1074/">2018 · NAACL</a></td>
+</tr>
+<tr>
+<td>02</td>
+<td>Claims, verdicts, and evidence</td>
+<td>AVeriTeC</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D20">통합 D20</a></td>
+<td><a href="https://arxiv.org/abs/2305.13117">2023 · NeurIPS</a></td>
+</tr>
+<tr>
+<td>03</td>
+<td>Evidence quality</td>
+<td>ALCE</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D26">통합 D26</a></td>
+<td><a href="https://aclanthology.org/2023.emnlp-main.398/">2023 · EMNLP</a></td>
+</tr>
+<tr>
+<td>03</td>
+<td>Evidence quality</td>
+<td>Ev2R</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D27">통합 D27</a></td>
+<td><a href="https://arxiv.org/abs/2411.05375v2">2025 · preprint v2</a></td>
+</tr>
+<tr>
+<td>03</td>
+<td>Evidence quality</td>
+<td>Sufficient Context</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D23">통합 D23</a></td>
+<td><a href="https://arxiv.org/abs/2411.06037">2025 · ICLR</a></td>
+</tr>
+<tr>
+<td>04</td>
+<td>Correction and corruption</td>
+<td>ClashEval</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D01">통합 D01</a></td>
+<td><a href="https://proceedings.neurips.cc/paper_files/paper/2024/hash/3aa291abc426d7a29fb08418c1244177-Abstract.html">2024 · NeurIPS</a></td>
+</tr>
+<tr>
+<td>04</td>
+<td>Correction and corruption</td>
+<td>Adaptive Chameleon</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D02">통합 D02</a></td>
+<td><a href="https://arxiv.org/abs/2305.13300v4">2024 · ICLR</a></td>
+</tr>
+<tr>
+<td>04</td>
+<td>Correction and corruption</td>
+<td>Real Documents</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D03">통합 D03</a></td>
+<td><a href="https://arxiv.org/abs/2404.16032v2">2024 · COLM</a></td>
+</tr>
+<tr>
+<td>05</td>
+<td>Time and observed knowledge</td>
+<td>Dated Data</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D14">통합 D14</a></td>
+<td><a href="https://arxiv.org/abs/2403.12958v2">2024 · COLM</a></td>
+</tr>
+<tr>
+<td>05</td>
+<td>Time and observed knowledge</td>
+<td>FreshLLMs</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D29">통합 D29</a></td>
+<td><a href="https://arxiv.org/abs/2310.03214">2023 · preprint</a></td>
+</tr>
+<tr>
+<td>06</td>
+<td>The unit of verification</td>
+<td>ClaimDecomp</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D30">통합 D30</a></td>
+<td><a href="https://aclanthology.org/2022.emnlp-main.229/">2022 · EMNLP</a></td>
+</tr>
+<tr>
+<td>06</td>
+<td>The unit of verification</td>
+<td>Decomposition Dilemmas</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D31">통합 D31</a></td>
+<td><a href="https://arxiv.org/abs/2411.02400v2">2025 · paper version</a></td>
+</tr>
+<tr>
+<td>06</td>
+<td>The unit of verification</td>
+<td>ClaimCLAIRE</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D09">통합 D09</a> · <a href="papers/ClaimCLAIRE_한국어_절별해설.html">절별 해설</a></td>
+<td><a href="https://aclanthology.org/2026.trustnlp-main.6/">2026 · TrustNLP</a></td>
+</tr>
+<tr>
+<td>07</td>
+<td>Evidence composition and verdict flips</td>
+<td>VitaminC</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D21">통합 D21</a></td>
+<td><a href="https://aclanthology.org/2021.naacl-main.52/">2021 · NAACL</a></td>
+</tr>
+<tr>
+<td>07</td>
+<td>Evidence composition and verdict flips</td>
+<td>Judgment Flip Risk</td>
+<td><a href="papers/Flip_Risk_한국어_절별해설.html">절별 해설</a></td>
+<td><a href="https://doi.org/10.4218/etrij.2026-0242">2026 · ETRI Journal</a></td>
+</tr>
+<tr>
+<td>08</td>
+<td>Evidence conditions</td>
+<td>FaithEval</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D22">통합 D22</a></td>
+<td><a href="https://arxiv.org/abs/2410.03727v3">2025 · ICLR</a></td>
+</tr>
+<tr>
+<td>08</td>
+<td>Evidence conditions</td>
+<td>HAE-GEO</td>
+<td><a href="papers/HAE_GEO_한국어_절별해설.html">절별 해설</a></td>
+<td><a href="https://arxiv.org/abs/2609.06027v2">2026 · preprint</a></td>
+</tr>
+<tr>
+<td>09</td>
+<td>Apparent corroboration</td>
+<td>Evidence Laundering</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D10">통합 D10</a></td>
+<td><a href="https://aclanthology.org/2026.emnlp-main.509/">2026 · EMNLP</a></td>
+</tr>
+<tr>
+<td>09</td>
+<td>Apparent corroboration</td>
+<td>Fact2Fiction</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D28">통합 D28</a></td>
+<td><a href="https://ojs.aaai.org/index.php/AAAI/article/view/40353">2026 · AAAI</a></td>
+</tr>
+<tr>
+<td>10</td>
+<td>Evidence access and evidence use</td>
+<td>RAGuard</td>
+<td><a href="papers/RAGuard_한국어_절별해설.html">절별 해설</a></td>
+<td><a href="https://arxiv.org/abs/2502.16101v5">2025 · NeurIPS; v5 2026</a></td>
+</tr>
+<tr>
+<td>10</td>
+<td>Evidence access and evidence use</td>
+<td>DRNoise</td>
+<td><a href="papers/DRNoise_한국어_절별해설.html">절별 해설</a></td>
+<td><a href="https://arxiv.org/abs/2607.17291v2">2026 · preprint</a></td>
+</tr>
+<tr>
+<td>11</td>
+<td>Self-correction and external feedback</td>
+<td>Intrinsic Self-Correction</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D07">통합 D07</a></td>
+<td><a href="https://arxiv.org/abs/2310.01798">2024 · ICLR</a></td>
+</tr>
+<tr>
+<td>11</td>
+<td>Self-correction and external feedback</td>
+<td>CRITIC</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D06">통합 D06</a></td>
+<td><a href="https://arxiv.org/abs/2305.11738">2024 · ICLR</a></td>
+</tr>
+<tr>
+<td>12</td>
+<td>Consolidation and corrective retrieval</td>
+<td>Astute RAG</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D04">통합 D04</a></td>
+<td><a href="https://aclanthology.org/2025.acl-long.1476/">2025 · ACL</a></td>
+</tr>
+<tr>
+<td>12</td>
+<td>Consolidation and corrective retrieval</td>
+<td>CRAG</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D24">통합 D24</a> · <a href="papers/CRAG_한국어_절별해설.html">절별 해설</a></td>
+<td><a href="https://arxiv.org/abs/2401.15884v3">2024 · preprint v3</a></td>
+</tr>
+<tr>
+<td>13</td>
+<td>Adaptive retrieval and verification</td>
+<td>Self-RAG</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D25">통합 D25</a></td>
+<td><a href="https://arxiv.org/abs/2310.11511v1">2023 · preprint v1</a></td>
+</tr>
+<tr>
+<td>13</td>
+<td>Adaptive retrieval and verification</td>
+<td>FIRE</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D08">통합 D08</a></td>
+<td><a href="https://aclanthology.org/2025.findings-naacl.158/">2025 · Findings of NAACL</a></td>
+</tr>
+<tr>
+<td>14</td>
+<td>Search and stopping policies</td>
+<td>BeliefRAG</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D12">통합 D12</a> · <a href="papers/BeliefRAG_한국어_절별해설.html">절별 해설</a></td>
+<td><a href="https://arxiv.org/abs/2609.39139v1">2026 · preprint</a></td>
+</tr>
+<tr>
+<td>14</td>
+<td>Search and stopping policies</td>
+<td>Stop-RAG</td>
+<td><a href="papers/Stop_RAG_한국어_절별해설.html">절별 해설</a></td>
+<td><a href="https://arxiv.org/abs/2510.14337v1">2025 · NeurIPS MTI-LLM Workshop</a></td>
+</tr>
+<tr>
+<td>15</td>
+<td>Evaluation targets for our task</td>
+<td>Ev2R</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D27">통합 D27</a></td>
+<td><a href="https://arxiv.org/abs/2411.05375v2">2025 · preprint v2</a></td>
+</tr>
+<tr>
+<td>15</td>
+<td>Evaluation targets for our task</td>
+<td>HAE-GEO</td>
+<td><a href="papers/HAE_GEO_한국어_절별해설.html">절별 해설</a></td>
+<td><a href="https://arxiv.org/abs/2609.06027v2">2026 · preprint</a></td>
+</tr>
+<tr>
+<td>15</td>
+<td>Evaluation targets for our task</td>
+<td>Search Wisely</td>
+<td><a href="../knowledge-revision/팀공유_연구가이드.html#paper-D15">통합 D15</a></td>
+<td><a href="https://arxiv.org/abs/2505.17281">2025 · preprint</a></td>
+</tr>
+</tbody>
+</table></div>
+</section><section class="chapter" id="section-3"><h2 id="section-3-title">모든 논문의 정식 제목</h2>
+<ul>
+<li><strong>RAG</strong> — Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks · 2020 · NeurIPS · <a href="https://arxiv.org/abs/2005.11401">공식 출처</a></li>
+<li><strong>ReAct</strong> — ReAct: Synergizing Reasoning and Acting in Language Models · 2023 · ICLR · <a href="https://arxiv.org/abs/2210.03629">공식 출처</a></li>
+<li><strong>FEVER</strong> — FEVER: a Large-scale Dataset for Fact Extraction and VERification · 2018 · NAACL · <a href="https://aclanthology.org/N18-1074/">공식 출처</a></li>
+<li><strong>AVeriTeC</strong> — AVeriTeC: A Dataset for Real-world Claim Verification with Evidence from the Web · 2023 · NeurIPS · <a href="https://arxiv.org/abs/2305.13117">공식 출처</a></li>
+<li><strong>ALCE</strong> — Enabling Large Language Models to Generate Text with Citations · 2023 · EMNLP · <a href="https://aclanthology.org/2023.emnlp-main.398/">공식 출처</a></li>
+<li><strong>Ev2R</strong> — Ev2R: Evaluating Evidence Retrieval in Automated Fact-Checking · 2025 · preprint v2 · <a href="https://arxiv.org/abs/2411.05375v2">공식 출처</a></li>
+<li><strong>Sufficient Context</strong> — Sufficient Context: A New Lens on Retrieval Augmented Generation Systems · 2025 · ICLR · <a href="https://arxiv.org/abs/2411.06037">공식 출처</a></li>
+<li><strong>ClashEval</strong> — ClashEval: Quantifying the Tug-of-War between an LLM’s Internal Prior and External Evidence · 2024 · NeurIPS · <a href="https://proceedings.neurips.cc/paper_files/paper/2024/hash/3aa291abc426d7a29fb08418c1244177-Abstract.html">공식 출처</a></li>
+<li><strong>Adaptive Chameleon</strong> — Adaptive Chameleon or Stubborn Sloth: Revealing the Behavior of Large Language Models in Knowledge Conflicts · 2024 · ICLR · <a href="https://arxiv.org/abs/2305.13300v4">공식 출처</a></li>
+<li><strong>Real Documents</strong> — Studying Large Language Model Behaviors Under Context-Memory Conflicts With Real Documents · 2024 · COLM · <a href="https://arxiv.org/abs/2404.16032v2">공식 출처</a></li>
+<li><strong>Dated Data</strong> — Dated Data: Tracing Knowledge Cutoffs in Large Language Models · 2024 · COLM · <a href="https://arxiv.org/abs/2403.12958v2">공식 출처</a></li>
+<li><strong>FreshLLMs</strong> — FreshLLMs: Refreshing Large Language Models with Search Engine Augmentation · 2023 · preprint · <a href="https://arxiv.org/abs/2310.03214">공식 출처</a></li>
+<li><strong>ClaimDecomp</strong> — Generating Literal and Implied Subquestions to Fact-check Complex Claims · 2022 · EMNLP · <a href="https://aclanthology.org/2022.emnlp-main.229/">공식 출처</a></li>
+<li><strong>Decomposition Dilemmas</strong> — Decomposition Dilemmas: Does Claim Decomposition Boost or Burden Fact-Checking Performance? · 2025 · paper version · <a href="https://arxiv.org/abs/2411.02400v2">공식 출처</a></li>
+<li><strong>ClaimCLAIRE</strong> — ClaimCLAIRE: A Trust-Aware Multi-Component Fact-Checking Agent for Open-World Claims · 2026 · TrustNLP · <a href="https://aclanthology.org/2026.trustnlp-main.6/">공식 출처</a></li>
+<li><strong>VitaminC</strong> — Get Your Vitamin C! Robust Fact Verification with Contrastive Evidence · 2021 · NAACL · <a href="https://aclanthology.org/2021.naacl-main.52/">공식 출처</a></li>
+<li><strong>Judgment Flip Risk</strong> — Diagnosing Judgment Flip Risk of Large Language Models in Fact Verification under Conflicting Evidence · 2026 · ETRI Journal · <a href="https://doi.org/10.4218/etrij.2026-0242">공식 출처</a></li>
+<li><strong>FaithEval</strong> — FaithEval: Can Your Language Model Stay Faithful to Context, Even If “The Moon is Made of Marshmallows” · 2025 · ICLR · <a href="https://arxiv.org/abs/2410.03727v3">공식 출처</a></li>
+<li><strong>HAE-GEO</strong> — Evaluating Deep-Search Agents under Hierarchical Web Evidence Poisoning · 2026 · preprint · <a href="https://arxiv.org/abs/2609.06027v2">공식 출처</a></li>
+<li><strong>Evidence Laundering</strong> — Evidence Laundering: Deep Research Agents Mistake Correlated Sources for Independent Evidence · 2026 · EMNLP · <a href="https://aclanthology.org/2026.emnlp-main.509/">공식 출처</a></li>
+<li><strong>Fact2Fiction</strong> — Fact2Fiction: Targeted Poisoning Attack to Agentic Fact-checking System · 2026 · AAAI · <a href="https://ojs.aaai.org/index.php/AAAI/article/view/40353">공식 출처</a></li>
+<li><strong>RAGuard</strong> — Worse than Zero-shot? A Fact-Checking Dataset for Evaluating the Robustness of RAG Against Misleading Retrievals · 2025 · NeurIPS; v5 2026 · <a href="https://arxiv.org/abs/2502.16101v5">공식 출처</a></li>
+<li><strong>DRNoise</strong> — DRNoise: Benchmarking Deep Research Agents in Misleading Evidence Environments · 2026 · preprint · <a href="https://arxiv.org/abs/2607.17291v2">공식 출처</a></li>
+<li><strong>Intrinsic Self-Correction</strong> — Large Language Models Cannot Self-Correct Reasoning Yet · 2024 · ICLR · <a href="https://arxiv.org/abs/2310.01798">공식 출처</a></li>
+<li><strong>CRITIC</strong> — CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing · 2024 · ICLR · <a href="https://arxiv.org/abs/2305.11738">공식 출처</a></li>
+<li><strong>Astute RAG</strong> — Astute RAG: Overcoming Imperfect Retrieval Augmentation and Knowledge Conflicts for Large Language Models · 2025 · ACL · <a href="https://aclanthology.org/2025.acl-long.1476/">공식 출처</a></li>
+<li><strong>CRAG</strong> — Corrective Retrieval Augmented Generation · 2024 · preprint v3 · <a href="https://arxiv.org/abs/2401.15884v3">공식 출처</a></li>
+<li><strong>Self-RAG</strong> — Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection · 2023 · preprint v1 · <a href="https://arxiv.org/abs/2310.11511v1">공식 출처</a></li>
+<li><strong>FIRE</strong> — FIRE: Fact-checking with Iterative Retrieval and Verification · 2025 · Findings of NAACL · <a href="https://aclanthology.org/2025.findings-naacl.158/">공식 출처</a></li>
+<li><strong>BeliefRAG</strong> — BeliefRAG: Making Adaptive RAG State-Aware under Evolving Evidence · 2026 · preprint · <a href="https://arxiv.org/abs/2609.39139v1">공식 출처</a></li>
+<li><strong>Stop-RAG</strong> — Stop-RAG: Value-Based Retrieval Control for Iterative RAG · 2025 · NeurIPS MTI-LLM Workshop · <a href="https://arxiv.org/abs/2510.14337v1">공식 출처</a></li>
+<li><strong>Search Wisely</strong> — Search Wisely: Mitigating Sub-optimal Agentic Searches By Reducing Uncertainty · 2025 · preprint · <a href="https://arxiv.org/abs/2505.17281">공식 출처</a></li>
+</ul>
+</section><section class="chapter" id="section-4"><h2 id="section-4-title">범위·출처·사용 안내</h2>
+<p>캡처와 수치는 논문에 보고된 내용이고, 팀의 실험 결과와 구분합니다. 새 해설은 공식 PDF의 절·표·페이지를 명시했습니다. 기존 통합 가이드와 기존 해설은 보존하며, 현재 방향 정리는 별도의 팀 문서에서 읽으시면 됩니다. HTML은 다운로드하여 브라우저에서 열면 이미지 확대가 작동합니다. GitHub 파일 보기 화면은 HTML을 실행하지 않습니다.</p>
+</section><footer class="bottom"><a href="발표논문_읽기지도.md">Markdown 편집 원본</a> · 2026-11-03 논의 / 2026-11-04 공유본 · <a href="#top">맨 위로</a></footer></main></div><dialog id="viewer" aria-labelledby="viewer-title"><div class="viewer-head"><b id="viewer-title">원문 전체 페이지</b><a id="viewer-source" target="_blank" rel="noreferrer">공식 원문 ↗</a><button id="zoom" type="button">원본 크기</button><button id="close-viewer" type="button" aria-label="확대 닫기">닫기 ×</button></div><div class="viewer-body"><img id="viewer-img" alt="" class="fit"></div></dialog><script>
+const dialog=document.getElementById('viewer'), big=document.getElementById('viewer-img');let opener=null;
+document.querySelectorAll('.image-open').forEach(b=>b.addEventListener('click',()=>{opener=b;big.src=b.querySelector('img').src;big.alt=b.dataset.caption;big.className='fit';document.getElementById('viewer-title').textContent=b.dataset.caption;document.getElementById('viewer-source').href=b.dataset.source;document.getElementById('zoom').textContent='원본 크기';dialog.showModal()}));
+document.getElementById('close-viewer').addEventListener('click',()=>dialog.close());
+dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()});
+dialog.addEventListener('close',()=>{if(opener)opener.focus()});
+document.getElementById('zoom').addEventListener('click',e=>{big.classList.toggle('fit');e.target.textContent=big.classList.contains('fit')?'원본 크기':'화면 맞춤'});
+function progress(){const max=document.documentElement.scrollHeight-innerHeight;document.getElementById('progress').style.width=(max>0?scrollY/max*100:0)+'%'}
+addEventListener('scroll',progress,{passive:true});addEventListener('resize',progress);progress();
+const obs=new IntersectionObserver(es=>{for(const e of es){if(e.isIntersecting){document.querySelectorAll('.side a').forEach(a=>a.classList.toggle('active',a.hash==='#'+e.target.id))}}},{rootMargin:'-10% 0px -65% 0px'});
+document.querySelectorAll('.chapter').forEach(e=>obs.observe(e));
+const menu=document.querySelector('.side details');const narrow=matchMedia('(max-width:740px)');if(narrow.matches)menu.open=false;narrow.addEventListener('change',e=>{menu.open=!e.matches});
+if(document.getElementById('flip-lab')){
+ const b=document.getElementById('base-count'),f=document.getElementById('flip-count'),out=document.getElementById('flip-output');
+ function calc(){let n=Math.max(1,Math.min(100,Number(b.value)||1));let k=Math.max(0,Math.min(n,Number(f.value)||0));b.value=n;f.max=n;f.value=k;out.textContent='Flip rate = '+k+' ÷ '+n+' = '+(k/n*100).toFixed(1)+'% · 전체 100개 기준 손상 비율은 '+k.toFixed(1)+'%';}
+ b.addEventListener('change',calc);f.addEventListener('change',calc);calc();
+}
+if(document.getElementById('crag-lab')){
+ const sel=document.getElementById('score-case'),out=document.getElementById('crag-output');
+ const examples={good:[.8,-.3,-.7],bad:[-1,-1,-1],middle:[.4,.1,-.8],edge:[.59,-.99,-.7],false:[.8,.2,-.1]};
+ function route(){const x=examples[sel.value],max=Math.max(...x);let v=max>.59?'Correct → 기존 문서 정제 후 생성':max<-.99?'Incorrect → 웹 검색으로 대체':'Ambiguous → 기존 자료 정제 + 웹 근거 결합';out.textContent=v+(sel.value==='false'?' · 사실이 틀려도 이 점수라면 같은 Correct 분기':'');}
+ sel.addEventListener('change',route);route();
+}
+
+const search=document.getElementById('search');
+function filterChapters(){const q=search.value.trim().toLowerCase();let count=0;document.querySelectorAll('.chapter').forEach(s=>{s.hidden=q&&!s.textContent.toLowerCase().includes(q);if(!s.hidden)count++;const a=document.querySelector('.side a[href="#'+s.id+'"]');if(a)a.hidden=s.hidden});document.getElementById('search-status').textContent=count+'개 절 표시';}
+search.addEventListener('input',filterChapters);filterChapters();
+document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',()=>{search.value='';filterChapters()}));
+</script></body></html>
