@@ -1,0 +1,502 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>현재 논의·연구 방향·Task | NLP Team5</title><style>
+:root{--ink:#18313d;--muted:#526875;--teal:#147a73;--line:#d9e3e5;--paper:#fff;--bg:#f4f6f5;--gold:#ad671c}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:88px}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI","Malgun Gothic",system-ui,sans-serif;font-size:17px;line-height:1.85;word-break:keep-all;overflow-wrap:anywhere}a{color:var(--teal);text-underline-offset:4px}button,input,select{font:inherit}button,select{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #e7a349;outline-offset:3px}.top{position:sticky;top:0;z-index:10;background:#142f3b;color:white;border-bottom:3px solid #31aaa0}.top-inner{max-width:1450px;margin:auto;padding:12px 28px;display:flex;align-items:center;gap:24px}.brand{font-size:13px;letter-spacing:.1em;font-weight:700;color:#fff;text-decoration:none}.top nav{display:flex;flex-wrap:wrap;gap:18px;margin-left:auto}.top nav a{color:#cfdee3;text-decoration:none;font-size:14px}.top nav a.current{color:#fff;border-bottom:2px solid #67dbbf}.progress{height:3px;position:absolute;bottom:-3px;left:0;background:#f2bb69;width:0}.shell{max-width:1450px;margin:auto;display:grid;grid-template-columns:270px minmax(0,1fr);gap:44px;padding:40px 28px 70px}.side{position:sticky;top:90px;align-self:start;max-height:calc(100vh - 110px);overflow:auto;font-size:14px;padding-right:10px}.side h2{font-size:13px;letter-spacing:.14em;margin:5px 0 16px;color:var(--muted)}.side a{display:block;padding:7px 12px;border-left:2px solid var(--line);text-decoration:none;color:var(--muted);line-height:1.6}.side a:hover,.side a.active{border-color:var(--teal);background:#e4eeeb;color:var(--teal)}.side .small{font-size:12px;margin-top:22px;color:var(--muted)}main{min-width:0;max-width:1030px}.hero{padding:20px 0 30px;border-bottom:1px solid var(--line);margin-bottom:30px}.eyebrow{font-size:12px;letter-spacing:.15em;font-weight:800;color:var(--teal)}h1{font-size:clamp(30px,3.6vw,48px);line-height:1.35;letter-spacing:-.045em;max-width:850px;margin:10px 0 24px}.hero p{max-width:850px}.chapter{background:white;border:1px solid var(--line);border-radius:15px;margin:24px 0;padding:32px 36px;box-shadow:0 6px 18px #193c4210}.chapter h2{font-size:25px;line-height:1.5;margin:0 0 25px;letter-spacing:-.025em}.chapter h3{font-size:20px;margin:30px 0 12px;color:#244e58}.chapter p{margin:16px 0}.chapter li{margin:8px 0}strong{font-weight:750}blockquote{margin:24px 0;padding:14px 22px;border-left:4px solid var(--teal);background:#eff7f3;border-radius:0 10px 10px 0}.table-scroll{max-width:100%;overflow-x:auto;margin:25px 0;border:1px solid var(--line);border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px;line-height:1.7;min-width:520px}th{background:#eaf1ef;text-align:left;color:#244b50}th,td{padding:13px 15px;border-bottom:1px solid var(--line);vertical-align:top}tbody tr:last-child td{border-bottom:0}tbody tr:nth-child(even){background:#fafcfb}.reading-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}.reading-cards a{padding:23px;border:1px solid #b6d3cd;border-radius:12px;text-decoration:none;background:#edf5f2;display:flex;flex-direction:column;gap:12px}.reading-cards small{font-size:11px;letter-spacing:.1em}.reading-cards strong{font-size:22px;line-height:1.5}.reading-cards span{font-size:14px;color:var(--muted)}.flow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;margin:24px 0}.flow span{background:#e9f2ef;padding:10px 13px;border:1px solid #d0e0da;border-radius:8px}.paper-scene{margin:28px 0;border:1px solid #c9d8df;border-radius:12px;overflow:hidden;background:#f4f7f8}.scene-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:13px 17px;background:#e7edef;font-size:13px}.scene-top span{color:var(--muted)}.scene-grid{display:grid;grid-template-columns:minmax(180px,.8fr) minmax(220px,1fr);gap:24px;padding:22px}.image-open{border:0;background:transparent;padding:0;align-self:start;text-align:left;display:block;position:relative;max-width:100%}.image-open img{display:block;width:100%;height:auto;box-shadow:0 5px 16px #18313d20}.image-open span{display:block;text-align:center;background:#173f4a;color:#fff;padding:7px;font-size:12px}.scene-grid figcaption{font-size:14px;line-height:1.85}.scene-grid p{margin:5px 0 16px}.scene-grid .scene-label{font-size:12px;font-weight:800;color:var(--teal);margin:0 0 5px}.scene-grid .credit{font-size:11px;color:var(--muted);margin-top:20px}.lab{border:1px solid #d4c397;background:#fffaf0;border-radius:12px;padding:24px;margin:28px 0}.lab h3{margin-top:8px}.controls{display:flex;gap:18px;flex-wrap:wrap}.controls label{flex:1;min-width:150px}.lab input{display:block;width:100%;border:1px solid #bcbda9;padding:8px;border-radius:6px;background:white}.lab select{width:100%;padding:12px;border:1px solid #bcbda9;border-radius:6px;white-space:normal;background:white}.lab output{display:block;padding:15px;margin-top:16px;background:#fff;border:1px solid #e8dfc9;border-radius:8px;font-size:19px;line-height:1.7}.lab .lab-note{font-size:13px;color:#695c40}.bottom{padding:20px;font-size:13px;color:var(--muted)}dialog{border:0;padding:0;border-radius:12px;width:96vw;max-width:1500px;height:94vh;max-height:94vh;background:#e6ecee;color:var(--ink)}dialog::backdrop{background:#0a1d2be0}.viewer-head{height:62px;display:flex;align-items:center;gap:14px;padding:12px 20px;background:white;border-bottom:1px solid var(--line)}.viewer-head b{font-size:14px;flex:1}.viewer-head button{padding:5px 12px;border:1px solid var(--line);border-radius:5px;background:white}.viewer-head a{font-size:13px}.viewer-body{height:calc(100% - 62px);overflow:auto;text-align:center;padding:16px}.viewer-body img{max-width:100%;height:auto;display:block;margin:auto}.viewer-body img.fit{height:100%;width:auto;max-width:100%;object-fit:contain}.no-js{padding:12px;background:#fff6dd}
+@media(max-width:1000px){.shell{grid-template-columns:210px minmax(0,1fr);gap:24px;padding:25px 18px}.chapter{padding:25px}.scene-grid{grid-template-columns:1fr}.image-open{max-width:360px;margin:auto}.reading-cards{grid-template-columns:1fr}}
+@media(max-width:740px){body{font-size:16px}.shell{display:block;padding:16px 12px 40px}.side{position:static;max-height:none;padding:0;margin:12px 0 28px}.side details{background:#e9efed;border-radius:10px;padding:12px}.side summary{cursor:pointer;font-weight:bold}.side a{padding:6px 10px}.top-inner{padding:10px 12px;gap:10px;display:block}.top nav{gap:16px;margin-top:6px}.top nav a{font-size:12px}.hero{padding:12px 10px 22px}.chapter{padding:22px 18px;border-radius:12px}.chapter h2{font-size:22px}.chapter h3{font-size:19px}.scene-grid{padding:15px;gap:18px}.scene-top{font-size:12px}.viewer-head{padding:8px;gap:8px;height:72px}.viewer-head b{font-size:11px}.viewer-head a{display:none}.viewer-head button{font-size:12px;padding:5px 8px}.viewer-body{height:calc(100% - 72px);padding:6px}.table-scroll table{font-size:13px}th,td{padding:10px}}
+@media print{.top,.side,.lab,dialog{display:none}.shell{display:block;padding:0}.chapter{break-inside:auto;box-shadow:none;border:0;padding:10px 0}.hero{padding-top:0}.image-open{max-width:260px}.scene-grid{grid-template-columns:260px 1fr}.chapter h2,.chapter h3{break-after:avoid}body{font-size:11pt;background:white}a{color:inherit}.table-scroll{overflow:visible}table{min-width:0}.reading-cards a{border:1px solid #ddd}}
+
+.search-box{width:100%;padding:9px;margin:10px 0;border:1px solid #b9cccb;border-radius:6px} .chapter[hidden]{display:none} .side a[hidden]{display:none} #search-status{font-size:12px;color:#526875} .scope-label{font-size:13px;color:#526875}
+</style></head><body id="top"><header class="top"><div class="top-inner"><a class="brand" href="팀논의_연구방향과_Task.html">NLP TEAM 5 / MIDTERM</a><nav><a href="팀논의_연구방향과_Task.html">팀 논의·Task</a><a href="발표논문_읽기지도.html">32편 읽기 지도</a><a href="NLP_Team5_Midterm_18slides.pptx">PPTX 18장</a></nav></div><div class="progress" id="progress"></div></header><div class="shell"><aside class="side"><label for="search">이 문서에서 찾기</label><input id="search" class="search-box" type="search" placeholder="예: C0, 회복, Q-network"><p id="search-status" aria-live="polite"></p><details open><summary>읽기 목차</summary><nav><a href="#section-1">1. 처음 합류하셨다면: 무엇을 만드는 연구인가요?</a><a href="#section-2">2. 우리의 질문은 어떻게 좁혀졌나요?</a><a href="#section-3">3. 세 정보 경로를 어떻게 다룰까요?</a><a href="#section-4">4. 현재 관심의 중심: 네 가지 초기 근거 조건</a><a href="#section-5">5. Task 확정 논의를 위한 공통 문안</a><a href="#section-6">6. 비교 조건: 무엇을 바꾸고 무엇을 고정할까요?</a><a href="#section-7">7. 팀원 50개 자료를 어떻게 살릴까요?</a><a href="#section-8">8. 평가 초안: 결과·행동·비용을 연결합니다</a><a href="#section-9">9. 선행연구를 발표에서 어떻게 묶을까요?</a><a href="#section-10">10. 중간 발표의 구성과 팀 논의 순서</a><a href="#section-11">11. 범위·출처·현재 결정 상태</a></nav></details></aside><main><div class="hero"><p class="eyebrow">TEAM DISCUSSION · SOURCE-BASED READING</p><h1 id="nlp-5조-근거가-잘못되었을-때-팩트체크-agent는-무엇을-해야-할까요">NLP 5조 — 근거가 잘못되었을 때, 팩트체크 Agent는 무엇을 해야 할까요?</h1>
+<p><strong>현재 논의를 한 문장으로 정리하면:</strong> 고정 문서 집합에서 찾은 근거의 부족·충돌·오도가 사실 판정에 미치는 영향을 살펴보고, Agent가 추가 검증과 종료를 선택하여 <strong>근거를 갖춘 올바른 판정</strong>을 만들 수 있는지 연구하려고 합니다.</p>
+<p>이 문서는 세 팀원이 같은 출발점에서 Task를 논의하기 위한 정리입니다. 중간 발표는 논문을 하나씩 소개하는 목록보다 <strong>어떤 의문이 생겼고, 선행연구를 읽으며 그 의문을 어떻게 좁혔는지</strong>를 보여주는 흐름으로 구성합니다.</p>
+<p><strong>먼저 볼 자료:</strong> <a href="NLP_Team5_Midterm_18slides.pptx">편집 가능한 발표 18장</a> · <a href="발표논문_읽기지도.md">발표 논문 읽기 지도</a> · <a href="../knowledge-revision/팀공유_연구가이드.html">기존 31편 통합 가이드</a></p>
+</div><section class="chapter" id="section-1"><h2 id="section-1-title">1. 처음 합류하셨다면: 무엇을 만드는 연구인가요?</h2>
+<p>처음의 큰 방향은 <strong>기사·뉴스·주장을 검증하는 팩트체크 Agent</strong>였습니다. 검색, 공식 자료/API 조회, 근거 대조를 수행한 뒤 주장에 대한 판정과 이유를 제시하는 시스템입니다. 최근 논의에서는 그중 <strong>근거의 상태가 좋지 않을 때의 판단과 행동</strong>에 초점을 맞추었습니다.</p>
+<p>다음은 구조를 설명하기 위한 가상 예시입니다.</p>
+<div class="table-scroll" tabindex="0"><table>
+<colgroup>
+<col style="width: 50%"/>
+<col style="width: 50%"/>
+</colgroup>
+<thead>
+<tr>
+<th>단계</th>
+<th>예시</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>입력 주장</td>
+<td>“기관 A는 2022년에 설립되었습니다.”</td>
+</tr>
+<tr>
+<td>고정 corpus 검색</td>
+<td>소개문 세 개는 2022년을 말하지만, 연혁 문서는 2010년이라고 말합니다.</td>
+</tr>
+<tr>
+<td>Agent가 결정할 일</td>
+<td>대상 기관·시점이 같은지 확인하고, 충돌을 해소할 추가 자료를 찾을지 선택합니다.</td>
+</tr>
+<tr>
+<td>추가 도구</td>
+<td>공식 연혁·등록 자료 검색, 원문 페이지 열람, 필요하면 날짜·수치 계산</td>
+</tr>
+<tr>
+<td>출력</td>
+<td>Refuted, 실제 설립연도 2010년, 이를 입증하는 근거, 2022년 자료가 재출범 시점을 가리킨다는 설명</td>
+</tr>
+<tr>
+<td>평가</td>
+<td>판정이 맞는지, 인용 근거가 충분한지, 충돌 이유를 맞게 설명했는지, 검색에 얼마나 비용을 썼는지</td>
+</tr>
+</tbody>
+</table></div>
+<p>단순히 검색 결과에 있는 문장을 복사하는 문제보다 어렵습니다. <strong>주제 관련성, 사실성, 근거 충분성, 출처 독립성</strong>은 서로 다릅니다. Agent는 이 차이를 보고 계속 찾기·다른 출처 확인·판정·보류 중 어떤 행동이 적절한지 선택합니다.</p>
+<p>수업과의 연결도 구체적입니다. <strong>정보검색(retrieval)</strong>은 corpus에서 문서를 선택하는 부분, <strong>RAG</strong>는 선택한 문서를 판정에 사용하는 부분, <strong>ReAct</strong>는 도구 관찰을 바탕으로 다음 행동을 정하는 부분입니다. 최종 설명 생성과 정량 평가까지 함께 들어가므로 전반부 수업 내용을 하나의 Task에 연결할 수 있습니다.</p>
+</section><section class="chapter" id="section-2"><h2 id="section-2-title">2. 우리의 질문은 어떻게 좁혀졌나요?</h2>
+<div class="table-scroll" tabindex="0"><table>
+<colgroup>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+</colgroup>
+<thead>
+<tr>
+<th>논의의 단계</th>
+<th>생긴 질문</th>
+<th>연구 방향에 남긴 것</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>팩트체크 Agent</td>
+<td>검색하면 참거짓을 알 수 있을까요?</td>
+<td>주장·판정·근거를 분리하는 FEVER/AVeriTeC 틀</td>
+</tr>
+<tr>
+<td>세 정보 경로</td>
+<td>모델의 기존 답, given 근거, 새 검색이 다르면 무엇을 믿을까요?</td>
+<td>검색 없는 진단, 고정 corpus, 추가 검증의 비교</td>
+</tr>
+<tr>
+<td>오염 근거</td>
+<td>잘못된 문서를 주면 답이 얼마나 바뀔까요?</td>
+<td>문서 조건과 정답→오답 손상 분석</td>
+</tr>
+<tr>
+<td>Fixed-corpus RAG</td>
+<td>관련 문서 자체를 못 찾은 것과 찾고도 잘못 쓴 것을 어떻게 나눌까요?</td>
+<td>retrieval 노출과 판정의 분리</td>
+</tr>
+<tr>
+<td>충분성과 독립성</td>
+<td>여러 문서가 같은 말을 하면 검증이 끝난 것일까요?</td>
+<td>출처 의존성·정보 부족·충돌에 따른 행동 분석</td>
+</tr>
+<tr>
+<td>능동 검증</td>
+<td>추가 검색이 회복을 돕는지, 다시 오도하는지 어떻게 볼까요?</td>
+<td>회복률과 손상률을 함께 측정</td>
+</tr>
+<tr>
+<td>제어기</td>
+<td>계속 검색할 가치가 있을 때만 행동하게 할 수 있을까요?</td>
+<td>프롬프트·규칙·학습 정책의 확장 후보</td>
+</tr>
+</tbody>
+</table></div>
+<p>유사한 선행연구를 발견할 때마다 연구의 의미가 사라진 것이 아니라, <strong>무엇을 이미 알고 있으며 어디를 더 명확히 관찰할지</strong>가 구체화되었습니다. 중간 발표에서는 이 과정 자체가 Task 선택의 근거가 됩니다.</p>
+</section><section class="chapter" id="section-3"><h2 id="section-3-title">3. 세 정보 경로를 어떻게 다룰까요?</h2>
+<div class="table-scroll" tabindex="0"><table>
+<colgroup>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+</colgroup>
+<thead>
+<tr>
+<th>경로</th>
+<th>관측할 수 있는 것</th>
+<th>실험에서 맡는 역할</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Closed-book response</td>
+<td>외부 문서 없이 모델이 내놓은 답</td>
+<td>모델의 기존 행동을 확인하는 기준선</td>
+</tr>
+<tr>
+<td>Retrieved given evidence</td>
+<td>고정 corpus에서 선택된 문서와 순위</td>
+<td>우리가 통제하는 초기 근거 조건</td>
+</tr>
+<tr>
+<td>Actively fetched evidence</td>
+<td>도구로 새롭게 확보한 문서·출처·시점</td>
+<td>추가 검증의 효과와 비용</td>
+</tr>
+</tbody>
+</table></div>
+<p>모델이 어떤 사실을 ‘학습했는지’를 직접 확인하기보다, <strong>같은 사실을 외부 근거 없이 안정적으로 맞히는가</strong>를 조작적 기준으로 사용합니다. Dated Data와 Real Documents가 이 구분에 도움을 줍니다. 최신 주장이라는 이유만으로 모든 모델이 모른다고 단정하는 대신, 시점 정보와 실제 closed-book 응답을 함께 기록합니다.</p>
+<p>정답 기준은 별도의 사람이 검수한 자료와 판정 규칙에 둡니다. 모델의 기억, 검색 결과의 다수 의견, 공식 사이트라는 이름 중 하나를 자동으로 정답으로 삼지 않습니다. 공식 자료도 대상 시점·단위·조건을 맞춰 읽습니다.</p>
+</section><section class="chapter" id="section-4"><h2 id="section-4-title">4. 현재 관심의 중심: 네 가지 초기 근거 조건</h2>
+<p>같은 원자적 주장(atomic claim)에 대해 근거 조건을 바꾸면, 주장 난이도 차이와 근거 효과를 더 잘 구분할 수 있습니다.</p>
+<div class="table-scroll" tabindex="0"><table>
+<colgroup>
+<col style="width: 25%"/>
+<col style="width: 25%"/>
+<col style="width: 25%"/>
+<col style="width: 25%"/>
+</colgroup>
+<thead>
+<tr>
+<th>조건</th>
+<th>예시</th>
+<th>관찰할 행동</th>
+<th>주요 실패</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Valid and sufficient</td>
+<td>설립일을 명시한 일관된 유효 자료</td>
+<td>근거를 사용하고 적절히 종료</td>
+<td>과잉 검색으로 정답 손상</td>
+</tr>
+<tr>
+<td>Missing decisive evidence</td>
+<td>활동 내용은 있지만 설립일이 없음</td>
+<td>빠진 정보를 특정해 검색</td>
+<td>관련성만으로 결론</td>
+</tr>
+<tr>
+<td>Conflicting evidence</td>
+<td>2010년과 2022년 자료가 함께 존재</td>
+<td>시점·주체·출처 차이를 조사</td>
+<td>다수결, 순서 편향</td>
+</tr>
+<tr>
+<td>Coherent but misleading evidence</td>
+<td>여러 문서가 같은 잘못된 설립일을 반복</td>
+<td>독립적인 근거로 재검증</td>
+<td>일치성을 진실성으로 오인</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>수량과 출처는 다른 축입니다.</strong> 원문 하나를 재인용한 문서 10개와 서로 독립적으로 확인한 문서 10개는 같은 근거량이 아닙니다. 오도 문서 1/5와 1/10의 비교도 문서 길이·관련성·정답 근거 수를 맞춰야 해석할 수 있습니다.</p>
+<p>팀 초기에 이야기한 <strong>진짜/가짜 주장 × 진짜/가짜 근거의 네 조합</strong>도 유지합니다. 다만 지금 표와 같은 분류는 아닙니다. 앞의 축은 주장·문서의 진실성이고, 이 표는 Agent가 받는 근거의 구성입니다. 참인 문서가 거짓 주장을 반박할 수 있으며, 문서에 오류가 있어도 특정 주장을 판정하는 데 결정적이지 않을 수 있습니다. 데이터에는 <code>claim_label</code>, <code>document_validity</code>, <code>claim_evidence_relation</code>, <code>evidence_condition</code>을 나눠 기록하는 안이 적합합니다.</p>
+</section><section class="chapter" id="section-5"><h2 id="section-5-title">5. Task 확정 논의를 위한 공통 문안</h2>
+<blockquote>
+<p><strong>Evidence-Grounded Fact Verification under Imperfect Retrieved Evidence</strong></p>
+<p>Given an atomic claim, a fixed document corpus, and access to external verification tools, an agent must retrieve and assess evidence, decide whether further verification is warranted, and return a verdict supported by sufficient, time-appropriate evidence under a bounded tool budget.</p>
+</blockquote>
+<p>한국어로는 <strong>“불완전한 검색 근거 아래에서 추가 검증 여부를 판단하고, 충분한 근거를 동반한 사실 판정을 수행하는 Task”</strong>입니다. 여기서 입력·행동·출력은 다음과 같이 구체화합니다.</p>
+<div class="table-scroll" tabindex="0"><table>
+<colgroup>
+<col style="width: 50%"/>
+<col style="width: 50%"/>
+</colgroup>
+<thead>
+<tr>
+<th>요소</th>
+<th>현재 정리안</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>입력</td>
+<td>정규화한 단일 주장, 주장 대상 시점, 접근 가능한 고정 corpus, 허용 도구와 예산</td>
+</tr>
+<tr>
+<td>핵심 행동</td>
+<td>관련 문서 검색, 정보 부족·충돌 확인, 추가 출처 탐색 여부와 종료 선택</td>
+</tr>
+<tr>
+<td>출력</td>
+<td>Supported / Refuted / Not Enough Evidence, 인용 근거, 짧은 판정 이유, 필요하면 정정 사실</td>
+</tr>
+<tr>
+<td>기록</td>
+<td>검색 질의, 문서 ID·출처·시점, 도구 호출, 근거 채택/배제 사유의 짧은 요약, 비용, 실행 상태</td>
+</tr>
+<tr>
+<td>성공 기준</td>
+<td>올바른 판정과 충분하고 시점에 맞는 근거를 함께 제시</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>‘무엇을 해결할지’가 Task이고, BM25·dense retrieval·프롬프트·규칙·RL은 방법 후보입니다.</strong> 중간 발표에서 Task를 설명하기 위해 구현 방법을 모두 확정할 필요는 없습니다.</p>
+<h3 id="ppt-뒤에-붙인-세-후보는-어떻게-다른가요">PPT 뒤에 붙인 세 후보는 어떻게 다른가요?</h3>
+<div class="table-scroll" tabindex="0"><table>
+<colgroup>
+<col style="width: 25%"/>
+<col style="width: 25%"/>
+<col style="width: 25%"/>
+<col style="width: 25%"/>
+</colgroup>
+<thead>
+<tr>
+<th>후보</th>
+<th>초점</th>
+<th>주로 보는 평가</th>
+<th>구현 부담</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A. Fact-checking under imperfect evidence</td>
+<td>네 근거 조건에서 검색·판정·추가 검증 비교</td>
+<td>Grounded Success, verdict quality, recovery / harm</td>
+<td>고정 corpus와 판정 기록을 먼저 구성하기 좋음</td>
+</tr>
+<tr>
+<td>B. Independent verification under false corroboration</td>
+<td>복제·재인용 출처를 독립 근거로 오인하는가</td>
+<td>Source independence, recovery, grounded verdict</td>
+<td>출처 관계를 사람이 검수하는 부담이 큼</td>
+</tr>
+<tr>
+<td>C. Selective verification under a search budget</td>
+<td>더 찾을 가치가 있는 사례에서만 검색하는가</td>
+<td>Quality–cost curve, recovery, unnecessary search</td>
+<td>제어 정책 비교와 비용 기록 필요; RL은 선택적 확장</td>
+</tr>
+</tbody>
+</table></div>
+<p>A를 공통 Task 틀로 놓고 B·C 중 하나를 핵심 연구 질문으로 좁히는 구성이 가능합니다. 세 후보 모두를 별도 프로젝트처럼 끝까지 구현하는 구조로 읽을 필요는 없습니다.</p>
+</section><section class="chapter" id="section-6"><h2 id="section-6-title">6. 비교 조건: 무엇을 바꾸고 무엇을 고정할까요?</h2>
+<p>아래 C0–C2는 <strong>이 문서의 비교 이름 제안</strong>입니다. 기존 팀 평가 문서의 B0–B2와 다른 목적의 번호이므로 함께 설명합니다.</p>
+<div class="table-scroll" tabindex="0"><table>
+<colgroup>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+</colgroup>
+<thead>
+<tr>
+<th>조건</th>
+<th>접근 정보·정책</th>
+<th>주된 질문</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C0 · Closed-book</td>
+<td>동일 주장, 외부 문서·도구 없음</td>
+<td>모델은 처음에 어떤 판정을 하나요?</td>
+</tr>
+<tr>
+<td>C1 · Fixed-corpus RAG</td>
+<td>고정 corpus를 검색하여 판정</td>
+<td>초기 근거 조건이 검색과 판정을 어떻게 바꾸나요?</td>
+</tr>
+<tr>
+<td>C2 · Active verification</td>
+<td>C1과 같은 시작점 + 추가 검증 도구</td>
+<td>추가 검증이 회복·손상·비용을 어떻게 바꾸나요?</td>
+</tr>
+</tbody>
+</table></div>
+<p>이 비교만으로 ‘Agent의 판단 덕분’이라고 결론 내리면 정보량 증가 효과와 섞입니다. 그래서 <strong>C2 안에서 고정 검색 절차와 적응형 정책을 같은 모델·도구·최대 예산으로 비교</strong>하면 좋습니다. 이는 팀원의 기존 B1 고정 workflow / B2 적응형 Agent 비교와 연결됩니다.</p>
+<p>초기 관심은 C1의 문서 구성에 있습니다. 다만 판정 단계만 보고 싶을 때는 <strong>같은 근거 묶음을 직접 제공하는 진단 실험</strong>을, 검색까지 보려면 <strong>공통 corpus에서 실제로 찾게 하는 실험</strong>을 구분해 둡니다. Corpus 오염 비율과 top-k 결과에 실제 노출된 오염 비율을 각각 기록하면 retrieval 실패가 연구 주제를 가리는 대신 설명 변수가 됩니다.</p>
+<p>검색 정책을 비교할 때 retriever를 고정하고, BM25 대 dense 비교를 할 때 정책·생성기를 고정하는 식으로 한 번에 바꾸는 축을 제한하는 구성이 해석하기 쉽습니다.</p>
+</section><section class="chapter" id="section-7"><h2 id="section-7-title">7. 팀원 50개 자료를 어떻게 살릴까요?</h2>
+<p>현재 저장소에서 확인한 팀원 기여는 <strong>HeonSu의 <code>c2dbe3b</code> 커밋</strong>, <code>evaluation.md</code> §9의 실제 글 기반 50개입니다. 문서 50개·선정 주장 50개·분할 그룹 47개이며, 기사/정보글 37개, Threads 9개, X 4개입니다. 원 자료와 정규화한 주장, 참조 근거, 사례별 평가 포인트가 연구의 출발 자산입니다. <a href="../evaluation.md">팀원 평가 자료</a> · <a href="https://github.com/CJI0718/uos-nlp-2026-team5/commit/c2dbe3b">해당 커밋</a></p>
+<div class="table-scroll" tabindex="0"><table>
+<colgroup>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+</colgroup>
+<thead>
+<tr>
+<th>묶음</th>
+<th>활용 방향</th>
+<th>원 자료에 추가할 기록</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>최신·시점 민감 주장</td>
+<td>외부 자료가 판정에 중요한 사례</td>
+<td>발표일·대상 기간·허용 근거 시점·closed-book 응답</td>
+</tr>
+<tr>
+<td>수치·단위·조건 주장</td>
+<td>근거 비교와 결정적 오류 설명</td>
+<td>원 수치, 단위, 분모, 조건, 계산 정답</td>
+</tr>
+<tr>
+<td>안정적 사실</td>
+<td>모델의 기존 응답과 주어진 근거 충돌 관찰</td>
+<td>반복 closed-book 결과; 필요하면 FEVER 일부 보충</td>
+</tr>
+<tr>
+<td>동일 사건·유사 사례</td>
+<td>group 단위 분할과 paired 분석</td>
+<td>원 ID 유지, 동일 사건 그룹, 변형 부모 ID</td>
+</tr>
+</tbody>
+</table></div>
+<p>모든 기존 자료를 버리고 새 benchmark로 바꾸기보다 <strong>원 ID를 유지하고 적합성 태그를 붙인 뒤 일부를 보충·교체하는 안</strong>이 좋습니다. FEVER를 쓸 경우에도 고정된 사실이라는 이유만으로 모델이 알고 있다고 간주하지 않고 실제 응답을 확인합니다.</p>
+<p>근거 변형은 원본과 별도 버전으로 저장합니다. 예를 들어 원 주장 하나에 clean/missing/conflict/misleading 네 조건을 만들더라도 <strong>서로 독립인 주장 네 개가 된 것은 아닙니다.</strong> 핵심 50개와 조건별 실행 수를 따로 집계합니다. 팀원 자료의 47개 그룹 정보는 개발·평가 누출과 오차 추정에 그대로 활용할 수 있습니다.</p>
+</section><section class="chapter" id="section-8"><h2 id="section-8-title">8. 평가 초안: 결과·행동·비용을 연결합니다</h2>
+<p>팀원 문서의 정확성·근거 적절성·오류 설명·비용 지표를 바탕으로 다음과 같이 정리합니다. 영어 명칭은 발표 화면과 실험표에서 공통으로 사용하기 좋습니다.</p>
+<div class="table-scroll" tabindex="0"><table>
+<colgroup>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+</colgroup>
+<thead>
+<tr>
+<th>Metric</th>
+<th>정의 또는 계산</th>
+<th>이 Task에 어울리는 이유</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Verdict Accuracy / Macro-F1</td>
+<td>gold verdict와 비교; label별 결과 함께 보고</td>
+<td>라벨 불균형과 기본 사실 판정 성능</td>
+</tr>
+<tr>
+<td>Grounded Success Rate (GSR)</td>
+<td>올바른 verdict <strong>AND</strong> 충분한 근거 <strong>AND</strong> 시점 정합 / 전체 시도</td>
+<td>맞는 답만 찍는 경우와 근거를 갖춘 검증 구별</td>
+</tr>
+<tr>
+<td>Recovery Rate</td>
+<td>C1 오답 중 C2가 정답으로 바꾼 수 / C1 오답 수</td>
+<td>잘못된 근거를 받은 후의 교정</td>
+</tr>
+<tr>
+<td>Harm Rate</td>
+<td>C1 정답 중 C2가 오답으로 바꾼 수 / C1 정답 수</td>
+<td>추가 검색의 역효과</td>
+</tr>
+<tr>
+<td>Evidence Recall@k</td>
+<td>검수한 필요 근거 집합 중 top-k가 회수한 비율</td>
+<td>고정 corpus에서 검색 실패 구분</td>
+</tr>
+<tr>
+<td>Misleading Exposure Rate</td>
+<td>오도 문서를 한 개 이상 받은 사례 / 전체 사례</td>
+<td>corpus 오염이 실제 모델 입력까지 도달했는지</td>
+</tr>
+<tr>
+<td>Verification / Recovery Transition</td>
+<td>검색 발동 → 독립 근거 확보 → 판정 교정의 단계별 비율</td>
+<td>검색했지만 회복 못한 원인 분리</td>
+</tr>
+<tr>
+<td>Tool / Token / Time Cost</td>
+<td>검색·fetch·LLM 횟수, 토큰, wall time</td>
+<td>같은 정확도에서 필요한 자원 비교</td>
+</tr>
+<tr>
+<td>Execution Failure Rate</td>
+<td>timeout·파싱 오류 등 / 전체 시도</td>
+<td>시스템 실패를 사실 판정 실패와 구분</td>
+</tr>
+</tbody>
+</table></div>
+<p>Recovery/Harm은 먼저 <strong>verdict 기준</strong>으로 계산하고, 같은 전이를 <strong>grounded success 기준</strong>으로도 나눠 보고할 수 있습니다. 분모가 0이면 0%가 아니라 N/A로 표시합니다. 출처 독립성을 주제로 고르면 ‘URL 개수’ 대신 원자료 계보·재인용 관계를 검수합니다.</p>
+<p>오류 설명은 팀원 제안대로 <strong>문제 위치 → 오류 이유 → 정정 내용</strong>의 세 항목을 봅니다. 정답 판정이어도 인용이 잘못되거나 설명이 새 오류를 만들 수 있으므로 이를 별도로 확인합니다.</p>
+<p>비용은 임의 가중합 하나만 보고하기보다 <strong>품질–비용 곡선(Quality–Cost Curve)</strong>과 같은 예산에서의 성공률을 먼저 제시하면 좋습니다. 비용 계수를 둔 reward나 utility는 추가 선택입니다.</p>
+</section><section class="chapter" id="section-9"><h2 id="section-9-title">9. 선행연구를 발표에서 어떻게 묶을까요?</h2>
+<div class="table-scroll" tabindex="0"><table>
+<colgroup>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+</colgroup>
+<thead>
+<tr>
+<th>논문의 역할</th>
+<th>함께 읽을 연구</th>
+<th>우리가 가져가는 논지</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>기본 구조</td>
+<td>RAG, ReAct, FEVER, AVeriTeC</td>
+<td>retrieval·action·claim·evidence·verdict 정의</td>
+</tr>
+<tr>
+<td>연구 설계의 안전장치</td>
+<td>Dated Data, Real Documents, ClaimDecomp, Decomposition Dilemmas, ALCE, Ev2R</td>
+<td>기존 지식의 관측, 평가 단위, 근거 채점</td>
+</tr>
+<tr>
+<td>오염 조건의 설계</td>
+<td>VitaminC, FaithEval, HAE-GEO, Fact2Fiction, Evidence Laundering</td>
+<td>국소 수정, 맥락 조건, 공격 구조, 출처 상관</td>
+</tr>
+<tr>
+<td>가장 가까운 비교</td>
+<td>Flip Risk, RAGuard, DRNoise, ClashEval, Adaptive Chameleon</td>
+<td>비율·순서·자연 오도·검색 실패·판정 손상</td>
+</tr>
+<tr>
+<td>교정과 행동</td>
+<td>CRITIC, Astute RAG, CRAG, Self-RAG, FIRE, ClaimCLAIRE</td>
+<td>외부 feedback, 근거 통합, 검색 발동과 종료</td>
+</tr>
+<tr>
+<td>효율과 확장</td>
+<td>Sufficient Context, Search Wisely, BeliefRAG, Stop-RAG</td>
+<td>충분성, 검색 가치, 상태와 제어 정책</td>
+</tr>
+</tbody>
+</table></div>
+<p>한 논문은 설계 참고와 가설의 출발점을 동시에 맡을 수 있습니다. 예를 들어 FIRE는 도구·종료 설계의 참고인 동시에 충분성과 비용에 관한 연구 질문을 만들어 줍니다. 위 표는 우열·배타적 분류가 아니라 발표에서의 역할입니다.</p>
+<p><strong>차별성을 말할 때의 중심:</strong> 외부 검색 자체의 새로움보다, <strong>초기 근거 조건을 통제하면서 검색 노출 → 검증 발동 → 독립 근거 확보 → 회복/손상을 연결해 분석하는 구성</strong>을 제시합니다. RAGuard의 CRAG 웹 검색 결과를 포함한 가까운 논문을 정면으로 비교하면 이 주장이 더 설득력 있습니다.</p>
+</section><section class="chapter" id="section-10"><h2 id="section-10-title">10. 중간 발표의 구성과 팀 논의 순서</h2>
+<p>PPTX 앞 15장은 논문 캡처를 주제별로 묶었습니다. 뒤의 16–18장은 A/B/C Task 후보입니다. 이 18장 파일은 토론·편집용이며, 실제 발표에 사용할 Task 슬라이드는 팀 논의 후 선택하는 구조입니다.</p>
+<ol type="1">
+<li><strong>Task A/B/C의 초점 선택:</strong> 네 조건 전반, 출처 독립성, 비용 대비 선택적 검증 중 주 질문을 정합니다.</li>
+<li><strong>평가 단위 확인:</strong> 원자적 주장과 근거를 동반한 판정이 팀원의 50개 자료를 어떻게 이어받는지 확인합니다.</li>
+<li><strong>비교의 목적 확인:</strong> C0/C1/C2는 정보 접근의 차이, 고정 workflow/적응형 Agent는 정책의 차이라는 점을 합의합니다.</li>
+<li><strong>중간 발표에서 받을 피드백:</strong> 창의성을 조건 통제·행동 진단·회복 분석의 결합으로 제시해도 충분한지, 무엇을 줄이면 명확해지는지 질문합니다.</li>
+</ol>
+<p>그다음 작은 개발용 사례에서 도구·기록 형식을 확인하고, 평가 자료 검수를 거쳐 비교 범위를 고정하는 순서가 자연스럽습니다. 역할 분담은 자료·실험·평가/발표라는 작업 단위를 기준으로 세 사람이 조정할 수 있습니다.</p>
+</section><section class="chapter" id="section-11"><h2 id="section-11-title">11. 범위·출처·현재 결정 상태</h2>
+<p>이 문서는 <strong>기사·뉴스·주장을 검증하는 Agent라는 팀의 큰 방향</strong> 위에, 이후 대화에서 발전한 연구 질문을 팀 논의용으로 정리한 것입니다. Task 공통 문안과 A/B/C 후보는 <strong>확정 논의를 위한 안</strong>이며, 세부 방법·RL 도입·모델·예산이 팀 전체에서 합의되었다는 기록은 아닙니다. 현재 결과표는 선행연구의 결과이고 우리 팀의 실험 결과는 없습니다.</p>
+<p>팀원의 실제 50개 자료는 <strong>지지 37·반박 11·NEI 후보 1·판정 보류 1</strong>이며 독립 검수 전 초안입니다. 보류는 네 번째 사실 라벨이 아닙니다. 50개 문서와 47개 분할 그룹의 차이, 접근·시점·정답 검수 상태는 기존 <code>evaluation.md</code>를 기준으로 이어갑니다. 이 문서는 그 자료를 덮어쓰거나 새로운 실험 성과로 표시하지 않습니다.</p>
+<p>이번 정리 시점에 원격 main과 <code>docs/factcheck-details</code>를 대조했고, 반영 기준 커밋은 <code>c2dbe3b</code>, 문헌 가이드 기준 main은 <code>6a67e0c</code>입니다. 이후 팀원 변경은 별도 갱신으로 이어가면 됩니다.</p>
+<p>라이브 웹 검색은 결과가 바뀔 수 있으므로 허용된 범위의 snapshot·시점·해시·도구 결과를 기록하고, 고정 재생 실험과 실제 웹 실행을 구분하는 것이 좋습니다. 처음부터 모든 오염 축·모델·retriever·정책을 조합하는 대신 주 질문 하나를 기준으로 비교 범위를 정합니다. RL은 trajectory 수집·reward 검수·별도 학습 자료 비용까지 포함해 선택합니다.</p>
+<p><strong>근거 문헌과 원문 위치:</strong> <a href="발표논문_읽기지도.md">발표 논문 읽기 지도</a>, <a href="../knowledge-revision/문헌검토.md">기존 31편 해설</a>, <a href="papers/RAGuard_한국어_절별해설.html">RAGuard 추가 해설</a>, <a href="papers/Stop_RAG_한국어_절별해설.html">Stop-RAG 추가 해설</a>. 본문은 이 자료와 현재 팀 대화를 연결한 연구 제안이며, 원문 수치와 제안한 metric을 구분합니다.</p>
+</section><footer class="bottom"><a href="팀논의_연구방향과_Task.md">Markdown 편집 원본</a> · 2026-11-03 논의 / 2026-11-04 공유본 · <a href="#top">맨 위로</a></footer></main></div><dialog id="viewer" aria-labelledby="viewer-title"><div class="viewer-head"><b id="viewer-title">원문 전체 페이지</b><a id="viewer-source" target="_blank" rel="noreferrer">공식 원문 ↗</a><button id="zoom" type="button">원본 크기</button><button id="close-viewer" type="button" aria-label="확대 닫기">닫기 ×</button></div><div class="viewer-body"><img id="viewer-img" alt="" class="fit"></div></dialog><script>
+const dialog=document.getElementById('viewer'), big=document.getElementById('viewer-img');let opener=null;
+document.querySelectorAll('.image-open').forEach(b=>b.addEventListener('click',()=>{opener=b;big.src=b.querySelector('img').src;big.alt=b.dataset.caption;big.className='fit';document.getElementById('viewer-title').textContent=b.dataset.caption;document.getElementById('viewer-source').href=b.dataset.source;document.getElementById('zoom').textContent='원본 크기';dialog.showModal()}));
+document.getElementById('close-viewer').addEventListener('click',()=>dialog.close());
+dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()});
+dialog.addEventListener('close',()=>{if(opener)opener.focus()});
+document.getElementById('zoom').addEventListener('click',e=>{big.classList.toggle('fit');e.target.textContent=big.classList.contains('fit')?'원본 크기':'화면 맞춤'});
+function progress(){const max=document.documentElement.scrollHeight-innerHeight;document.getElementById('progress').style.width=(max>0?scrollY/max*100:0)+'%'}
+addEventListener('scroll',progress,{passive:true});addEventListener('resize',progress);progress();
+const obs=new IntersectionObserver(es=>{for(const e of es){if(e.isIntersecting){document.querySelectorAll('.side a').forEach(a=>a.classList.toggle('active',a.hash==='#'+e.target.id))}}},{rootMargin:'-10% 0px -65% 0px'});
+document.querySelectorAll('.chapter').forEach(e=>obs.observe(e));
+const menu=document.querySelector('.side details');const narrow=matchMedia('(max-width:740px)');if(narrow.matches)menu.open=false;narrow.addEventListener('change',e=>{menu.open=!e.matches});
+if(document.getElementById('flip-lab')){
+ const b=document.getElementById('base-count'),f=document.getElementById('flip-count'),out=document.getElementById('flip-output');
+ function calc(){let n=Math.max(1,Math.min(100,Number(b.value)||1));let k=Math.max(0,Math.min(n,Number(f.value)||0));b.value=n;f.max=n;f.value=k;out.textContent='Flip rate = '+k+' ÷ '+n+' = '+(k/n*100).toFixed(1)+'% · 전체 100개 기준 손상 비율은 '+k.toFixed(1)+'%';}
+ b.addEventListener('change',calc);f.addEventListener('change',calc);calc();
+}
+if(document.getElementById('crag-lab')){
+ const sel=document.getElementById('score-case'),out=document.getElementById('crag-output');
+ const examples={good:[.8,-.3,-.7],bad:[-1,-1,-1],middle:[.4,.1,-.8],edge:[.59,-.99,-.7],false:[.8,.2,-.1]};
+ function route(){const x=examples[sel.value],max=Math.max(...x);let v=max>.59?'Correct → 기존 문서 정제 후 생성':max<-.99?'Incorrect → 웹 검색으로 대체':'Ambiguous → 기존 자료 정제 + 웹 근거 결합';out.textContent=v+(sel.value==='false'?' · 사실이 틀려도 이 점수라면 같은 Correct 분기':'');}
+ sel.addEventListener('change',route);route();
+}
+
+const search=document.getElementById('search');
+function filterChapters(){const q=search.value.trim().toLowerCase();let count=0;document.querySelectorAll('.chapter').forEach(s=>{s.hidden=q&&!s.textContent.toLowerCase().includes(q);if(!s.hidden)count++;const a=document.querySelector('.side a[href="#'+s.id+'"]');if(a)a.hidden=s.hidden});document.getElementById('search-status').textContent=count+'개 절 표시';}
+search.addEventListener('input',filterChapters);filterChapters();
+document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',()=>{search.value='';filterChapters()}));
+</script></body></html>
