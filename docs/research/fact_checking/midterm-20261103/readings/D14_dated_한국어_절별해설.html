@@ -1,0 +1,101 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dated Data · 한국어 절별 해설</title><style>:root{color-scheme:light;--ink:#20312f;--green:#165e54;--line:#d3ded9;--paper:#fffefa}*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:56px}body{margin:0;background:#f2f3ef;color:var(--ink);font:17px/1.75 "Malgun Gothic","Noto Sans KR",system-ui,sans-serif}header{background:#183b37;color:#fff;padding:12px clamp(16px,4vw,65px);display:flex;gap:18px;align-items:center;flex-wrap:wrap}header a{font-weight:700;color:#faf9f2}header span{font-size:.87em;color:#c7e1db}.layout{display:grid;grid-template-columns:minmax(170px,260px) minmax(0,900px);gap:35px;max-width:1350px;margin:auto;padding:32px clamp(12px,3vw,46px)}aside{align-self:start;position:sticky;top:8px;max-height:92vh;overflow:auto;font-size:14px}nav{display:grid}nav a{padding:5px 2px;text-decoration:none}summary{color:var(--green);font-weight:700;cursor:pointer}main{min-width:0;background:var(--paper);padding:clamp(18px,4vw,52px);border:1px solid var(--line);border-radius:10px;overflow-wrap:anywhere}h1,h2,h3{line-height:1.35;word-break:keep-all}h1{margin-top:0;font-size:clamp(27px,3vw,39px)}h2{font-size:23px;color:var(--green);border-top:1px solid var(--line);padding-top:22px;margin-top:34px}h3{font-size:18px;margin-top:23px}a{color:var(--green);text-underline-offset:3px}p{margin:.8em 0}table{border-collapse:collapse;font-size:.91em;width:100%}td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}th{background:#eaf0ea}figure{margin:1.3em 0}figcaption{font-size:.88em;color:#49605d;margin-bottom:8px}.scene{display:block;position:relative;width:min(100%,560px);padding:0;background:#fff;border:1px solid #bccdc6;cursor:zoom-in}.scene img,.canvas img{display:block;width:100%;height:auto}.focus{position:absolute;border:2px solid #ac710b;background:rgba(255,193,41,.10);pointer-events:none}.canvas{overflow:auto;flex:1;min-height:0;text-align:center}.canvas .sheet{position:relative;display:inline-block;vertical-align:top;width:min(100%,780px)}.canvas.wide .sheet{width:1350px}.canvas.nomark .focus{display:none}dialog{width:min(96vw,1300px);height:94vh;padding:10px;border:0;background:#f1f3f2}dialog[open]{display:flex;flex-direction:column;gap:8px}dialog::backdrop{background:#112a28bf}dialog button{padding:8px 14px;cursor:pointer}dialog>div:first-child{display:flex;justify-content:flex-end;gap:7px}code{overflow-wrap:anywhere}figure img{background:white}main>a{margin-right:8px}@media(max-width:820px){.layout{display:block;padding:12px}.layout aside{position:static;max-height:230px;margin-bottom:12px}main{padding:16px}h2{font-size:20px}body{font-size:16px}td,th{padding:5px}.canvas.wide .sheet{width:1050px}}
+</style></head>
+<body><header><a href="논문_읽기목록.html">NLP 5조 · 논문 읽기 목록</a><span>발표 32편 · 보충 4편</span></header>
+<div class="layout"><aside><details open><summary>이 문서의 목차</summary><nav><a href="#먼저-붙잡을-질문">먼저 붙잡을 질문</a><a href="#논문의-논증을-먼저-따라가기">논문의 논증을 먼저 따라가기</a><a href="#figure-1-날짜가-하나라는-가정이-흔들리는-이유">§§1–2, Figure 1 · 날짜가 하나라는 가정이 흔들리는 이유</a><a href="#시간이-바뀌며-내용이-갱신되는-텍스트">§3 · 시간이 바뀌며 내용이 갱신되는 텍스트</a><a href="#모델-비교와-자료-검색이-답하는-질문">§§4–5 · 모델 비교와 자료 검색이 답하는 질문</a><a href="#중복-제거와-크롤-날짜에서-생기는-어긋남">§6 · 중복 제거와 크롤 날짜에서 생기는 어긋남</a><a href="#우리의-이미-아는-사실은-어떻게-고를까요">§7 · 우리의 ‘이미 아는 사실’은 어떻게 고를까요?</a><a href="#원문-장면과-읽는-순서">원문 장면과 읽는 순서</a><a href="#논문-결과와-우리-설계의-경계">논문 결과와 우리 설계의 경계</a></nav></details></aside><main><h1 id="dated-data-한국어-절별-해설">Dated Data · 한국어 절별 해설</h1>
+<p>Dated Data: Tracing Knowledge Cutoffs in Large Language Models</p>
+<p><strong>D14 · 2024 · COLM · 5장</strong></p>
+<p><a href="논문_읽기목록.html">전체 읽기 목록</a> · <a href="https://arxiv.org/pdf/2403.12958v2">해설 기준 판본 PDF</a> · <a href="https://arxiv.org/html/2403.12958v2">공식 서지·원문</a></p>
+<h2 id="먼저-붙잡을-질문">먼저 붙잡을 질문</h2>
+<p>모델이 최신 상태를 틀렸다면 그 사실이 학습 자료에 한 번도 없었다고 결론 내릴 수 있을까요?</p>
+<p><strong>왜 선택했나 — ‘학습 cutoff 이전/이후’라는 데이터 층화의 가정을 점검한다.</strong> 모델에 붙은 단일 cutoff 날짜가 데이터 자원마다 같은 의미인지 묻는다. 특정 사실을 맞혔다고 학습 표본에 있었다고 결론 내리는 방법을 제안한 논문은 아니다.</p>
+<h2 id="논문의-논증을-먼저-따라가기">논문의 논증을 먼저 따라가기</h2>
+<p>‘어느 날짜까지 학습했다’는 설명은 모델 단위지만, 뉴스나 Wikipedia는 자료마다 서로 다른 시점의 복사본으로 남는다. 연구진은 여러 시점에 걸친 뉴스와 Wikipedia 자료를 준비하고, 모델이 각 버전의 텍스트에 얼마나 높은 가능도를 부여하는지 측정한다. 시간에 따른 perplexity 곡선의 최솟값을 이용해 자료원별로 관찰되는 effective cutoff를 추정한다. Figure 1은 이 측정이 왜 필요한지를 보여주는 도입 예시다.</p>
+<p>먼저 여러 모델에서 공표일과 이 추정치가 맞는지 비교한다. 다음에는 훈련 코퍼스가 공개된 경우 실제 자료를 조사해 두 값이 어긋날 경로를 찾는다. 최근 날짜의 CommonCrawl 덤프에도 오래된 내용이 들어가고, 중복 제거가 시점이 다른 유사 버전 중 무엇을 남기는지에 영향을 준다. 따라서 파일이 수집된 날, 문서의 내용이 가리키는 날, 모델에서 상대적으로 친숙하게 보이는 시점은 달라질 수 있다.</p>
+<p>우리 사례의 ‘2022년 사건’도 같은 구분이 필요하다. 사건은 2022년에 벌어졌지만 핵심 수치가 정정·확정된 것은 이후일 수 있다. 사건일과 최초 확정일을 주석하고 모델의 자료 없는 응답도 따로 측정하면, 모델이 실제로 보인 답을 기준으로 초기 정답/오답을 층화할 수 있다. 이 측정은 논문이 자료원 단위로 계산한 버전별 perplexity와 구분해 보고한다.</p>
+<h2 id="figure-1-날짜가-하나라는-가정이-흔들리는-이유">§§1–2, Figure 1 · 날짜가 하나라는 가정이 흔들리는 이유</h2>
+<p><a href="https://arxiv.org/pdf/2403.12958v2#page=1">PDF pp. 1–3</a></p>
+<p>사건이 일어난 날, 문서가 바뀐 날, 크롤링한 날, 모델이 보고한 수집 종료일은 서로 다를 수 있습니다. Figure 1의 시간별 문서 버전은 같은 문서도 어느 시점의 내용을 대표하는지 달라질 수 있음을 보여줍니다.</p>
+<h2 id="시간이-바뀌며-내용이-갱신되는-텍스트">§3 · 시간이 바뀌며 내용이 갱신되는 텍스트</h2>
+<p><a href="https://arxiv.org/pdf/2403.12958v2#page=3">PDF pp. 3–5</a></p>
+<p>NewsSpan과 WikiSpan으로 뉴스·위키의 여러 시점 버전을 다룹니다. 모델이 어느 버전을 더 자연스럽게 보는지를 점수화하는 probing과, 접근 가능한 사전학습 코퍼스에서 실제 버전을 찾는 mining을 구분합니다. 전자는 행동 측정이고 후자는 자료를 직접 조사하는 절차입니다.</p>
+<h2 id="모델-비교와-자료-검색이-답하는-질문">§§4–5 · 모델 비교와 자료 검색이 답하는 질문</h2>
+<p><a href="https://arxiv.org/pdf/2403.12958v2#page=5">PDF pp. 5–8</a></p>
+<p>공개 모델·코퍼스에서 시간별 문장 버전의 선호와 실제 자료 존재를 대조합니다. 특정 버전에 낮은 perplexity를 주는 것은 모델이 그 문장을 잘 예측한다는 관찰입니다. 특정 사실의 학습 여부를 개인별로 증명하는 표시는 아닙니다. 뉴스와 위키는 갱신·복제 방식도 다릅니다.</p>
+<h2 id="중복-제거와-크롤-날짜에서-생기는-어긋남">§6 · 중복 제거와 크롤 날짜에서 생기는 어긋남</h2>
+<p><a href="https://arxiv.org/pdf/2403.12958v2#page=8">PDF pp. 8–10</a></p>
+<p>비슷한 문서 여러 개 중 어떤 버전이 남았는지, 새 덤프에도 오래된 내용이 들어 있는지를 조사합니다. 이 단계는 명시된 종료일 앞뒤에 자료가 칼로 자른 듯 나뉘지 않는 이유를 데이터 처리 과정에서 설명합니다.</p>
+<h2 id="우리의-이미-아는-사실은-어떻게-고를까요">§7 · 우리의 ‘이미 아는 사실’은 어떻게 고를까요?</h2>
+<p><a href="https://arxiv.org/pdf/2403.12958v2#page=10">PDF p. 10</a></p>
+<p>대상 날짜와 출처 공개일을 기록하고, 자료 없는 응답을 반복해 안정적으로 맞히는 사례를 찾을 수 있습니다. 이는 실험 전 행동 기준입니다. 해당 사실을 학습 자료에 실제 포함한 것으로 단정하지 않으면, 이후 가짜 문서가 답을 바꿨다는 관찰도 더 정확해집니다.</p>
+<h2 id="원문-장면과-읽는-순서">원문 장면과 읽는 순서</h2>
+<p>Figure 1은 하나의 사실이 시간에 따라 다른 문서 버전으로 나타나는 모습을 보여줍니다. Table 1에 적힌 학습 자료 정보가 특정 사실을 모델이 안다는 증거인지 구분하세요.</p>
+<p><strong>Figure 1 · dated dataset versions</strong> · <a href="https://arxiv.org/pdf/2403.12958v2#page=2">PDF p. 2</a></p>
+<p><a href="https://arxiv.org/pdf/2403.12958v2#page=2">원문 전체 2페이지 열기</a></p>
+<p><strong>Table 1 · reported training data</strong> · <a href="https://arxiv.org/pdf/2403.12958v2#page=4">PDF p. 4</a></p>
+<p><a href="https://arxiv.org/pdf/2403.12958v2#page=4">원문 전체 4페이지 열기</a></p>
+<h2 id="논문-결과와-우리-설계의-경계">논문 결과와 우리 설계의 경계</h2>
+<p><strong>원문에서 보고한 결과.</strong> 보고된 cutoff와 실제 관찰되는 자원별 cutoff가 다를 수 있다. 새 crawl 안의 오래된 자료와 중복 제거 과정이 관련된다.</p>
+<p><strong>우리 연구로 가져올 부분.</strong> 문서 게시일·사건일·최초 확정일·모델 공개일을 구분한다. 우리 세 paraphrase probe는 이 논문의 perplexity 기반 cutoff 추정과 같은 방법이 아니다. 참고한 것은 ‘명목상 cutoff만으로 사실의 학습 여부를 단정하지 말라’는 데이터 설계의 이유다. FreshLLMs의 시간 변화 질문과 함께 읽으면 실제 사례 구성으로 이어진다.</p>
+<p><strong>팀에서 풀어 볼 질문.</strong> 사건은 2020년에 벌어지고 확정 수치는 2022년에 공개됐다면 평가 기준일을 어느 필드에 기록할까요?</p>
+<h3 id="지식-cutoff가-알려졌는데-왜-closed-book-점검이-필요한가요">지식 cutoff가 알려졌는데 왜 closed-book 점검이 필요한가요?</h3>
+<p><strong>30초 답변:</strong> “마감일은 특정 사실의 학습·정확한 회상을 보증하지 않기 때문입니다. <strong>학습 자료의 시점, 포함 여부, 응답에서의 접근 가능성</strong>을 구분해야 합니다.”</p>
+<p><strong>풀어서 설명:</strong> Dated Data는 모델이 사용하는 데이터 자원의 버전과 시점이 한 가지 cutoff 표기로 충분히 설명되지 않는 문제를 다룹니다. 날짜 전에 발생한 사실도 빠졌거나 드물게 등장했거나 틀리게 응답할 수 있습니다. 반대로 정답 응답 한 번만으로 실제 학습 데이터 포함을 입증할 수 없습니다.</p>
+<p><strong>연구 연결:</strong> Stable fact 후보는 여러 표현의 closed-book 응답으로 <strong>관찰된 안정성</strong>을 점검합니다. 최신 사실은 문서의 발표일뿐 아니라 <strong>그 정보가 실제로 처음 공개된 시점</strong>도 검토합니다.</p>
+<h3 id="table-1의-pilec4rwccwiki-dump는-무엇인가요">Table 1의 Pile·C4·RW·CC·Wiki Dump는 무엇인가요?</h3>
+<p><strong>30초 답변:</strong> “모두 <strong>학습 데이터 자원 또는 그 시점</strong>을 가리킵니다. 그 표는 모델 성능 순위가 아니라 데이터 구성의 차이를 보여 줍니다.”</p>
+<table>
+<colgroup>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+</colgroup>
+<thead>
+<tr>
+<th>약어·표기</th>
+<th>풀이</th>
+<th>표에서의 의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The Pile</td>
+<td>여러 텍스트 자원을 묶은 학습 corpus 이름</td>
+<td>사용 여부를 표시합니다.</td>
+</tr>
+<tr>
+<td>C4</td>
+<td>Colossal Clean Crawled Corpus</td>
+<td>정제한 웹 텍스트 corpus입니다.</td>
+</tr>
+<tr>
+<td>RW</td>
+<td>RefinedWeb</td>
+<td>정제한 웹 데이터 자원입니다.</td>
+</tr>
+<tr>
+<td>CC</td>
+<td>Common Crawl</td>
+<td>웹 크롤링 데이터 자원입니다.</td>
+</tr>
+<tr>
+<td>Dump</td>
+<td>특정 시점의 데이터 스냅샷</td>
+<td>최신 실시간 데이터라는 뜻이 아닙니다.</td>
+</tr>
+<tr>
+<td>CC Dumps: 5 (’19–’23)</td>
+<td>여러 수집 스냅샷과 연도 범위</td>
+<td>모델 수나 실험 횟수를 뜻하지 않습니다.</td>
+</tr>
+<tr>
+<td>? ’20</td>
+<td>연도는 제시되지만 월이 불명확</td>
+<td>정확한 날짜로 확정해서 읽지 않습니다.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>화면 예시:</strong> 1099-K의 금액 예시는 <strong>논문 당시 서로 다른 시점의 설명이 충돌하는 사례</strong>입니다. 발표에서는 세법의 현재 기준을 안내하는 대신 <strong>시점 혼동의 예시</strong>로 설명합니다.</p>
+<p><a href="논문_읽기목록.html">읽기 목록으로 돌아가기</a></p>
+</main></div>
+<dialog id="zoom" aria-label="논문 원문 페이지"><div><button id="mark">영역 표시 전환</button><button id="size">원본 크기 전환</button><button id="close">닫기</button></div><div class="canvas"></div></dialog><script>const viewer=document.querySelector('#zoom'),canvas=viewer.querySelector('.canvas');let trigger=null;for(const btn of document.querySelectorAll('.scene')){btn.addEventListener('click',()=>{trigger=btn;canvas.className='canvas';canvas.replaceChildren();const sheet=document.createElement('div');sheet.className='sheet';for(const node of btn.children){const copy=node.cloneNode(true);if(copy.tagName==='IMG')copy.loading='eager';sheet.append(copy)}canvas.append(sheet);viewer.showModal()})}document.querySelector('#size').onclick=()=>canvas.classList.toggle('wide');document.querySelector('#mark').onclick=()=>canvas.classList.toggle('nomark');document.querySelector('#close').onclick=()=>viewer.close();viewer.addEventListener('close',()=>{canvas.replaceChildren();if(trigger)trigger.focus()});if(matchMedia('(max-width:820px)').matches)document.querySelector('aside details').open=false;
+</script></body></html>

@@ -1,0 +1,182 @@
+{
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D03_PDF_06_2.jpg": {
+    "caption": "PDF p. 6 · Table 3 · update, retain, or change incorrectly",
+    "focus": "left:16.83%;top:65.4%;width:66.83%;height:21.46%",
+    "page": 6,
+    "paper": "D03",
+    "credit": "Evgenii Kortukov et al.",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source": "https://arxiv.org/pdf/2404.16032v2"
+  },
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D03_PDF_04_1.jpg": {
+    "caption": "PDF p. 4 · Figure 1 · sample selection",
+    "focus": "left:16.83%;top:8.21%;width:66.83%;height:27.15%",
+    "page": 4,
+    "paper": "D03",
+    "credit": "Evgenii Kortukov et al.",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source": "https://arxiv.org/pdf/2404.16032v2"
+  },
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D04_PDF_04_1.jpg": {
+    "caption": "PDF p. 4 · Figure 4 · source-aware consolidation",
+    "focus": "left:10.75%;top:7.25%;width:78.79%;height:30.17%",
+    "page": 4,
+    "paper": "D04",
+    "credit": "Wang et al.",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source": "https://aclanthology.org/2025.acl-long.1476.pdf"
+  },
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D07_PDF_05_2.jpg": {
+    "caption": "PDF p. 5 · Table 4 · intrinsic self-correction",
+    "focus": "left:16.83%;top:10.73%;width:66.83%;height:16.16%",
+    "page": 5,
+    "paper": "D07",
+    "credit": "Jie Huang et al.",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source": "https://arxiv.org/pdf/2310.01798v2"
+  },
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D07_PDF_04_1.jpg": {
+    "caption": "PDF p. 4 · Table 3 · intrinsic self-correction",
+    "focus": "left:16.83%;top:24.62%;width:66.83%;height:16.54%",
+    "page": 4,
+    "paper": "D07",
+    "credit": "Jie Huang et al.",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source": "https://arxiv.org/pdf/2310.01798v2"
+  },
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D08_PDF_06_1.jpg": {
+    "caption": "PDF p. 6 · Table 3 · accuracy and cost",
+    "focus": "left:10.75%;top:7.25%;width:38.97%;height:20.07%",
+    "page": 6,
+    "paper": "D08",
+    "credit": "Zhuohan Xie et al.",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source": "https://aclanthology.org/2025.findings-naacl.158.pdf"
+  },
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D10_PDF_03_1.jpg": {
+    "caption": "PDF p. 3 · Figure 2 · matched corpus conditions",
+    "focus": "left:10.92%;top:7.36%;width:78.79%;height:35.99%",
+    "page": 3,
+    "paper": "D10",
+    "credit": "Zhou et al.",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source": "https://aclanthology.org/2026.emnlp-main.509.pdf"
+  },
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D15_PDF_02_1.jpg": {
+    "caption": "PDF p. 2 · Figures 1–3 · over-search and under-search",
+    "focus": "left:50.4%;top:7.36%;width:39.14%;height:60.93%",
+    "page": 2,
+    "paper": "D15",
+    "credit": "Peilin Wu et al.",
+    "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "source": "https://arxiv.org/pdf/2505.17281v2"
+  },
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D18_PDF_02_1.jpg": {
+    "caption": "PDF p. 2 · Figure 1 · prompting and interaction examples",
+    "focus": "left:16.18%;top:10.1%;width:67.97%;height:50.51%",
+    "page": 2,
+    "paper": "D18",
+    "credit": "Shunyu Yao et al.",
+    "license": "http://creativecommons.org/licenses/by/4.0/",
+    "source": "https://arxiv.org/pdf/2210.03629v3"
+  },
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D19_PDF_02_1.jpg": {
+    "caption": "PDF p. 2 · Figure 1 · claim and evidence",
+    "focus": "left:50.4%;top:6.77%;width:39.14%;height:31.36%",
+    "page": 2,
+    "paper": "D19",
+    "credit": "James Thorne et al.",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source": "https://aclanthology.org/N18-1074.pdf"
+  },
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D21_PDF_04_1.jpg": {
+    "caption": "PDF p. 4 · Table 1 · factual and non-factual revisions",
+    "focus": "left:10.92%;top:7.72%;width:78.95%;height:38.84%",
+    "page": 4,
+    "paper": "D21",
+    "credit": "저자명은 연결한 공식 서지와 PDF 첫 면 참조",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source": "https://aclanthology.org/2021.naacl-main.52.pdf"
+  },
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D22_PDF_05_2.jpg": {
+    "caption": "PDF p. 5 · Figure 3 · construction and validation",
+    "focus": "left:16.83%;top:8.96%;width:66.99%;height:27.65%",
+    "page": 5,
+    "paper": "D22",
+    "credit": "Ming et al.",
+    "license": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "source": "https://arxiv.org/pdf/2410.03727v3"
+  },
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D22_PDF_04_1.jpg": {
+    "caption": "PDF p. 4 · Figure 2 · three context conditions",
+    "focus": "left:16.83%;top:8.84%;width:66.99%;height:31.82%",
+    "page": 4,
+    "paper": "D22",
+    "credit": "Ming et al.",
+    "license": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "source": "https://arxiv.org/pdf/2410.03727v3"
+  },
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D25_PDF_04_2.jpg": {
+    "caption": "PDF p. 4 · Table 1 · reflection-token types",
+    "focus": "left:16.83%;top:9.85%;width:66.83%;height:15.4%",
+    "page": 4,
+    "paper": "D25",
+    "credit": "저자명은 연결한 공식 서지와 PDF 첫 면 참조",
+    "license": "http://creativecommons.org/licenses/by/4.0/",
+    "source": "https://arxiv.org/pdf/2310.11511v1"
+  },
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D25_PDF_02_1.jpg": {
+    "caption": "PDF p. 2 · Figure 1 · retrieval and reflection",
+    "focus": "left:16.83%;top:8.21%;width:66.83%;height:35.23%",
+    "page": 2,
+    "paper": "D25",
+    "credit": "저자명은 연결한 공식 서지와 PDF 첫 면 참조",
+    "license": "http://creativecommons.org/licenses/by/4.0/",
+    "source": "https://arxiv.org/pdf/2310.11511v1"
+  },
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D26_PDF_04_1.jpg": {
+    "caption": "PDF p. 4 · Figure 3 · citation evaluation",
+    "focus": "left:50.56%;top:7.25%;width:38.97%;height:36.58%",
+    "page": 4,
+    "paper": "D26",
+    "credit": "Tianyu Gao; Howard Yen; Jiatong Yu; Danqi Chen",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source": "https://aclanthology.org/2023.emnlp-main.398.pdf"
+  },
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D27_PDF_05_2.jpg": {
+    "caption": "PDF p. 5 · Section 3.3 · weighted evidence scorer",
+    "focus": "left:50.4%;top:32.9%;width:39.48%;height:33.38%",
+    "page": 5,
+    "paper": "D27",
+    "credit": "Mubashara Akhtar; Michael Schlichtkrull; Andreas Vlachos",
+    "license": "http://creativecommons.org/licenses/by/4.0/",
+    "source": "https://arxiv.org/pdf/2411.05375v2"
+  },
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D27_PDF_02_1.jpg": {
+    "caption": "PDF p. 2 · Figure 1 · evidence scorer",
+    "focus": "left:10.92%;top:7.25%;width:78.62%;height:31.36%",
+    "page": 2,
+    "paper": "D27",
+    "credit": "Mubashara Akhtar; Michael Schlichtkrull; Andreas Vlachos",
+    "license": "http://creativecommons.org/licenses/by/4.0/",
+    "source": "https://arxiv.org/pdf/2411.05375v2"
+  },
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D30_PDF_01_1.jpg": {
+    "caption": "PDF p. 1 · Figure 1 · explicit and implicit questions",
+    "focus": "left:50.23%;top:24.59%;width:39.48%;height:32.07%",
+    "page": 1,
+    "paper": "D30",
+    "credit": "저자명은 연결한 공식 서지와 PDF 첫 면 참조",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "source": "https://aclanthology.org/2022.emnlp-main.229.pdf"
+  },
+  "%EC%9B%90%EB%AC%B8%EC%9E%A5%EB%A9%B4/D31_PDF_04_1.jpg": {
+    "caption": "PDF p. 4 · Tables 2–3 · decomposition outcomes",
+    "focus": "left:50.4%;top:21.86%;width:39.31%;height:34.8%",
+    "page": 4,
+    "paper": "D31",
+    "credit": "Hu et al.",
+    "license": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "source": "https://arxiv.org/pdf/2411.02400v2"
+  }
+}
