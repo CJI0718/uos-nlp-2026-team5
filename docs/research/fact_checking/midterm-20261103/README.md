@@ -13,6 +13,8 @@
 
 ## 개별 해설
 
+**[발표 PDF 15장 기준 전체 읽기 목록](readings/README.md)**에 발표 32편과 보충 4편의 한국어 절별 해설이 있습니다. [발표 PDF 열기](NLP_Team5_Midterm_Literature_15slides.pdf) · [브라우저용 목록](readings/논문_읽기목록.html)
+
 기존 통합 가이드를 중복 작성하지 않고 빠진 **RAGuard와 Stop-RAG 두 편**을 새로 작성했습니다. 기존에 로컬에서 읽었던 개별 해설도 함께 공유합니다.
 
 | 논문 | 읽기 문서 | 발표 연결 |
