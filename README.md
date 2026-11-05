@@ -7,7 +7,7 @@
 
 ## 지금 함께 볼 자료
 
-- **[11월 5일 최신 발표 묶음](docs/research/fact_checking/midterm-20261103/ready-20261105/README.md)** · 17장 PPTX · 대본 HTML · 질의 대응 · 31편 실험 비교표
+- **[11월 5일 최신 발표 묶음](docs/research/fact_checking/midterm-20261103/ready-20261105/README.md)** · 표지 포함 18장 PPTX · 대본 HTML · 질의 대응 · 31편 실험 비교표
 
 - **[발표 PDF 순서로 읽는 논문별 절별 해설](docs/research/fact_checking/midterm-20261103/readings/README.md)** · 발표 32편과 보충 4편을 한국어로 읽습니다. 각 슬라이드에서 인용한 논문의 해당 절과 원문 페이지로 바로 이동할 수 있습니다.
 
@@ -93,3 +93,4 @@ HTML 한 파일에 CSS·JavaScript·데이터·상세 리서치가 들어 있어
 계정·비밀번호를 공유하지 않습니다.
 
 웹에서 문서를 수정하는 방법부터 시작해도 됩니다. [협업 안내 보기](CONTRIBUTING.md).
+
