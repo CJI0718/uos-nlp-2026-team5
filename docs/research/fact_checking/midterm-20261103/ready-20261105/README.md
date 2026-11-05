@@ -1,15 +1,17 @@
 # NLP 5조 중간발표 · 2026-11-05 최신 묶음
 
-**Task A: Fact-checking under imperfect evidence**를 발표 과제로 확정했습니다. 문헌 15장 뒤에 Task 1장, **Task (And Improvement?)** 1장을 배치했습니다. RL 제어기와 세부 지표는 교수님 피드백을 받을 확장 후보입니다.
+**Task A: Fact-checking under imperfect evidence**를 발표 과제로 확정했습니다. 파란 표지 1장과 문헌 15장 뒤에 Task 1장, **Task (And Improvement?)** 1장을 배치했습니다. RL 제어기와 세부 지표는 교수님 피드백을 받을 확장 후보입니다.
 
 | 자료 | 용도 |
 |---|---|
-| [발표 PPTX · 17장](NLP_Team5_Midterm_17slides_TaskA.pptx) | 편집 가능한 최신 발표본 |
+| [발표 PPTX · 표지 포함 18장](NLP_Team5_Midterm_18slides_with_Cover.pptx) | 편집 가능한 최신 발표본 |
 | [발표 대본 HTML](발표대본_한국어.html) · [MD](발표대본_한국어.md) | 17장 화면 내장, 슬라이드 이동·검색·글자 크기·다크 모드 |
 | [질의 대응 HTML](NLP_Team5_발표_질의응답_매뉴얼.html) · [MD](NLP_Team5_발표_질의응답_매뉴얼.md) | 111개 질문, 32편 지표·성능·분모·비교 조건 |
 | [31편 실험 비교 HTML](comparison/논문31편_실험비교.html) · [MD](comparison/논문31편_실험비교.md) | 실험 단위·모델·데이터·검색·학습·결과 비교 |
 | [지표 정의와 예시](TaskA_지표정의와_평가예시.md) | 가상 예시, 수식, 분모, 보류·실패 처리 |
 | [외부 Fetch API 조사](C2_외부Fetch_API_리서치_2026-11-05.md) | X·Exa·Tavily·Brave·공식 자료의 역할과 실험 통제 |
+
+표지 다음의 본문 01–17 번호는 유지했습니다. 대본·질의 대응의 번호는 이 본문 번호이며, PowerPoint 페이지 번호보다 1 작습니다. 마지막 Task 제목은 사용자 수정본을 반영했습니다.
 
 ## 태블릿에서 보기
 
@@ -22,3 +24,4 @@ C0: closed-book 판정 → C1: fixed-corpus RAG → C2: 동일 초기 근거 + �
 ## 범위와 출처
 
 논문 수치는 원 연구 결과이며 이 프로젝트의 실험 결과가 아닙니다. 지표 예시는 가상입니다. Task A 확정은 2026-11-05 사용자 결정에 따른 발표안이며 모델·예산·RL 학습 착수까지 승인한 것은 아닙니다. 팀원 기존 50개 자료와 제안은 원 위치에 보존했습니다. 로컬 작업·비공개 trajectory·API 키는 공유 대상에 포함하지 않았습니다. 이전 18장 후보안은 상위 폴더에 탐색 기록으로 남아 있습니다.
+
