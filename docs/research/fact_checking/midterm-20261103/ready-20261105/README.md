@@ -32,4 +32,4 @@ C0: closed-book 판정 → C1: fixed-corpus RAG → C2: 동일 초기 근거 + �
 
 Pandoc와 Python beautifulsoup4가 설치된 환경에서 이 폴더의 tools/build_metrics_qa.py를 실행합니다. 수식은 MathML로 포함되어 외부 수식 라이브러리 없이 읽을 수 있습니다. 주지표와 채점 프로토콜은 팀·교수님 협의용 권고안이며, 기존 슬라이드를 수정한 것은 아닙니다.
 
-
+2026-11-05 복구: 표지 연결 구조를 정리한 뒤 실제 Microsoft PowerPoint에서 18장 열기·저장·재열기를 확인했습니다. 사용자 수정본의 본문 17장 텍스트와 순서는 유지했습니다.
