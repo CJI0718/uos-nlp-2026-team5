@@ -209,6 +209,37 @@ class AgentResult:
         }
 
 
+@dataclass
+class EpisodeState:
+    """What a policy may inspect when choosing the next action.
+
+    Deliberately contains no gold fields: a policy that could see the answer
+    would invalidate the measurement. Lives in schema so that both loop and
+    policies can import it without a cycle.
+    """
+
+    claim: "Claim"
+    step: int
+    events: list[ToolEvent] = field(default_factory=list)
+
+    def observations_for(self, tool: str) -> list[ToolEvent]:
+        return [e for e in self.events if e.tool == tool]
+
+    @property
+    def retrieved_ids(self) -> list[str]:
+        """Evidence ids in the order they first appeared, best rank first."""
+        ids: list[str] = []
+        for event in self.events:
+            for evidence_id in event.evidence_ids:
+                if evidence_id not in ids:
+                    ids.append(evidence_id)
+        return ids
+
+    @property
+    def tool_call_count(self) -> int:
+        return len(self.events)
+
+
 def read_jsonl(path: str | Path) -> list[dict]:
     lines = Path(path).read_text(encoding="utf-8").splitlines()
     return [json.loads(line) for line in lines if line.strip()]

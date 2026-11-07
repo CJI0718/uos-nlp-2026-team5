@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from typing import Protocol
 
 from task_a.schema import (
-    AgentResult, Claim, ExecutionStatus, ToolEvent, ToolStatus, Usage, Verdict,
+    AgentResult, Claim, EpisodeState, ExecutionStatus, ToolEvent, ToolStatus, Usage, Verdict,
 )
 from task_a.tools import FINISH_SCHEMA, ToolRegistry
 
@@ -80,28 +80,31 @@ class Budget:
 
 
 class ReActAgent:
+    """Runs one episode. `policy` decides who picks the next action.
+
+    policy=None is the adaptive default: the model chooses every tool call.
+    Passing a policy is what makes the fixed-workflow and closed-book arms
+    comparable at the same model, tools and budget (Q03).
+    """
+
     def __init__(
         self,
         llm: LLMClient,
         registry: ToolRegistry,
         budget: Budget | None = None,
-        system_prompt: str = SYSTEM_PROMPT,
+        policy=None,
+        system_prompt: str | None = None,
     ) -> None:
         self.llm = llm
         self.registry = registry
         self.budget = budget or Budget()
-        self.system_prompt = system_prompt
+        self.policy = policy
+        self.system_prompt = system_prompt or (
+            policy.system_prompt if policy is not None else SYSTEM_PROMPT)
 
     def run(self, claim: Claim) -> AgentResult:
         started = time.monotonic()
         messages = self._initial_messages(claim)
-        tools = self.registry.schemas + [{
-            "type": "function",
-            "function": {"name": FINISH_TOOL,
-                         "description": "검증을 끝내고 최종 판정을 제출한다. 반드시 마지막으로 호출한다.",
-                         "parameters": FINISH_SCHEMA},
-        }]
-
         events: list[ToolEvent] = []
         usage = Usage()
         tool_calls = external_calls = 0
@@ -112,22 +115,29 @@ class ReActAgent:
                 return self._fail(claim, events, usage, step, started,
                                   ExecutionStatus.BUDGET_EXCEEDED, f"예산 소진: {over}")
 
-            response = self._complete(messages, tools)
-            if response is None:
-                return self._fail(claim, events, usage, step, started,
-                                  ExecutionStatus.PROVIDER_ERROR, "LLM 호출 실패")
-            usage.add(response.usage)
-
-            if not response.tool_calls:
-                # Model answered in prose instead of calling finish_verification.
-                parsed = _parse_finish(response.content)
-                if parsed is None:
+            state = EpisodeState(claim=claim, step=step, events=events)
+            forced = self.policy.force(state) if self.policy is not None else None
+            if forced is not None:
+                calls = [forced]
+                messages.append(_assistant_tool_call(forced))
+            else:
+                response = self._complete(messages, self._tools(state))
+                if response is None:
                     return self._fail(claim, events, usage, step, started,
-                                      ExecutionStatus.PARSE_ERROR,
-                                      "finish_verification 없이 종료")
-                return self._finish(claim, parsed, events, usage, step, started)
+                                      ExecutionStatus.PROVIDER_ERROR, "LLM 호출 실패")
+                usage.add(response.usage)
 
-            for call in response.tool_calls:
+                if not response.tool_calls:
+                    # Model answered in prose instead of calling finish_verification.
+                    parsed = _parse_finish(response.content)
+                    if parsed is None:
+                        return self._fail(claim, events, usage, step, started,
+                                          ExecutionStatus.PARSE_ERROR,
+                                          "finish_verification 없이 종료")
+                    return self._finish(claim, parsed, events, usage, step, started)
+                calls = response.tool_calls
+
+            for call in calls:
                 if call.name == FINISH_TOOL:
                     return self._finish(claim, call.args, events, usage, step, started)
 
@@ -155,6 +165,19 @@ class ReActAgent:
                           ExecutionStatus.BUDGET_EXCEEDED, "max_steps 도달")
 
     # -- internals ---------------------------------------------------------
+
+    def _tools(self, state: EpisodeState) -> list[dict]:
+        finish = {"type": "function",
+                  "function": {"name": FINISH_TOOL,
+                               "description": "검증을 끝내고 최종 판정을 제출한다. "
+                                              "반드시 마지막으로 호출한다.",
+                               "parameters": FINISH_SCHEMA}}
+        schemas = self.registry.schemas + [finish]
+        if self.policy is None:
+            return schemas
+        allowed = set(self.policy.allowed_tools(
+            [s["function"]["name"] for s in schemas], state))
+        return [s for s in schemas if s["function"]["name"] in allowed]
 
     def _initial_messages(self, claim: Claim) -> list[dict]:
         parts = [f"검증할 주장: {claim.text}"]
@@ -201,6 +224,19 @@ class ReActAgent:
             cited_evidence_ids=[], justification="", correction=None,
             stop_reason=reason, execution_status=status,
             events=events, usage=usage, steps=step, error=reason)
+
+
+def _assistant_tool_call(call: ToolCall) -> dict:
+    """Synthesise the assistant turn for a policy-forced call.
+
+    A `tool` role message must follow an assistant message declaring that call,
+    so a forced step has to write both. Without this the transcript is invalid
+    for any OpenAI-compatible provider.
+    """
+    return {"role": "assistant", "content": None,
+            "tool_calls": [{"id": call.id, "type": "function",
+                            "function": {"name": call.name,
+                                         "arguments": json.dumps(call.args, ensure_ascii=False)}}]}
 
 
 def _parse_finish(content: str | None) -> dict | None:

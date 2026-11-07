@@ -5,6 +5,7 @@ description = "NLP Team 5 Task A - fact-checking agent under imperfect evidence"
 requires-python = ">=3.12"
 dependencies = [
     "kiwipiepy>=0.24.1",
+    "openai>=3.46.0",
     "rank-bm25>=0.2.2",
 ]
 
