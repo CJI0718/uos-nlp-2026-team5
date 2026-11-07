@@ -7,31 +7,14 @@ infrastructure, not a substitute for the live backend.
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass, field
 
 from task_a.loop import LLMResponse, ToolCall
+from task_a.retrieve import BigramTokenizer
 from task_a.schema import EvidenceUnit, Usage
 from task_a.tools import ToolBackend
 
-_LATIN = re.compile(r"[A-Za-z0-9]+")
-_HANGUL_RUN = re.compile(r"[가-힣]+")
-
-
-def tokenize(text: str) -> list[str]:
-    """Latin/digit words plus Korean bigrams.
-
-    Single-character Korean tokens match nearly every document, so runs are
-    split into bigrams instead. Deliberately dependency-free: retrieve.py
-    replaces this with a real BM25 index plus a morphological analyser.
-    """
-    tokens = [t.lower() for t in _LATIN.findall(text or "")]
-    for run in _HANGUL_RUN.findall(text or ""):
-        if len(run) == 1:
-            tokens.append(run)
-        else:
-            tokens.extend(run[i:i + 2] for i in range(len(run) - 1))
-    return tokens
+tokenize = BigramTokenizer().tokenize
 
 
 class MockBackend:
