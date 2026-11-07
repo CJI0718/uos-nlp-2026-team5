@@ -37,8 +37,8 @@ class CountingWeb:
 
 
 def make_config(**overrides) -> RunConfig:
-    base = dict(run_id="exp-001", condition="C2", policy="react", model_id="m",
-                prompt_version="p1", data_version="d1")
+    base = dict(run_id="exp-001", arm="C2", condition="sufficient", policy="react",
+                model_id="m", prompt_version="p1", data_version="d1")
     base.update(overrides)
     return RunConfig(**base)
 
@@ -118,6 +118,29 @@ def test_disabled_cache_always_goes_live(tmp_path):
     assert not (tmp_path / "c.jsonl").exists()
 
 
+def test_c1_is_not_served_external_results_from_a_c2_cache(tmp_path):
+    """A cache written by a C2 run must not grant C1 external access.
+
+    Sharing one cache file across arms is convenient, so the arm check has to
+    come before the cache lookup. Otherwise the C1/C2 distinction - which is the
+    experiment - is void for any query a previous C2 episode happened to make.
+    """
+    path = tmp_path / "shared_cache.jsonl"
+    query = "Vision Pro pre-order"
+
+    c2 = CachingBackend(CorpusBackend([DOC], BigramTokenizer(), web=CountingWeb()),
+                        ToolCache(path))
+    assert c2.web_search(query, 5)
+    assert path.exists()
+
+    c1 = CachingBackend(CorpusBackend([DOC], BigramTokenizer(), web=None), ToolCache(path))
+    with pytest.raises(PermissionError, match="C1 조건"):
+        c1.web_search(query, 5)
+
+    assert c1.served_from_cache == 0
+    assert c1.cache.hits == 0
+
+
 def test_corpus_search_is_not_cached(tmp_path):
     """Retrieval is deterministic given a frozen index; caching it would hide
     index changes between conditions."""
@@ -158,7 +181,7 @@ def test_run_log_is_append_only(tmp_path):
     lines = (tmp_path / "run.jsonl").read_text(encoding="utf-8").strip().splitlines()
     assert len(lines) == 2
     assert json.loads(lines[0])["result"]["claim_id"] == "FC001"
-    assert json.loads(lines[1])["config"]["condition"] == "C2"
+    assert json.loads(lines[1])["config"]["arm"] == "C2"
 
 
 def test_completed_episodes_are_not_rerun(tmp_path):
@@ -177,12 +200,15 @@ def test_completed_episodes_are_not_rerun(tmp_path):
 
 def test_run_log_records_which_run_produced_the_result(tmp_path):
     log = RunLog(tmp_path / "run.jsonl")
-    log.append(make_config(run_id="exp-002", condition="C1", policy="fixed_workflow",
-                           model_id="m2", seed=7, replay=True), make_result("FC003"))
+    log.append(make_config(run_id="exp-002", arm="C1", condition="misleading",
+                           policy="fixed_workflow", model_id="m2", seed=7, replay=True),
+               make_result("FC003"))
 
     row = log.load()[0]
     assert row["config"]["run_id"] == "exp-002"
-    assert row["config"]["condition"] == "C1"
+    assert row["config"]["arm"] == "C1"
+    assert row["config"]["condition"] == "misleading"
+    assert row["config"]["policy"] == "fixed_workflow"
     assert row["config"]["seed"] == 7
     assert row["config"]["replay"] is True
 

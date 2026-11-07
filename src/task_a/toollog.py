@@ -40,14 +40,15 @@ class RunConfig:
     """Everything needed to tell two runs apart. Recorded on every result row."""
 
     run_id: str
-    condition: str                       # C0 | C1 | C2
-    policy: str                          # react | fixed_workflow | closed_book
+    arm: str                               # C0 | C1 | C2 - what information is reachable
+    condition: str                         # sufficient | missing | conflict | misleading
+    policy: str                            # react | fixed_workflow | closed_book
     model_id: str
     prompt_version: str
     data_version: str
     seed: int = 0
     code_commit: str | None = None
-    replay: bool = False                 # True when served from cache
+    replay: bool = False                   # True when served from cache
     extra: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:
@@ -127,6 +128,14 @@ class CachingBackend:
         self.served_from_cache = 0
         self.fetched_live = 0
 
+    @property
+    def web(self):
+        """Expose the wrapped provider so callers can tell C1 from C2.
+
+        A wrapper that hides this makes the arm it is serving uninspectable.
+        """
+        return getattr(self.inner, "web", None)
+
     def search_corpus(self, query: str, top_k: int):
         return self.inner.search_corpus(query, top_k)
 
@@ -134,11 +143,24 @@ class CachingBackend:
         return self.inner.lookup(evidence_id) if hasattr(self.inner, "lookup") else None
 
     def web_search(self, query: str, top_k: int) -> list[dict]:
+        self._assert_external_allowed()
         return self._cached_call("search_web", {"query": query, "top_k": top_k},
                                  lambda: self.inner.web_search(query, top_k))
 
     def fetch(self, url: str) -> str:
+        self._assert_external_allowed()
         return self._cached_call("fetch_url", {"url": url}, lambda: self.inner.fetch(url))
+
+    def _assert_external_allowed(self) -> None:
+        """Check the arm before consulting the cache.
+
+        A C1 episode whose query happens to be in a cache written by a C2 run
+        would otherwise be served external results, and the C1/C2 distinction -
+        which is the experiment - would be silently void. The cache is a replay
+        store, not a permission grant.
+        """
+        if self.web is None:
+            raise PermissionError("C1 조건: 외부 검색이 비활성화되어 있다")
 
     def _cached_call(self, tool: str, args: dict, call):
         key = cache_key(tool, args)
