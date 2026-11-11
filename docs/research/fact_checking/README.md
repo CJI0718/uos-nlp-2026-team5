@@ -1,6 +1,6 @@
 # 근거 기반 팩트체크 Agent · 연구 구상
 
-[2026-10-29 최신 팀 공유 안내](team_guide/README.md) · [Task·논문·4조합 설계](team_guide/팀공유.md) · [전체 111편 원문](team_guide/원문_다운로드_현황.md)
+[2026-10-29 최신 팀 공유 안내](https://github.com/CJI0718/uos-nlp-2026-team5/blob/main/docs/research/fact_checking/team_guide/README.md) · [Task·논문·4조합 설계](https://github.com/CJI0718/uos-nlp-2026-team5/blob/main/docs/research/fact_checking/team_guide/%ED%8C%80%EA%B3%B5%EC%9C%A0.md) · [전체 111편 원문](https://github.com/CJI0718/uos-nlp-2026-team5/blob/main/docs/research/fact_checking/team_guide/%EC%9B%90%EB%AC%B8_%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C_%ED%98%84%ED%99%A9.md)
 
 기준일: **2026-10-23**. 큰 방향은 팀 합의, 아래 세부 설계는 **제안**. 코드 구현·모델 실험·데이터 작성 결과가 아니다.
 

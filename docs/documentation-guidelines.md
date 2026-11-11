@@ -41,4 +41,4 @@
 - 팀원 수와 현재 과제 범위를 반영한다. 관련 branch와 commit을 확인해 팀원의 최신 제안을 빠뜨리지 않는다.
 - 새 문서와 과거 탐색 기록의 위치를 구분하고, README에서 현재 안내문으로 바로 진입할 수 있게 한다.
 
-기준 문서: [팩트체크 팀 공유 안내](research/fact_checking/team_guide/팀공유.md).
+기준 문서: [팩트체크 팀 공유 안내](https://github.com/CJI0718/uos-nlp-2026-team5/blob/main/docs/research/fact_checking/team_guide/%ED%8C%80%EA%B3%B5%EC%9C%A0.md).

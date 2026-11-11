@@ -4,7 +4,7 @@
 
 이 문서는 세 팀원이 같은 출발점에서 Task를 논의하기 위한 정리입니다. 중간 발표는 논문을 하나씩 소개하는 목록보다 **어떤 의문이 생겼고, 선행연구를 읽으며 그 의문을 어떻게 좁혔는지**를 보여주는 흐름으로 구성합니다.
 
-**먼저 볼 자료:** [편집 가능한 발표 18장](NLP_Team5_Midterm_18slides.pptx) · [발표 논문 읽기 지도](발표논문_읽기지도.md) · [기존 31편 통합 가이드](../knowledge-revision/팀공유_연구가이드.html)
+**먼저 볼 자료:** [편집 가능한 발표 18장](https://github.com/CJI0718/uos-nlp-2026-team5/blob/main/docs/research/fact_checking/midterm-20261103/NLP_Team5_Midterm_18slides.pptx) · [발표 논문 읽기 지도](https://github.com/CJI0718/uos-nlp-2026-team5/blob/main/docs/research/fact_checking/midterm-20261103/%EB%B0%9C%ED%91%9C%EB%85%BC%EB%AC%B8_%EC%9D%BD%EA%B8%B0%EC%A7%80%EB%8F%84.md) · [기존 31편 통합 가이드](https://github.com/CJI0718/uos-nlp-2026-team5/blob/main/docs/research/fact_checking/knowledge-revision/%ED%8C%80%EA%B3%B5%EC%9C%A0_%EC%97%B0%EA%B5%AC%EA%B0%80%EC%9D%B4%EB%93%9C.html)
 
 ## 1. 처음 합류하셨다면: 무엇을 만드는 연구인가요?
 
@@ -183,4 +183,4 @@ PPTX 앞 15장은 논문 캡처를 주제별로 묶었습니다. 뒤의 16–18�
 
 라이브 웹 검색은 결과가 바뀔 수 있으므로 허용된 범위의 snapshot·시점·해시·도구 결과를 기록하고, 고정 재생 실험과 실제 웹 실행을 구분하는 것이 좋습니다. 처음부터 모든 오염 축·모델·retriever·정책을 조합하는 대신 주 질문 하나를 기준으로 비교 범위를 정합니다. RL은 trajectory 수집·reward 검수·별도 학습 자료 비용까지 포함해 선택합니다.
 
-**근거 문헌과 원문 위치:** [발표 논문 읽기 지도](발표논문_읽기지도.md), [기존 31편 해설](../knowledge-revision/문헌검토.md), [RAGuard 추가 해설](papers/RAGuard_한국어_절별해설.html), [Stop-RAG 추가 해설](papers/Stop_RAG_한국어_절별해설.html). 본문은 이 자료와 현재 팀 대화를 연결한 연구 제안이며, 원문 수치와 제안한 metric을 구분합니다.
+**근거 문헌과 원문 위치:** [발표 논문 읽기 지도](https://github.com/CJI0718/uos-nlp-2026-team5/blob/main/docs/research/fact_checking/midterm-20261103/%EB%B0%9C%ED%91%9C%EB%85%BC%EB%AC%B8_%EC%9D%BD%EA%B8%B0%EC%A7%80%EB%8F%84.md), [기존 31편 해설](https://github.com/CJI0718/uos-nlp-2026-team5/blob/main/docs/research/fact_checking/knowledge-revision/%EB%AC%B8%ED%97%8C%EA%B2%80%ED%86%A0.md), [RAGuard 추가 해설](https://github.com/CJI0718/uos-nlp-2026-team5/blob/main/docs/research/fact_checking/midterm-20261103/papers/RAGuard_%ED%95%9C%EA%B5%AD%EC%96%B4_%EC%A0%88%EB%B3%84%ED%95%B4%EC%84%A4.html), [Stop-RAG 추가 해설](https://github.com/CJI0718/uos-nlp-2026-team5/blob/main/docs/research/fact_checking/midterm-20261103/papers/Stop_RAG_%ED%95%9C%EA%B5%AD%EC%96%B4_%EC%A0%88%EB%B3%84%ED%95%B4%EC%84%A4.html). 본문은 이 자료와 현재 팀 대화를 연결한 연구 제안이며, 원문 수치와 제안한 metric을 구분합니다.
