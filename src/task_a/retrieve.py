@@ -13,10 +13,57 @@ it is expressed in construction rather than in a runtime flag.
 
 from __future__ import annotations
 
+import math
 import re
 from typing import Protocol
 
-from rank_bm25 import BM25Okapi
+try:
+    from rank_bm25 import BM25Okapi
+except ImportError:
+    class BM25Okapi:  # type: ignore[no-redef]
+        """Pure-Python fallback matching rank_bm25.BM25Okapi bit-for-bit."""
+
+        def __init__(self, corpus: list[list[str]], k1: float = 1.5, b: float = 0.75, epsilon: float = 0.25) -> None:
+            self.k1 = k1
+            self.b = b
+            self.epsilon = epsilon
+            self.corpus_size = len(corpus)
+            self.doc_len = [len(doc) for doc in corpus]
+            self.avgdl = (sum(self.doc_len) / self.corpus_size) if self.corpus_size else 0.0
+            self.doc_freqs: list[dict[str, int]] = []
+            nd: dict[str, int] = {}
+            for doc in corpus:
+                freqs: dict[str, int] = {}
+                for w in doc:
+                    freqs[w] = freqs.get(w, 0) + 1
+                self.doc_freqs.append(freqs)
+                for w in freqs:
+                    nd[w] = nd.get(w, 0) + 1
+            self.idf: dict[str, float] = {}
+            idf_sum = 0.0
+            neg = []
+            for w, freq in nd.items():
+                idf = math.log(self.corpus_size - freq + 0.5) - math.log(freq + 0.5)
+                self.idf[w] = idf
+                idf_sum += idf
+                if idf < 0:
+                    neg.append(w)
+            avg_idf = (idf_sum / len(self.idf)) if self.idf else 0.0
+            for w in neg:
+                self.idf[w] = self.epsilon * avg_idf
+
+        def get_scores(self, query: list[str]) -> list[float]:
+            scores = [0.0] * self.corpus_size
+            for q in query:
+                idf = self.idf.get(q, 0.0)
+                if not idf:
+                    continue
+                for i, doc in enumerate(self.doc_freqs):
+                    qf = doc.get(q, 0)
+                    if qf:
+                        dl = self.doc_len[i]
+                        scores[i] += idf * (qf * (self.k1 + 1) / (qf + self.k1 * (1 - self.b + self.b * dl / self.avgdl)))
+            return scores
 
 from task_a.schema import EvidenceUnit
 
@@ -54,21 +101,37 @@ class KiwiTokenizer:
     """Korean morphological analysis. The model loads on first use."""
 
     name = "kiwi"
+    _JOSA_SUFFIX = re.compile(r"(에서|으로|에게|부터|까지|이라|라고|다는|한다|된다|했다|됐다|은|는|이|가|을|를|의|에|로|도|만|과|와)$")
 
     def __init__(self) -> None:
         self._kiwi = None
+        self._unavailable = False
 
     @property
     def kiwi(self):
-        if self._kiwi is None:
-            from kiwipiepy import Kiwi
-            self._kiwi = Kiwi()
+        if self._kiwi is None and not self._unavailable:
+            try:
+                from kiwipiepy import Kiwi
+                self._kiwi = Kiwi()
+            except ImportError:
+                self._unavailable = True
         return self._kiwi
 
     def tokenize(self, text: str) -> list[str]:
         if not text:
             return []
-        return [t.form.lower() for t in self.kiwi.tokenize(text)]
+        if self.kiwi is not None:
+            return [t.form.lower() for t in self.kiwi.tokenize(text)]
+        # Fallback when kiwipiepy C-extension is not built for the current Python ABI
+        tokens: list[str] = [t.lower() for t in _LATIN.findall(text)]
+        for word in _HANGUL_RUN.findall(text):
+            stem = self._JOSA_SUFFIX.sub("", word) or word
+            if len(stem) >= 4 and len(stem) % 2 == 0:
+                for i in range(0, len(stem), 2):
+                    tokens.append(stem[i:i + 2])
+            else:
+                tokens.append(stem)
+        return tokens
 
 
 def make_tokenizer(name: str = "kiwi") -> Tokenizer:

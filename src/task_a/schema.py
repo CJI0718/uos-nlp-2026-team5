@@ -182,6 +182,10 @@ class AgentResult:
     usage: Usage = field(default_factory=Usage)
     steps: int = 0
     error: str | None = None
+    distortion_type: str | None = None
+    problematic_span: str | None = None
+    mission_type: str | None = None
+    mission_output: dict | None = None
 
     @property
     def searched_externally(self) -> bool:
@@ -193,7 +197,7 @@ class AgentResult:
         return self.verdict is not None and self.execution_status == ExecutionStatus.OK
 
     def to_dict(self) -> dict:
-        return {
+        out = {
             "claim_id": self.claim_id,
             "verdict": self.verdict.value if self.verdict else None,
             "abstain": self.abstain,
@@ -207,6 +211,15 @@ class AgentResult:
             "events": [e.to_dict() for e in self.events],
             "usage": asdict(self.usage),
         }
+        if self.distortion_type is not None:
+            out["distortion_type"] = self.distortion_type
+        if self.problematic_span is not None:
+            out["problematic_span"] = self.problematic_span
+        if self.mission_type is not None:
+            out["mission_type"] = self.mission_type
+        if self.mission_output is not None:
+            out["mission_output"] = self.mission_output
+        return out
 
 
 @dataclass

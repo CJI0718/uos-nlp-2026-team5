@@ -110,18 +110,16 @@ class ReActAgent:
         tool_calls = external_calls = 0
 
         for step in range(1, self.budget.max_steps + 1):
-            over = self.budget.exceeded(step - 1, tool_calls, external_calls)
-            if over:
-                return self._fail(claim, events, usage, step, started,
-                                  ExecutionStatus.BUDGET_EXCEEDED, f"예산 소진: {over}")
-
             state = EpisodeState(claim=claim, step=step, events=events)
             forced = self.policy.force(state) if self.policy is not None else None
             if forced is not None:
                 calls = [forced]
                 messages.append(_assistant_tool_call(forced))
             else:
-                response = self._complete(messages, self._tools(state))
+                response = self._complete(
+                    messages,
+                    self._tools(state, tool_calls=tool_calls, external_calls=external_calls),
+                )
                 if response is None:
                     return self._fail(claim, events, usage, step, started,
                                       ExecutionStatus.PROVIDER_ERROR, "LLM 호출 실패")
@@ -136,10 +134,17 @@ class ReActAgent:
                                           "finish_verification 없이 종료")
                     return self._finish(claim, parsed, events, usage, step, started)
                 calls = response.tool_calls
+                if any(c.name != FINISH_TOOL for c in calls):
+                    messages.append(_assistant_tool_calls(calls, response.content))
 
             for call in calls:
                 if call.name == FINISH_TOOL:
                     return self._finish(claim, call.args, events, usage, step, started)
+
+                over = self.budget.exceeded(step - 1, tool_calls, external_calls)
+                if over:
+                    return self._fail(claim, events, usage, step, started,
+                                      ExecutionStatus.BUDGET_EXCEEDED, f"예산 소진: {over}")
 
                 tool_calls += 1
                 t0 = time.monotonic()
@@ -166,13 +171,29 @@ class ReActAgent:
 
     # -- internals ---------------------------------------------------------
 
-    def _tools(self, state: EpisodeState) -> list[dict]:
+    def _tools(
+        self,
+        state: EpisodeState,
+        *,
+        tool_calls: int = 0,
+        external_calls: int = 0,
+    ) -> list[dict]:
         finish = {"type": "function",
                   "function": {"name": FINISH_TOOL,
                                "description": "검증을 끝내고 최종 판정을 제출한다. "
                                               "반드시 마지막으로 호출한다.",
                                "parameters": FINISH_SCHEMA}}
-        schemas = self.registry.schemas + [finish]
+        if tool_calls >= self.budget.max_tool_calls:
+            return [finish]
+        reg_schemas = [
+            s for s in self.registry.schemas
+            if not (
+                external_calls >= self.budget.max_external_calls
+                and self.registry.specs.get(s["function"]["name"]) is not None
+                and self.registry.specs[s["function"]["name"]].external
+            )
+        ]
+        schemas = reg_schemas + [finish]
         if self.policy is None:
             return schemas
         allowed = set(self.policy.allowed_tools(
@@ -215,7 +236,11 @@ class ReActAgent:
             cited_evidence_ids=cited, justification=justification,
             correction=(args or {}).get("correction"),
             stop_reason=str((args or {}).get("stop_reason") or "unspecified"),
-            execution_status=ExecutionStatus.OK, events=events, usage=usage, steps=step)
+            execution_status=ExecutionStatus.OK, events=events, usage=usage, steps=step,
+            distortion_type=(args or {}).get("distortion_type"),
+            problematic_span=(args or {}).get("problematic_span"),
+            mission_type=(args or {}).get("mission_type"),
+            mission_output=(args or {}).get("mission_output"))
 
     def _fail(self, claim, events, usage, step, started, status, reason) -> AgentResult:
         usage.elapsed_ms = int((time.monotonic() - started) * 1000)
@@ -233,10 +258,27 @@ def _assistant_tool_call(call: ToolCall) -> dict:
     so a forced step has to write both. Without this the transcript is invalid
     for any OpenAI-compatible provider.
     """
-    return {"role": "assistant", "content": None,
-            "tool_calls": [{"id": call.id, "type": "function",
-                            "function": {"name": call.name,
-                                         "arguments": json.dumps(call.args, ensure_ascii=False)}}]}
+    return _assistant_tool_calls([call], None)
+
+
+def _assistant_tool_calls(calls: list[ToolCall], content: str | None = None) -> dict:
+    """Record the assistant message with tool_calls for multi-turn compatibility."""
+    return {
+        "role": "assistant",
+        "content": content,
+        "tool_calls": [
+            {
+                "id": call.id,
+                "type": "function",
+                "function": {
+                    "name": call.name,
+                    "arguments": json.dumps(call.args, ensure_ascii=False),
+                },
+            }
+            for call in calls
+            if call.name != FINISH_TOOL
+        ],
+    }
 
 
 def _parse_finish(content: str | None) -> dict | None:

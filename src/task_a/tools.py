@@ -145,6 +145,27 @@ def calculate_comparison(op: str, **kwargs) -> ToolResult:
                  "factor": factor, "value": converted},
             )
 
+        if op == "multiply":
+            a, b = float(kwargs["a"]), float(kwargs["b"])
+            value = a * b
+            return ToolResult(
+                ToolStatus.OK,
+                f"{a:g} x {b:g} = {value:g}",
+                {"op": op, "formula": "a * b", "inputs": {"a": a, "b": b}, "value": value},
+            )
+
+        if op == "ratio":
+            a, b = float(kwargs["a"]), float(kwargs["b"])
+            if b == 0:
+                return ToolResult(ToolStatus.INVALID_INPUT, "0 분모: 기준값이 0이라 비율을 계산할 수 없음")
+            value = a / b
+            return ToolResult(
+                ToolStatus.OK,
+                f"{a:g} / {b:g} = {value:.6g} ({value * 100:.4g}%)",
+                {"op": op, "formula": "a / b", "inputs": {"a": a, "b": b},
+                 "value": value, "percentage": value * 100},
+            )
+
         return ToolResult(ToolStatus.INVALID_INPUT, f"허용되지 않은 연산: {op!r}")
     except (KeyError, TypeError) as exc:
         return ToolResult(ToolStatus.INVALID_INPUT, f"입력 누락: {exc}")
@@ -244,11 +265,11 @@ class ToolRegistry:
         self._add(ToolSpec(
             "calculate_comparison",
             "허용된 연산만 수행하는 계산기. op: diff, pct_change, percentage_point_gap, "
-            "tz_convert, scale_unit. 임의 수식 평가는 지원하지 않는다.",
+            "tz_convert, scale_unit, multiply, ratio. 임의 수식 평가는 지원하지 않는다.",
             {"type": "object",
              "properties": {
                  "op": {"type": "string", "enum": ["diff", "pct_change", "percentage_point_gap",
-                                                   "tz_convert", "scale_unit"]},
+                                                   "tz_convert", "scale_unit", "multiply", "ratio"]},
                  "a": {"type": "number"}, "b": {"type": "number"},
                  "old": {"type": "number"}, "new": {"type": "number"},
                  "value": {"type": "number"},
@@ -304,14 +325,15 @@ class ToolRegistry:
         lines, ids, ranks, flags = [], [], [], []
         for rank, (unit, score) in enumerate(hits, start=1):
             snippet = unit.text[:MAX_SNIPPET_CHARS]
-            lines.append(f"[{rank}] {unit.evidence_id} | {unit.title} | 관련도 {score:.3f}\n"
+            meta = f" | 출처군:{unit.provenance_group}" if unit.provenance_group else ""
+            lines.append(f"[{rank}] {unit.evidence_id} | {unit.title} | 관련도 {score:.3f}{meta}\n"
                          f"    {snippet}")
             ids.append(unit.evidence_id)
             ranks.append(rank)
             if unit.is_misleading:
                 flags.append(unit.evidence_id)
         return ToolResult(ToolStatus.OK, "\n\n".join(lines),
-                          {"query": query, "top_k": k, "count": len(hits)},
+                          {"query": query, "top_k": k, "count": len(hits), "misleading_ids": flags},
                           evidence_ids=ids, ranks=ranks)
 
     def _read_evidence(self, evidence_id: str, section: str | None = None) -> ToolResult:
@@ -379,6 +401,27 @@ FINISH_SCHEMA = {
         "stop_reason": {"type": "string",
                         "enum": ["evidence_sufficient", "budget_exhausted",
                                  "no_further_tools_helpful", "conflict_unresolved"]},
+        "distortion_type": {
+            "type": "string",
+            "enum": ["none", "numeric_error", "unit_or_scale_error", "timezone_or_date_error",
+                     "missing_condition_or_scope", "overgeneralization", "forecast_as_fact",
+                     "source_misattribution", "unverified_claim"],
+            "description": "원문과 주장을 대조해 식별한 왜곡/오류 유형(선택)",
+        },
+        "problematic_span": {
+            "type": "string",
+            "description": "주장 또는 입력 글에서 왜곡이 발생한 구체적 구절(선택)",
+        },
+        "mission_type": {
+            "type": "string",
+            "enum": ["no_op", "event_manager", "news_to_artifact", "opportunity_execution",
+                     "app_safe_trial", "continuous_tracking", "hold_abstain"],
+            "description": "검증 결과에 따라 결정한 후속 업무(Mission) 유형(선택)",
+        },
+        "mission_output": {
+            "type": "object",
+            "description": "생성한 후속 Mission 결과물 정보 또는 장기 추적 등록 명세(선택)",
+        },
     },
     "required": ["verdict", "abstain", "cited_evidence_ids", "justification", "stop_reason"],
 }
