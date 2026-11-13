@@ -49,3 +49,6 @@ logs/
 
 # Personal and project-specific files
 heonsu/
+missions/events/
+missions/artifacts/
+missions/tracking/
