@@ -1,4 +1,4 @@
-"""Tests for loop bug fixes, extended calculator, verification-gated missions, and MCP/CLI adapter."""
+"""Tests for MCP server, AgentEnvironment budget/arm isolation, extended calculator, verification-gated missions, and run scoring."""
 
 from __future__ import annotations
 
@@ -7,13 +7,13 @@ from pathlib import Path
 
 import pytest
 
-from task_a.loop import FINISH_TOOL, Budget, ReActAgent
 from task_a.mcp_server import AgentEnvironment, MCPStdioServer
-from task_a.missions import MissionExecutor, validate_mission_gate
-from task_a.mock import MockBackend, ScriptedLLM, finish_response, tool_call_response
-from task_a.schema import Claim, EvidenceUnit, ExecutionStatus, ToolStatus, Verdict, write_jsonl
-from task_a.score_run import load_gold, score_run
-from task_a.tools import ToolRegistry, calculate_comparison
+from task_a.missions import MissionExecutor
+from task_a.mock import MockBackend
+from task_a.schema import Claim, EvidenceUnit, ToolStatus, Verdict, write_jsonl
+from task_a.score_run import load_gold, score_run, score_transition, to_graded, ungraded_metrics
+from task_a.scorer import Arm
+from task_a.tools import FINISH_TOOL, ToolRegistry, calculate_comparison
 
 FC002 = Claim(
     claim_id="FC002",
@@ -31,51 +31,7 @@ APPLE = EvidenceUnit(
 )
 
 
-# --- 1. Loop bug fixes -----------------------------------------------------
-
-def test_multiturn_adaptive_loop_records_assistant_tool_calls():
-    """Bug fix 1: adaptive tool calls must append role='assistant' with tool_calls
-    before role='tool' so OpenAI-compatible providers accept the second turn."""
-    script = [
-        tool_call_response("search_evidence", {"query": "Vision Pro"}, call_id="c1"),
-        finish_response("refuted", ["EV_FC002_apple"], "PST임", "evidence_sufficient"),
-    ]
-    llm = ScriptedLLM(script)
-    agent = ReActAgent(llm, ToolRegistry(MockBackend([APPLE])))
-
-    result = agent.run(FC002)
-
-    assert result.execution_status == ExecutionStatus.OK
-    second_turn_messages = llm.seen_messages[1]
-    roles = [m["role"] for m in second_turn_messages]
-    assert roles == ["system", "user", "assistant", "tool"]
-    assert second_turn_messages[2]["tool_calls"][0]["id"] == "c1"
-    assert second_turn_messages[2]["tool_calls"][0]["function"]["name"] == "search_evidence"
-
-
-def test_budget_exhaustion_still_allows_finish_verification():
-    """Bug fix 2: when max_tool_calls is reached, the model still gets a final turn
-    with only finish_verification offered so it can submit a verdict."""
-    script = [
-        tool_call_response("search_evidence", {"query": "Vision Pro"}),
-        tool_call_response("read_evidence", {"evidence_id": "EV_FC002_apple"}),
-        finish_response("refuted", ["EV_FC002_apple"], "05:00 PST = 22:00 KST", "budget_exhausted"),
-    ]
-    llm = ScriptedLLM(script)
-    agent = ReActAgent(
-        llm,
-        ToolRegistry(MockBackend([APPLE])),
-        budget=Budget(max_steps=4, max_tool_calls=2, max_external_calls=1),
-    )
-
-    result = agent.run(FC002)
-
-    assert result.execution_status == ExecutionStatus.OK
-    assert result.verdict == Verdict.REFUTED
-    assert result.usage.tool_calls == 2
-
-
-# --- 2. Extended calculator ------------------------------------------------
+# --- 1. Extended calculator & URL SSRF guard -------------------------------
 
 def test_fc006_minimum_wage_multiplication():
     """FC006: 10,030 KRW * 209 hours = 2,096,270 KRW."""
@@ -94,7 +50,26 @@ def test_ratio_calculation_and_zero_guard():
     assert zero.status == ToolStatus.INVALID_INPUT
 
 
-# --- 3. Verification-Gated Missions ----------------------------------------
+@pytest.mark.parametrize("url,expected", [
+    ("https://www.apple.com/newsroom/x", ToolStatus.OK),
+    ("file:///etc/passwd", ToolStatus.BLOCKED),
+    ("http://localhost:8000/gold", ToolStatus.BLOCKED),
+    ("http://127.0.0.1/gold", ToolStatus.BLOCKED),
+    ("http://192.168.1.5/gold", ToolStatus.BLOCKED),
+    ("http://169.254.169.254/latest/meta-data", ToolStatus.BLOCKED),
+    ("ftp://example.com/x", ToolStatus.BLOCKED),
+])
+def test_fetch_url_guard(url, expected):
+    backend = MockBackend([APPLE], pages={"https://www.apple.com/newsroom/x": "본문"})
+    registry = ToolRegistry(backend)
+
+    result, is_external = registry.call("fetch_url", {"url": url})
+
+    assert result.status == expected
+    assert is_external is True
+
+
+# --- 2. Verification-Gated Missions ----------------------------------------
 
 def test_verification_gate_blocks_unverified_or_uncorrected_action(tmp_path):
     executor = MissionExecutor(tmp_path / "missions")
@@ -170,7 +145,7 @@ def test_continuous_tracking_and_artifact_generation(tmp_path):
     assert Path(art.payload["artifact_path"]).exists()
 
 
-# --- 4. MCP Server & External Agent Bridge ---------------------------------
+# --- 3. MCP Server & External Agent Bridge ---------------------------------
 
 def test_agent_environment_blocks_gold_leakage(tmp_path):
     gold_path = tmp_path / "gold.jsonl"
@@ -178,6 +153,58 @@ def test_agent_environment_blocks_gold_leakage(tmp_path):
 
     with pytest.raises(PermissionError, match="정답 누출 차단"):
         AgentEnvironment(claims_path=gold_path, out_path=tmp_path / "out.jsonl")
+
+
+def test_mcp_exposes_no_filesystem_tools(tmp_path):
+    claims_path = tmp_path / "claims.jsonl"
+    write_jsonl(claims_path, [FC002.to_dict()])
+    env = AgentEnvironment(claims_path=claims_path, out_path=tmp_path / "out.jsonl", tokenizer="bigram")
+    server = MCPStdioServer(env)
+
+    tools_resp = server.handle_request({"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
+    names = {t["name"] for t in tools_resp["result"]["tools"]}
+    assert not any(n in names for n in {"read_file", "list_dir", "run_shell", "execute_code"})
+
+
+def test_agent_environment_enforces_budget_but_allows_finish(tmp_path):
+    claims_path = tmp_path / "claims.jsonl"
+    corpus_path = tmp_path / "corpus.jsonl"
+    write_jsonl(claims_path, [FC002.to_dict()])
+    write_jsonl(corpus_path, [{
+        "evidence_id": APPLE.evidence_id,
+        "title": APPLE.title,
+        "text": APPLE.text,
+        "publisher": APPLE.publisher,
+    }])
+
+    env = AgentEnvironment(
+        claims_path=claims_path,
+        corpus_path=corpus_path,
+        out_path=tmp_path / "out.jsonl",
+        tokenizer="bigram",
+        max_tool_calls=1,
+    )
+    env.start_episode("FC002")
+
+    # 1st tool call succeeds
+    first = env.call_tool("read_evidence", {"evidence_id": "EV_FC002_apple"})
+    assert first["status"] == "ok"
+
+    # 2nd tool call is blocked by budget
+    second = env.call_tool("search_evidence", {"query": "another query"})
+    assert second["status"] == "blocked"
+    assert "도구 호출 예산" in second["observation"]
+
+    # finish_verification is still allowed so the agent can submit its verdict
+    fin = env.finish_episode({
+        "verdict": "refuted",
+        "abstain": False,
+        "cited_evidence_ids": ["EV_FC002_apple"],
+        "justification": "05:00 PST = 22:00 KST",
+        "stop_reason": "budget_exhausted",
+    })
+    assert fin.verdict == Verdict.REFUTED
+    assert fin.usage.tool_calls == 1
 
 
 def test_mcp_server_end_to_end_and_scoring_compatibility(tmp_path):
@@ -274,3 +301,64 @@ def test_mcp_server_end_to_end_and_scoring_compatibility(tmp_path):
     rows = [json.loads(line) for line in out_path.read_text(encoding="utf-8").splitlines() if line.strip()]
     summary = score_run(rows, load_gold(gold_path))
     assert summary["conditions"][0]["accuracy"]["value"] == 1.0
+
+
+# --- 4. Run Scoring & Gold Boundary ----------------------------------------
+
+def _run_row(claim_id, arm, verdict, condition="sufficient", cost=0.0, abstain=False):
+    return {
+        "config": {
+            "run_id": "r", "condition": condition, "policy": "mcp_skill_agent",
+            "model_id": "external-agent", "prompt_version": "skill-v1", "data_version": "d1",
+            "seed": 0, "code_commit": None, "replay": False, "extra": {}, "arm": arm,
+        },
+        "result": {
+            "claim_id": claim_id, "verdict": verdict, "abstain": abstain,
+            "cited_evidence_ids": [], "justification": "j", "correction": None,
+            "stop_reason": "evidence_sufficient", "execution_status": "ok",
+            "steps": 1, "error": None, "events": [],
+            "usage": {
+                "input_tokens": 0, "output_tokens": 0, "cached_tokens": 0,
+                "llm_calls": 0, "tool_calls": 1, "external_calls": 0,
+                "cost_usd": cost, "elapsed_ms": 0,
+            },
+        },
+    }
+
+
+def test_score_run_and_transitions(tmp_path):
+    gold_path = tmp_path / "gold.jsonl"
+    write_jsonl(gold_path, [
+        {"claim_id": "FC002", "label": "refuted", "rationale": "r", "review_status": "draft"},
+        {"claim_id": "FC004", "label": "supported", "rationale": "r", "review_status": "draft"},
+        {"claim_id": "FC038", "label": None, "rationale": "r", "review_status": "pending"},
+    ])
+    gold = load_gold(gold_path)
+    assert gold["FC002"] == Verdict.REFUTED
+    assert gold["FC038"] is None
+
+    c1 = [_run_row("FC002", Arm.C1, "supported"), _run_row("FC004", Arm.C1, "supported")]
+    c2 = [_run_row("FC002", Arm.C2, "refuted"), _run_row("FC004", Arm.C2, "refuted")]
+
+    summary_no_grades = score_run(c2, gold)
+    assert summary_no_grades["conditions"][0]["gsr"] is None
+
+    grades = {
+        ("FC002", Arm.C2, "sufficient"): {"e": True, "t": True},
+        ("FC004", Arm.C2, "sufficient"): {"e": False, "t": False},
+    }
+    summary_with_grades = score_run(c2, gold, grades)
+    assert summary_with_grades["conditions"][0]["gsr"] == {"numerator": 1, "denominator": 2, "value": 0.5}
+
+    trans = score_transition(c1, c2, gold)
+    assert trans["pairs"] == 2
+    assert trans["recovery"]["value"] == 1.0
+    assert trans["harm"]["value"] == 1.0
+
+    metrics = ungraded_metrics([_run_row("FC002", Arm.C1, "refuted"), _run_row("FC038", Arm.C1, "supported")], gold)
+    assert metrics["episodes"] == 2
+    assert metrics["accuracy"]["denominator"] == 1
+
+    graded = to_graded([_run_row("FC002", Arm.C1, "refuted")], {"FC002": Verdict.REFUTED}, {})
+    assert graded[0].v is True
+    assert graded[0].grounded is False

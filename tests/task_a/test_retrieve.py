@@ -4,12 +4,10 @@ from __future__ import annotations
 
 import pytest
 
-from task_a.loop import ReActAgent
-from task_a.mock import ScriptedLLM, finish_response, tool_call_response
 from task_a.retrieve import (
     BM25Index, BigramTokenizer, CorpusBackend, KiwiTokenizer, load_corpus, make_tokenizer,
 )
-from task_a.schema import Claim, EvidenceUnit, ToolStatus, Verdict
+from task_a.schema import Claim, EvidenceUnit, ToolStatus
 from task_a.tools import ToolRegistry
 
 FC002 = Claim(
@@ -134,27 +132,21 @@ def test_cross_lingual_gap_is_pinned():
 
 
 def test_agent_can_recover_by_requerying_in_english():
-    """The two-query path the prompt asks for, end to end."""
+    """The two-query path the Skill asks for, verified through ToolRegistry."""
     backend = CorpusBackend(CORPUS, KiwiTokenizer())
-    llm = ScriptedLLM([
-        tool_call_response("search_evidence", {"query": KO_QUERY}),
-        tool_call_response("search_evidence", {"query": EN_QUERY}),
-        tool_call_response("read_evidence", {"evidence_id": "EV_apple"}),
-        tool_call_response("calculate_comparison", {"op": "tz_convert", "time": "2024-01-19 05:00",
-                                                    "from_tz": "PST", "to_tz": "KST"}),
-        finish_response("refuted", ["EV_apple"],
-                        "공식 발표는 05:00 PST다. 한국어 질의에서 1위였던 문서는 독립 확인이 없다.",
-                        "evidence_sufficient", correction="2024-01-19 22:00 KST"),
-    ])
-    agent = ReActAgent(llm, ToolRegistry(backend))
+    registry = ToolRegistry(backend)
 
-    result = agent.run(FC002)
+    first, _ = registry.call("search_evidence", {"query": KO_QUERY})
+    second, _ = registry.call("search_evidence", {"query": EN_QUERY})
+    read, _ = registry.call("read_evidence", {"evidence_id": "EV_apple"})
+    calc, _ = registry.call("calculate_comparison", {"op": "tz_convert", "time": "2024-01-19 05:00",
+                                                     "from_tz": "PST", "to_tz": "KST"})
 
-    assert result.verdict == Verdict.REFUTED
     # The first query surfaced the planted document; the second found the source.
-    assert result.events[0].evidence_ids[0] == "EV_bad"
-    assert "EV_apple" in result.events[1].evidence_ids
-    assert result.cited_evidence_ids == ["EV_apple"]
+    assert first.evidence_ids[0] == "EV_bad"
+    assert second.evidence_ids[0] == "EV_apple"
+    assert read.status == ToolStatus.OK
+    assert "2024-01-19 22:00 KST" in calc.observation
 
 
 def test_c1_backend_has_no_external_access():
