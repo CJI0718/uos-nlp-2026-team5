@@ -44,18 +44,18 @@
 
 ### 3단계 전에 필요한 것
 
-- 에이전트가 검색할 대상: 기사 원문 코퍼스 또는 웹 검색 provider. 현재 둘 다 없습니다.
-- 2026-11-12 코드 검토에서 확인한 결함의 수정. 실모델 실행을 막는 것은 다음 두 가지입니다.
-  - 모델이 고른 도구 호출이 대화 기록에 남지 않아 두 번째 요청이 거부됩니다 (`src/task_a/loop.py`).
-  - 도구 예산을 다 쓰면 판정 기회 없이 실패로 종료됩니다 (`src/task_a/loop.py`).
+- 에이전트가 검색할 대상: 기사 원문 코퍼스 또는 웹 검색 provider 합의.
+- 2026-11-12 코드 검토에서 확인한 `src/task_a/loop.py` 결함 2건(멀티턴 도구 호출 기록 누락, 도구 예산 소진 시 판정 기회 박탈)은 수정 및 테스트 고정 완료(`tests/task_a/test_mcp_and_missions.py`).
 
 ## 파일 안내
 
 | 위치 | 내용 |
 | --- | --- |
-| [src/](src/README.md) | 에이전트 루프, 도구, 검색, 정책, 채점 |
-| [tests/](tests/) | 오프라인 테스트 |
-| [scripts/](scripts/) | 데이터 추출, 실행, 채점 명령 |
+| [src/](src/README.md) | 에이전트 루프, 도구, 검색, 정책, 후속 미션 게이팅, MCP 서버, 채점 |
+| [skills/](skills/factcheck-mission-agent/SKILL.md) | 외부 AI 에이전트 장착용 4단계 팩트체크·왜곡특정·미션수행 Skill |
+| [missions/](missions/README.md) | 검증 게이팅 통과 후 생성되는 후속 미션 결과물(`.ics`, `.md`) 및 장기 추적 레지스트리 |
+| [tests/](tests/) | 오프라인 테스트 (192개) |
+| [scripts/](scripts/) | 데이터 추출, 배치 실행, MCP/CLI 에이전트 도구, 채점 명령 |
 | [data/](data/README.md) | 주장 50개(에이전트 입력)와 참조 판정·근거(채점기 전용) |
 | [experiments/](experiments/README.md) | 실행 방법과 실험 기록 양식 |
 | [results/](results/README.md) · [reports/](reports/README.md) | 결과 요약, 보고서 |

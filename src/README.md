@@ -4,28 +4,35 @@ Task A(불완전한 근거 아래서의 팩트체크) 에이전트 구현입니�
 
 ```
 task_a/
-  schema.py     Claim / Gold / EvidenceUnit / ToolEvent / AgentResult / EpisodeState
-  dataset.py    evaluation.md §9.8 파서 (원본은 읽기만 함)
-  retrieve.py   BM25 + Kiwi/bigram 토크나이저, CorpusBackend
-  tools.py      도구 5개 + whitelisted 계산기 + fetch URL 차단
-  loop.py       ReAct 루프 — 다음 도구와 종료 시점을 정책이 정함
-  policies.py   react / fixed_workflow / closed_book
-  llm.py        OpenAI 호환 클라이언트 (자동 재시도 0회)
-  toollog.py    append-only 실행 로그, 외부 응답 캐시, 비용 집계
-  runner.py     에피소드 실행 — gold를 열 수 없음
-  score_run.py  채점 — gold를 여는 유일한 모듈
-  mock.py       오프라인 코퍼스 백엔드와 스크립트 LLM
+  schema.py       Claim / Gold / EvidenceUnit / ToolEvent / AgentResult / EpisodeState
+  dataset.py      evaluation.md §9.8 파서 (원본은 읽기만 함)
+  retrieve.py     BM25 + Kiwi/bigram 토크나이저, CorpusBackend
+  web.py          C2 외부 웹 검색(Tavily API + DuckDuckGo 폴백) 및 본문 추출기
+  tools.py        도구 5개 + whitelisted 계산기(diff/pct_change/tz_convert/multiply/ratio 등) + fetch URL 차단
+  missions.py     검증 게이팅(Verification Gate) 및 후속 Mission/Tracking 실행기
+  mcp_server.py   방식 A 어댑터: MCP JSON-RPC 서버 & 외부 에이전트 브릿지 (자동 RunLog 기록)
+  loop.py         ReAct 루프 — 다음 도구와 종료 시점을 정책이 정함
+  policies.py     react / fixed_workflow / closed_book
+  llm.py          OpenAI 호환 클라이언트 (자동 재시도 0회)
+  toollog.py      append-only 실행 로그, 외부 응답 캐시, 비용 집계
+  runner.py       에피소드 실행 — gold를 열 수 없음
+  score_run.py    채점 — gold를 여는 유일한 모듈
+  mock.py         오프라인 코퍼스 백엔드와 스크립트 LLM
 ```
 
 ## 실행
 
 ```bash
 uv sync --python 3.12
-uv run pytest -q                        # 184개 테스트
+uv run pytest -q                        # 192개 테스트
 uv run python scripts/demo_fc002.py     # FC002·FC004·FC041 오프라인 데모
 uv run python scripts/extract_fc_data.py # evaluation.md → data/task_a/*.jsonl
 uv run python scripts/run_eval.py --arm C1 --policy react --limit 5 --out /tmp/c1.jsonl
 uv run python scripts/score_run.py --run /tmp/c1.jsonl
+
+# 외부 에이전트(방식 A: MCP 서버 또는 CLI + Skill) 연동
+uv run python scripts/mcp_stdio.py --arm C1 --out results/exp-mcp/c1.jsonl
+uv run python scripts/agent_cli.py list --limit 5
 ```
 
 실행 방법은 [experiments/README.md](../experiments/README.md)를 봅니다.
