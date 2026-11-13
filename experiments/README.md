@@ -1,60 +1,42 @@
 # 실험 설정과 재현
 
-현재 **실모델 실험은 미실행**입니다. dry-run(모의 모델)만 수행했으며 그 결과는 성과로 인용하지 않습니다.
-실험마다 exp-001처럼 고유 ID를 부여합니다.
+이 브랜치(`feat/agent-skill-mcp`)에서는 외부 AI 에이전트(Antigravity, Claude Code, Cursor 등)에 [skills/factcheck-mission-agent/SKILL.md](../skills/factcheck-mission-agent/SKILL.md)와 MCP 서버([scripts/mcp_stdio.py](../scripts/mcp_stdio.py))를 장착하여 실험을 수행합니다.
+실험마다 `exp-001`처럼 고유 ID를 부여합니다.
 
 ## 실행 방법
 
 ```bash
 uv sync --python 3.12
 
-# 1) dry-run — provider 연락 없음, 비용 0. 파이프라인 검증용
-uv run python scripts/run_eval.py --arm C1 --policy react --limit 5 \
-    --out results/exp-000/c1-react.jsonl
+# 1) MCP 서버 구동 (루트의 .mcp.json을 통해 에이전트 클라이언트가 자동 실행하거나 수동 실행)
+#    - C1 조건: 로컬 코퍼스만 사용 (외부 웹 차단, API 키 불필요)
+uv run python scripts/mcp_stdio.py \
+    --arm C1 --condition sufficient \
+    --out results/exp-001/c1-mcp.jsonl
 
-# 2) 실호출 — 승인·예산 합의 후에만. 키는 환경변수로만 받습니다
-TASK_A_API_KEY=... uv run python scripts/run_eval.py --live \
-    --model-id <모델 ID> --base-url <endpoint> \
-    --arm C1 --policy react --condition sufficient \
-    --budget-usd 2.00 --out results/exp-001/c1-react.jsonl
+#    - C2 조건: 코퍼스 + 실시간 외부 웹 검색 (Tavily API 키 없으면 DuckDuckGo HTML 폴백 자동 사용)
+uv run python scripts/mcp_stdio.py \
+    --arm C2 --condition sufficient \
+    --out results/exp-001/c2-mcp.jsonl
 
-# 3) 채점 — gold를 읽는 유일한 명령
-uv run python scripts/score_run.py --run results/exp-001/c1-react.jsonl \
-    --c2 results/exp-001/c2-react.jsonl --grades data/task_a/grades.jsonl
+# 2) 또는 터미널 기반 에이전트용 CLI 어댑터 사용
+uv run python scripts/agent_cli.py start --claim-id FC002 --arm C1 --out results/exp-001/c1-mcp.jsonl
+uv run python scripts/agent_cli.py tool search_evidence --args '{"query": "Pre-orders January 19 2024 PST"}'
+uv run python scripts/agent_cli.py tool calculate_comparison --args '{"op": "tz_convert", "time": "2024-01-19 05:00", "from_tz": "PST", "to_tz": "KST"}'
+uv run python scripts/agent_cli.py tool execute_mission --args '{"mission_type": "event_manager", "verdict": "refuted", "title": "비전 프로 사전예약", "summary": "22:00 KST로 시간대 정정", "cited_evidence_ids": ["EV_FC002_1"], "correction": "2024-01-19 22:00 KST", "distortion_type": "timezone_or_date_error", "event_start_kst": "2024-01-19 22:00"}'
+uv run python scripts/agent_cli.py finish --args '{"verdict": "refuted", "abstain": false, "cited_evidence_ids": ["EV_FC002_1"], "justification": "05:00 PST는 22:00 KST임", "correction": "2024-01-19 22:00 KST", "stop_reason": "evidence_sufficient", "distortion_type": "timezone_or_date_error", "problematic_span": "오전 5시(한국시간)", "mission_type": "event_manager"}'
+
+# 3) 채점 — gold.jsonl을 읽는 유일한 명령
+uv run python scripts/score_run.py \
+    --run results/exp-001/c1-mcp.jsonl \
+    --c2 results/exp-001/c2-mcp.jsonl \
+    --grades data/task_a/grades.jsonl
 ```
 
-비교 축은 서로 독립입니다. `--arm`(C0/C1/C2)은 도달 가능한 정보, `--condition`
-(sufficient/missing/conflict/misleading)은 제공된 코퍼스 변형, `--policy`
-(react/fixed_workflow/closed_book)는 다음 행동을 누가 정하는지를 나타냅니다.
-
-안전장치는 코드에 들어 있습니다. `--live` 없이는 provider를 호출하지 않고, `--budget-usd`는
-누적 비용이 상한을 넘으면 실행을 중단하며, 자동 재시도와 모델 자동 변경은 없고, 이미 완료된
-에피소드는 재실행하지 않습니다. C1은 캐시가 따뜻해도 외부 검색을 거부합니다.
+비교 축은 서로 독립입니다:
+- `--arm` (`C0` / `C1` / `C2`): 도달 가능한 정보 범위 (`C0` 코퍼스·웹 차단, `C1` 코퍼스만 허용, `C2` 코퍼스+외부 웹 허용)
+- `--condition` (`sufficient` / `missing` / `conflict` / `misleading`): 제공된 코퍼스 변형
 
 ## 실험 기록
 
-실험 기록:
-- 연구 질문, 비교/고정 조건
-- 데이터 버전과 code commit
-- 정확한 모델 ID, provider, prompt 버전, seed 등 적용 가능한 설정
-- 실행 명령, Python 및 의존성 버전
-- 사례·조건·반복 수, 최대 호출 수, token/금액 상한
-- 성공 판정, 오류·재시도·중단 정책
-- 시작/종료 시각, 전체 시도 수와 결과 위치
-
-`run_eval.py`는 이 중 대부분을 결과 로그의 `config`에 자동 기록합니다(run_id, arm, condition,
-policy, model_id, prompt_version, data_version, seed, code_commit, replay).
-남은 항목(연구 질문, 예산 합의, 시작·종료 시각, 중단 정책)은 `exp-NNN.md`로 남깁니다.
-
-실행 승인이 있기 전에는 API 호출하지 않습니다.
-자동 재시도·자동 모델 변경은 기본적으로 하지 않습니다.
-원본 실패 기록은 보존하되 비공개 원문·키가 있는 raw log는 공개 저장소에 넣지 않습니다.
-GPU/LLM 실험을 GitHub Actions에 자동 등록하지 않습니다.
-
-## 아직 없는 것
-
-- 코퍼스 파일: 기사 37건의 원문 수집이 남았습니다. 수집 본문은 저작권 때문에 `data/raw/`
-  (Git 제외)에 두고 manifest만 커밋합니다.
-- 근거 조건 4변형: 오염 문서 주입은 사람이 설계·검수하는 단계입니다.
-- E·T rubric 등급 파일: 없으면 GSR·노출률·채택률은 0이 아니라 계산 불가로 표시됩니다.
-- 모델·provider·단가: `llm.PRICES`는 비어 있으며 실제 견적과 조회일을 넣기 전까지 비용은 미확인입니다.
+`mcp_server.py`는 각 에피소드가 `finish_verification`을 호출할 때 결과 로그(`--out`)의 `config`와 `result`에 실행 설정, 도구 호출 궤적(`events`), 왜곡 특정 정보(`distortion_type`, `problematic_span`), 후속 미션 산출물(`mission_type`, `mission_output`), 도구 사용량(`usage`)을 자동으로 기록합니다.
