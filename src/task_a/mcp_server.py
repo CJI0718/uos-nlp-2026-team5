@@ -19,7 +19,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from task_a.loop import FINISH_TOOL
 from task_a.missions import ALL_MISSIONS, MissionExecutor
 from task_a.retrieve import BigramTokenizer, CorpusBackend, KiwiTokenizer
 from task_a.schema import (
@@ -35,7 +34,7 @@ from task_a.schema import (
     read_jsonl,
 )
 from task_a.toollog import CachingBackend, RunConfig, RunLog, ToolCache
-from task_a.tools import FINISH_SCHEMA, ToolRegistry
+from task_a.tools import FINISH_SCHEMA, FINISH_TOOL, ToolRegistry
 
 
 @dataclass

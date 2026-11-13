@@ -1,11 +1,10 @@
 [project]
 name = "task-a-factcheck"
-version = "0.1.0"
-description = "NLP Team 5 Task A - fact-checking agent under imperfect evidence"
+version = "0.2.0"
+description = "NLP Team 5 - MCP server, skill, and verification-gated mission tools for fact-checking under imperfect evidence"
 requires-python = ">=3.12"
 dependencies = [
     "kiwipiepy>=0.24.1",
-    "openai>=3.46.0",
     "rank-bm25>=0.2.2",
 ]
 

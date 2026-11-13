@@ -386,8 +386,8 @@ class ToolRegistry:
                            "truncated": len(body) > MAX_FETCH_CHARS})
 
 
-# `finish_verification` is not a registry tool: it is the loop's exit signal,
-# parsed from the model's final structured answer rather than executed.
+# `finish_verification` is not a registry tool: it is the episode's exit signal.
+FINISH_TOOL = "finish_verification"
 
 FINISH_SCHEMA = {
     "type": "object",

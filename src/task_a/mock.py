@@ -1,18 +1,13 @@
-"""Offline doubles: a mock corpus backend and a scripted LLM.
+"""Offline mock backend for corpus and web tools.
 
-These let the whole agent run with zero API calls and zero cost, which is how
-`--dry-run` works and how the tests verify the loop. They are test/demo
-infrastructure, not a substitute for the live backend.
+Lets the MCP server, tools, retriever, and cache tests run offline with zero
+network access and zero cost.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-
-from task_a.loop import LLMResponse, ToolCall
 from task_a.retrieve import BigramTokenizer
-from task_a.schema import EvidenceUnit, Usage
-from task_a.tools import ToolBackend
+from task_a.schema import EvidenceUnit
 
 tokenize = BigramTokenizer().tokenize
 
@@ -56,39 +51,3 @@ class MockBackend:
         if url not in self.pages:
             raise ConnectionError(f"no mock page for {url}")
         return self.pages[url]
-
-
-@dataclass
-class ScriptedLLM:
-    """Replays a fixed sequence of model decisions.
-
-    Used to prove the loop honours whatever the model chooses: which tool, in
-    what order, and when to stop. A real client is swapped in at run time.
-    """
-
-    responses: list[LLMResponse] = field(default_factory=list)
-    model_id: str = "scripted-mock"
-    seen_messages: list[list[dict]] = field(default_factory=list)
-
-    def complete(self, messages: list[dict], tools: list[dict]) -> LLMResponse:
-        self.seen_messages.append([dict(m) for m in messages])
-        if not self.responses:
-            raise AssertionError("ScriptedLLM ran out of responses")
-        return self.responses.pop(0)
-
-
-def tool_call_response(name: str, args: dict, call_id: str | None = None,
-                       tokens: tuple[int, int] = (0, 0)) -> LLMResponse:
-    return LLMResponse(
-        tool_calls=[ToolCall(id=call_id or f"call_{name}", name=name, args=args)],
-        usage=Usage(input_tokens=tokens[0], output_tokens=tokens[1], llm_calls=1))
-
-
-def finish_response(verdict: str, cited: list[str], justification: str,
-                    stop_reason: str, correction: str | None = None,
-                    abstain: bool = False, tokens: tuple[int, int] = (0, 0)) -> LLMResponse:
-    args = {"verdict": verdict, "abstain": abstain, "cited_evidence_ids": cited,
-            "justification": justification, "stop_reason": stop_reason}
-    if correction:
-        args["correction"] = correction
-    return tool_call_response("finish_verification", args, tokens=tokens)

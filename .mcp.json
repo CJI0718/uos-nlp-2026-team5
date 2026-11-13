@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "factcheck-mission": {
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "scripts/mcp_stdio.py",
+        "--arm",
+        "C2",
+        "--out",
+        "results/exp-mcp/run.jsonl"
+      ]
+    }
+  }
+}
