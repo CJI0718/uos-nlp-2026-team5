@@ -73,10 +73,12 @@ READ_TOOLS = ("read_evidence", "fetch_url")
 #: missing/conflict/misleading need corpus variants that do not exist yet, and a
 #: log that names a condition the environment never applied is a false record.
 IMPLEMENTED_CONDITIONS = ("sufficient",)
+GATE_MODES = ("verdict", "provenance", "off")
 
 #: Fields that exist only in the scorer-side reference evidence file.
 REFERENCE_ONLY_FIELDS = frozenset({"claim_id", "check_status", "locator", "content"})
-_CLAIM_ID = re.compile(r"FC\d{3}", re.IGNORECASE)
+# Claim IDs are upper-case (FC001, AS01); hash ids are lower-case hex such as "fc984ce015".
+_CLAIM_ID = re.compile(r"FC\d{3}|AS\d{2}")
 _SCORER_ONLY_NAMES = ("gold", "evaluation.md", "evidence.jsonl")
 
 
@@ -147,7 +149,17 @@ class AgentEnvironment:
         max_external_calls: int = 4,
         code_commit: str | None = None,
         prompt_version: str = "skill-v2",
+        gate: str = "verdict",
+        show_provenance: bool = True,
+        data_version: str = "claims-2026-11-07",
     ) -> None:
+        """`gate` selects how missions are controlled:
+        verdict    the default gate (final verdict, read citations, correction)
+        provenance verdict gate plus source independence (primary source or 2+ groups)
+        off        no gate; the agent's request runs as asked. Experiment baseline only.
+        """
+        if gate not in GATE_MODES:
+            raise ValueError(f"알 수 없는 gate: {gate!r} (허용: {GATE_MODES})")
         _refuse_scorer_only(claims_path, "주장 입력")
         if arm not in ("C0", "C1", "C2"):
             raise ValueError(f"알 수 없는 arm: {arm!r}")
@@ -172,9 +184,11 @@ class AgentEnvironment:
             policy=policy,
             model_id=model_id,
             prompt_version=prompt_version,
-            data_version="claims-2026-11-07",
+            data_version=data_version,
             code_commit=code_commit,
+            extra={"gate": gate, "show_provenance": show_provenance},
         )
+        self.gate = gate
         self.log = RunLog(out_path)
         self.max_tool_calls = max_tool_calls
         self.max_external_calls = max_external_calls
@@ -189,7 +203,7 @@ class AgentEnvironment:
         else:
             self.backend = base_backend
 
-        self.registry = ToolRegistry(self.backend)
+        self.registry = ToolRegistry(self.backend, show_provenance=show_provenance)
         self.missions = MissionExecutor(missions_dir or Path("missions"))
         self.active: ActiveEpisode | None = None
 
@@ -367,11 +381,35 @@ class AgentEnvironment:
             tracking_condition=args.get("tracking_condition"),
             tracking_queries=args.get("tracking_queries"),
             observed_evidence_ids=ep.read_evidence_ids,
+            enforce_gate=self.gate != "off",
+            evidence_meta=self._evidence_meta(cited),
+            require_independent=self.gate == "provenance",
         )
         out = {"status": res.status.value, "observation": res.observation}
         if res.status == ToolStatus.OK:
             out.update(res.payload)
         return out
+
+    def _evidence_meta(self, ids: list[str]) -> dict[str, dict]:
+        meta = {}
+        for evidence_id in ids:
+            unit = self.backend.lookup(evidence_id) if hasattr(self.backend, "lookup") else None
+            if unit is not None:
+                meta[evidence_id] = {"source_type": unit.source_type,
+                                     "provenance_group": unit.provenance_group}
+        return meta
+
+    def _finish_description(self) -> str:
+        base = "검증 에피소드를 종료하고 최종 판정·근거·왜곡 분석을 제출합니다. "
+        if self.gate == "off":
+            return base + "mission_type을 주면 서버가 요청한 후속 미션(일정 등록 등)을 그대로 실행합니다."
+        text = (base + "mission_type을 주면 서버가 이 최종 판정으로 검증 게이트를 적용한 뒤 후속 미션을 실행합니다: "
+                "미확인(not_enough_evidence/abstain)이면 실행형 미션 차단, 실행형 미션은 이번 "
+                "에피소드에서 read_evidence/fetch_url로 읽은 근거만 인용 가능, 반박이면 correction 필수.")
+        if self.gate == "provenance":
+            text += (" 또한 실행형 미션의 인용 근거에는 1차 출처(출처유형 official/primary)가 있거나, "
+                     "서로 다른 출처군이 2개 이상이어야 합니다.")
+        return text
 
     def mcp_tools(self) -> list[dict]:
         """Return MCP tool definitions for any MCP-compatible host agent."""
@@ -405,12 +443,7 @@ class AgentEnvironment:
             })
         tools.append({
             "name": FINISH_TOOL,
-            "description": (
-                "검증 에피소드를 종료하고 최종 판정·근거·왜곡 분석을 제출합니다. mission_type을 주면 "
-                "서버가 이 최종 판정으로 검증 게이트를 적용한 뒤 후속 미션을 실행합니다: "
-                "미확인(not_enough_evidence/abstain)이면 실행형 미션 차단, 실행형 미션은 이번 "
-                "에피소드에서 read_evidence/fetch_url로 읽은 근거만 인용 가능, 반박이면 correction 필수."
-            ),
+            "description": self._finish_description(),
             "inputSchema": FINISH_SCHEMA,
         })
         return tools

@@ -22,6 +22,8 @@ from task_a.schema import EvidenceUnit, ToolResult, ToolStatus
 
 MAX_SNIPPET_CHARS = 600
 MAX_FETCH_CHARS = 4000
+#: source_type values that describe provenance (shown to the agent when enabled).
+PROVENANCE_SOURCE_TYPES = frozenset({"official", "primary", "news", "reprint", "blog", "sns"})
 
 
 class ToolBackend(Protocol):
@@ -238,8 +240,10 @@ class ToolRegistry:
         backend: ToolBackend,
         top_k: int = 5,
         allowed_hosts: frozenset[str] | None = None,
+        show_provenance: bool = True,
     ) -> None:
         self.backend = backend
+        self.show_provenance = show_provenance
         self.top_k = top_k
         self.allowed_hosts = allowed_hosts
         self.specs: dict[str, ToolSpec] = {}
@@ -325,7 +329,7 @@ class ToolRegistry:
         lines, ids, ranks, flags = [], [], [], []
         for rank, (unit, score) in enumerate(hits, start=1):
             snippet = unit.text[:MAX_SNIPPET_CHARS]
-            meta = f" | 출처군:{unit.provenance_group}" if unit.provenance_group else ""
+            meta = self._provenance_line(unit, sep=" | ")
             lines.append(f"[{rank}] {unit.evidence_id} | {unit.title} | 관련도 {score:.3f}{meta}\n"
                          f"    {snippet}")
             ids.append(unit.evidence_id)
@@ -335,6 +339,17 @@ class ToolRegistry:
         return ToolResult(ToolStatus.OK, "\n\n".join(lines),
                           {"query": query, "top_k": k, "count": len(hits), "misleading_ids": flags},
                           evidence_ids=ids, ranks=ranks)
+
+    def _provenance_line(self, unit: EvidenceUnit, sep: str) -> str:
+        """Source type and provenance group, or nothing when the condition hides them."""
+        if not self.show_provenance:
+            return ""
+        parts = []
+        if unit.source_type in PROVENANCE_SOURCE_TYPES:  # not file formats such as html/pdf
+            parts.append(f"출처유형:{unit.source_type}")
+        if unit.provenance_group:
+            parts.append(f"출처군:{unit.provenance_group}")
+        return (sep + " · ".join(parts)) if parts else ""
 
     def _read_evidence(self, evidence_id: str, section: str | None = None) -> ToolResult:
         unit = self.backend.lookup(evidence_id) if hasattr(self.backend, "lookup") else None
@@ -350,7 +365,7 @@ class ToolRegistry:
         return ToolResult(
             ToolStatus.OK,
             f"{unit.evidence_id} | {unit.title}\n출처: {unit.source_url or 'unknown'}\n"
-            f"발행: {unit.published_at or 'unknown'}\n\n{body}",
+            f"발행: {unit.published_at or 'unknown'}{self._provenance_line(unit, sep=chr(10))}\n\n{body}",
             {"evidence_id": unit.evidence_id, "source_url": unit.source_url,
              "published_at": unit.published_at, "provenance_group": unit.provenance_group,
              "content_hash": unit.content_hash or hashlib.sha256(unit.text.encode()).hexdigest()[:16]},

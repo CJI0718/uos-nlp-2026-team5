@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from task_a.mcp_server import (  # noqa: E402
-    IMPLEMENTED_CONDITIONS, AgentEnvironment, MCPStdioServer, current_commit,
+    GATE_MODES, IMPLEMENTED_CONDITIONS, AgentEnvironment, MCPStdioServer, current_commit,
 )
 from task_a.web import LiveWebProvider  # noqa: E402
 
@@ -44,6 +44,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--live-web", action="store_true",
                         help="C2에서 실제 웹 검색(Tavily 또는 DuckDuckGo 폴백)을 활성화합니다.")
     parser.add_argument("--web-provider", choices=["auto", "tavily", "ddg"], default="auto")
+    parser.add_argument("--gate", choices=list(GATE_MODES), default="verdict",
+                        help="미션 통제: verdict(기본) / provenance(출처 독립성 추가) / off(실험 기준선 전용)")
+    parser.add_argument("--data-version", default="claims-2026-11-07")
+    parser.add_argument("--hide-provenance", action="store_true",
+                        help="검색·열람 결과에서 출처유형·출처군 표시를 뺀다 (실험 조건용)")
     return parser.parse_args(argv)
 
 
@@ -64,6 +69,9 @@ def main(argv: list[str] | None = None) -> int:
         web_provider=web,
         code_commit=current_commit(ROOT),
         prompt_version=args.prompt_version,
+        gate=args.gate,
+        show_provenance=not args.hide_provenance,
+        data_version=args.data_version,
     )
     MCPStdioServer(env).serve_forever()
     return 0

@@ -90,11 +90,18 @@ def validate_mission_gate(
     cited_evidence_ids: list[str] | None = None,
     observed_evidence_ids: set[str] | frozenset[str] | None = None,
     event_start_kst: str | None = None,
+    evidence_meta: dict[str, dict] | None = None,
+    require_independent: bool = False,
 ) -> str | None:
     """Return an error reason if the mission violates the verification gate.
 
     `observed_evidence_ids` is the set the environment saw the agent read. When
     it is None (direct library use) only the presence of citations is checked.
+
+    With `require_independent`, an action also needs its cited documents to
+    include a primary source or to span at least two provenance groups:
+    five reprints of one article are one source, not five (`evidence_meta`
+    maps evidence_id to its `source_type` and `provenance_group`).
     """
     if mission_type not in ALL_MISSIONS:
         return f"알 수 없는 mission_type: {mission_type!r} (허용: {sorted(ALL_MISSIONS)})"
@@ -120,6 +127,10 @@ def validate_mission_gate(
                     f"검증 게이팅 차단: 이번 에피소드에서 read_evidence/fetch_url로 읽지 않은 근거를 "
                     f"인용했습니다: {unread}"
                 )
+        if require_independent:
+            reason = independence_error(cited, evidence_meta or {})
+            if reason:
+                return reason
         if verdict_val == Verdict.REFUTED.value and not (correction and correction.strip()):
             return (
                 f"검증 게이팅 차단: 반박(refuted)된 주장에 대해 실행형 미션({mission_type})을 "
@@ -132,6 +143,24 @@ def validate_mission_gate(
                 "없습니다. 정정된 시각으로만 일정을 만들 수 있습니다."
             )
     return None
+
+
+PRIMARY_SOURCE_TYPES = frozenset({"official", "primary"})
+
+
+def independence_error(cited: list[str], evidence_meta: dict[str, dict]) -> str | None:
+    """None when the cited documents include a primary source or two independent groups."""
+    metas = [evidence_meta.get(c) or {} for c in cited]
+    if any(m.get("source_type") in PRIMARY_SOURCE_TYPES for m in metas):
+        return None
+    groups = {m.get("provenance_group") or f"solo:{c}" for c, m in zip(cited, metas)}
+    if len(groups) >= 2:
+        return None
+    return (
+        "검증 게이팅 차단: 인용한 근거가 모두 같은 출처군"
+        f"({sorted(groups)})이고 1차 출처(공식 발표·원문)가 없습니다. 같은 원문을 옮긴 문서는 "
+        "여러 개여도 독립 근거 하나입니다. 1차 출처를 읽어 인용하거나 실행을 보류하세요."
+    )
 
 
 def _format_ics_datetime(dt_str: str) -> str:
@@ -171,13 +200,25 @@ class MissionExecutor:
         tracking_condition: str | None = None,
         tracking_queries: list[str] | None = None,
         observed_evidence_ids: set[str] | frozenset[str] | None = None,
+        enforce_gate: bool = True,
+        evidence_meta: dict[str, dict] | None = None,
+        require_independent: bool = False,
     ) -> ToolResult:
-        gate_error = validate_mission_gate(
-            mission_type, verdict, abstain=abstain, correction=correction,
-            cited_evidence_ids=cited_evidence_ids,
-            observed_evidence_ids=observed_evidence_ids,
-            event_start_kst=event_start_kst,
-        )
+        """Run a mission. `enforce_gate=False` exists only for the ungated
+        baseline conditions of action-safety experiments."""
+        if enforce_gate:
+            gate_error = validate_mission_gate(
+                mission_type, verdict, abstain=abstain, correction=correction,
+                cited_evidence_ids=cited_evidence_ids,
+                observed_evidence_ids=observed_evidence_ids,
+                event_start_kst=event_start_kst,
+                evidence_meta=evidence_meta,
+                require_independent=require_independent,
+            )
+        elif mission_type not in ALL_MISSIONS:
+            gate_error = f"알 수 없는 mission_type: {mission_type!r} (허용: {sorted(ALL_MISSIONS)})"
+        else:
+            gate_error = None
         if gate_error:
             return ToolResult(ToolStatus.INVALID_INPUT, gate_error)
 

@@ -124,3 +124,9 @@ def test_korean_url_paths_are_percent_encoded():
     url.encode("ascii")
     assert url.startswith("https://news.samsung.com/kr/%EC%82%BC%EC%84%B1")
     assert "q=%EA%B0%80%EA%B2%A9&x=1" in url and "#" not in url
+
+
+def test_lowercase_hex_ids_are_not_mistaken_for_claim_ids(tmp_path):
+    corpus = tmp_path / "corpus.jsonl"
+    write_jsonl(corpus, [{"evidence_id": "DOC_fc984ce015", "title": "t", "text": "x"}])
+    assert load_agent_corpus(corpus)[0].evidence_id == "DOC_fc984ce015"
