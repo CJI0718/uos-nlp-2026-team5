@@ -544,6 +544,7 @@ class ToolRegistry:
         return self._page(url, doc["title"], url, shown, text, "", None, None,
                           {"url": url, "published_at": published, "extractor": raw.get("extractor")
                            if isinstance(raw, dict) else None,
+                           "fetched_url": raw.get("fetched_url") if isinstance(raw, dict) else None,
                            "content_hash": hashlib.sha256(text.encode()).hexdigest()[:16],
                            "truncated": len(text) > MAX_FETCH_CHARS})
 

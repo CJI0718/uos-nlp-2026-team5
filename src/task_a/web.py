@@ -74,6 +74,30 @@ def to_ascii_url(url: str) -> str:
                        quote(p.query, safe="=&%/:+,;@!$'()*-._~"), p.fragment and ""))
 
 
+_NAVER_BLOG_PATH = re.compile(r"^/([A-Za-z0-9_-]+)/(\d+)/?$")
+
+
+def readable_url(url: str) -> str:
+    """Address that serves the same page with its body in the HTML.
+
+    Naver's desktop blog page (blog.naver.com/<id>/<no> or PostView.naver?blogId=&logNo=)
+    loads the post in an inner frame, so the fetched HTML has no body text. The
+    mobile address serves the post directly. Other URLs are returned unchanged.
+    """
+    parts = urllib.parse.urlsplit(url)
+    if (parts.hostname or "").lower() not in ("blog.naver.com", "www.blog.naver.com"):
+        return url
+    m = _NAVER_BLOG_PATH.match(parts.path)
+    if m:
+        blog_id, log_no = m.groups()
+    else:
+        qs = urllib.parse.parse_qs(parts.query)
+        blog_id, log_no = (qs.get("blogId") or [None])[0], (qs.get("logNo") or [None])[0]
+        if not (blog_id and log_no and log_no.isdigit()):
+            return url
+    return f"https://m.blog.naver.com/{blog_id}/{log_no}"
+
+
 def _unwrap_ddg_url(href: str) -> str:
     parsed = urllib.parse.urlsplit(href)
     if "duckduckgo.com" in parsed.netloc and parsed.path.startswith("/l/"):
@@ -115,7 +139,10 @@ class LiveWebProvider:
         denied = check_url(url, self.allowed_hosts)
         if denied:
             raise PermissionError(denied)
-        req = urllib.request.Request(to_ascii_url(url), headers={"User-Agent": USER_AGENT})
+        target = readable_url(url)
+        if target != url and check_url(target, self.allowed_hosts):
+            target = url   # the rewritten host is not allowed; fetch what was asked
+        req = urllib.request.Request(to_ascii_url(target), headers={"User-Agent": USER_AGENT})
         with urllib.request.urlopen(req, timeout=self.timeout) as resp:
             body = resp.read(MAX_DOWNLOAD_BYTES)
             content_type = (resp.headers.get("Content-Type") or "").lower()
@@ -124,9 +151,9 @@ class LiveWebProvider:
             art = extract_article(raw, url)
             return {"text": art.text[:MAX_PAGE_TEXT_CHARS], "title": art.title,
                     "published_at": art.published_at, "date_source": art.date_source,
-                    "extractor": art.method}
+                    "extractor": art.method, "fetched_url": target}
         return {"text": raw[:MAX_PAGE_TEXT_CHARS], "title": "", "published_at": None,
-                "extractor": "plain"}
+                "extractor": "plain", "fetched_url": target}
 
     def _search_tavily(self, query: str, top_k: int, api_key: str,
                        end_date: str | None = None) -> list[dict]:

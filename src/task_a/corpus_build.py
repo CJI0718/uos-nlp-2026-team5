@@ -32,7 +32,7 @@ from urllib.parse import urlsplit
 
 from task_a.article import decode_body, extract_article
 from task_a.tools import check_url
-from task_a.web import USER_AGENT, to_ascii_url
+from task_a.web import USER_AGENT, readable_url, to_ascii_url
 
 MIN_TEXT_CHARS = 300
 MAX_TEXT_CHARS = 100_000
@@ -78,7 +78,7 @@ def http_fetch(url: str, timeout: float = 20.0) -> Fetched:
     if denied:
         return Fetched(url, "blocked_url", detail=denied)
     try:
-        request_url = to_ascii_url(url)
+        request_url = to_ascii_url(readable_url(url))
     except (UnicodeError, ValueError) as exc:
         return Fetched(url, "blocked_url", detail=f"URL 인코딩 실패: {exc}")
     req = urllib.request.Request(request_url, headers={"User-Agent": USER_AGENT,

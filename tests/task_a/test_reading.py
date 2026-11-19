@@ -203,3 +203,18 @@ def test_web_only_c2_needs_no_corpus_and_offers_no_corpus_search(tmp_path):
     with pytest.raises(ValueError):   # web-only without a provider would have no evidence at all
         AgentEnvironment(claims_path=claims, arm="C2", web_only=True, out_path=tmp_path / "y.jsonl",
                          tokenizer="bigram")
+
+
+# --- pages whose body is not in the first HTML -------------------------------
+
+def test_naver_desktop_blog_urls_are_read_from_the_mobile_page():
+    from task_a.web import readable_url
+
+    mobile = "https://m.blog.naver.com/feelmetruth/224331961248"
+    assert readable_url("https://blog.naver.com/feelmetruth/224331961248") == mobile
+    assert readable_url("https://blog.naver.com/feelmetruth/224331961248?viewType=pc") == mobile
+    assert readable_url("https://blog.naver.com/PostView.naver?blogId=feelmetruth&logNo=224331961248"
+                        "&redirect=Dlog") == mobile
+    for unchanged in (mobile, "https://blog.naver.com/feelmetruth", "https://news.example/blog.naver.com/a/1",
+                      "https://blog.naver.com/PostList.naver?blogId=x"):
+        assert readable_url(unchanged) == unchanged
