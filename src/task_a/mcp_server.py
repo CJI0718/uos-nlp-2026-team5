@@ -239,8 +239,14 @@ class AgentEnvironment:
 
         ep = self.active
         if name == FINISH_TOOL:
-            result = self.finish_episode(args)
-            return {"status": "finished", "result": result.to_dict()}
+            result = self.finish_episode(args).to_dict()
+            # The log keeps the absolute artifact path; the agent only needs the
+            # file's place under the missions folder, not the repository layout.
+            mission = dict(result.get("mission_output") or {})
+            if mission.get("artifact_path"):
+                mission["artifact_path"] = Path(mission["artifact_path"]).name
+                result["mission_output"] = mission
+            return {"status": "finished", "result": result}
 
         if self.arm == "C0":
             return {

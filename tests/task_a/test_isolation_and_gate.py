@@ -226,3 +226,19 @@ def test_workspace_without_skill_for_ablation(tmp_path):
                                    "--arm", "C0", "--model-id", "m", "--no-skill"]))
     assert not (ws / ".claude/skills").exists()
     assert "tools-only-v2" in (ws / ".mcp.json").read_text(encoding="utf-8")
+
+
+def test_finish_response_does_not_reveal_repository_paths(tmp_path):
+    env = _env(tmp_path)
+    env.start_episode("FC900")
+    env.call_tool("read_evidence", {"evidence_id": "DOC_acme_keynote"})
+    args = {"verdict": "refuted", "abstain": False, "cited_evidence_ids": ["DOC_acme_keynote"],
+            "justification": "j", "stop_reason": "evidence_sufficient",
+            "mission_type": "event_manager", "event_start_kst": "2025-03-05 03:00",
+            "correction": "2025-03-05 03:00 KST"}
+    out = env.call_tool("finish_verification", args)
+
+    shown = out["result"]["mission_output"]["artifact_path"]
+    assert shown.endswith(".ics") and "/" not in shown and str(tmp_path) not in json.dumps(out)
+    logged = read_jsonl(tmp_path / "run.jsonl")[-1]["result"]["mission_output"]["artifact_path"]
+    assert Path(logged).is_absolute() and Path(logged).exists()

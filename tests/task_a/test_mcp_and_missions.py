@@ -292,10 +292,12 @@ def test_mcp_server_end_to_end_and_scoring_compatibility(tmp_path):
     assert payload["result"]["mission_type"] == "event_manager"
     mission = payload["result"]["mission_output"]
     assert mission["status"] == "ok"
-    assert "20240119T220000" in Path(mission["artifact_path"]).read_text(encoding="utf-8")
+    assert "/" not in mission["artifact_path"]  # agent sees the file name only
 
     # 3. Score with the existing scorer!
     rows = [json.loads(line) for line in out_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    logged_ics = Path(rows[-1]["result"]["mission_output"]["artifact_path"])
+    assert "20240119T220000" in logged_ics.read_text(encoding="utf-8")
     summary = score_run(rows, load_gold(gold_path))
     assert summary["conditions"][0]["accuracy"]["value"] == 1.0
 
