@@ -417,7 +417,8 @@ class AgentEnvironment:
         """
         for evidence_id in res.evidence_ids:
             unit = self._unit(evidence_id) if tool == "read_evidence" else None
-            text = unit.text if unit is not None else res.observation
+            # The whole page, not just the part shown, so grouping sees the full text.
+            text = unit.text if unit is not None else res.payload.get("full_text", res.observation)
             earlier = dict(ep.read_texts)
             ep.read_texts[evidence_id] = text
             labelled = unit is not None and unit.provenance_group and self.provenance_mode == "labeled"

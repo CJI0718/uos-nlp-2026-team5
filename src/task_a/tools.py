@@ -300,7 +300,8 @@ class ToolRegistry:
             self._search_web, external=True))
         self._add(ToolSpec(
             "fetch_url",
-            "허용된 host의 원문을 조회한다. 로컬·사설 주소는 차단된다.",
+            (f"허용된 host의 웹 페이지 본문(메뉴·광고 제외)을 앞 {MAX_FETCH_CHARS}자까지 연다. "
+             "로컬·사설 주소는 차단된다."),
             {"type": "object",
              "properties": {"url": {"type": "string"}},
              "required": ["url"]},
@@ -412,16 +413,31 @@ class ToolRegistry:
         if denied:
             return ToolResult(ToolStatus.BLOCKED, f"차단: {denied}")
         try:
-            body = self.backend.fetch(url)
+            raw = self.backend.fetch(url)
         except Exception as exc:
             return ToolResult(ToolStatus.SOURCE_UNAVAILABLE, f"조회 실패: {exc}")
-        if not body or not body.strip():
+        # Live providers return {text, title, published_at, date_source}; simple ones a string.
+        doc = raw if isinstance(raw, dict) else {"text": raw or ""}
+        text = (doc.get("text") or "").strip()
+        if not text:
             return ToolResult(ToolStatus.EMPTY, "본문이 비어 있다.")
+        published = doc.get("published_at")
+        cutoff = _cutoff_date(self.evidence_cutoff)
+        if cutoff and published and str(published)[:10] > cutoff:
+            # A page written after the cutoff could reveal how the event turned out.
+            return ToolResult(ToolStatus.BLOCKED,
+                              f"근거 허용 시점({cutoff}) 이후 발행된 문서다(발행 {str(published)[:10]}). "
+                              f"인용할 수 없다.", {"url": url, "published_at": published})
+        shown = published
+        if published and doc.get("date_source") == "htmldate":
+            shown = f"{published} (페이지에서 추정한 날짜, 수정일일 수 있음)"
+        head = f"{url} | {doc.get('title') or ''}\n발행: {shown or '미상'}\n\n"
         # The URL is the citation id for web evidence, so record it as read.
-        return ToolResult(ToolStatus.OK, body[:MAX_FETCH_CHARS],
-                          {"url": url, "chars": len(body),
-                           "content_hash": hashlib.sha256(body.encode()).hexdigest()[:16],
-                           "truncated": len(body) > MAX_FETCH_CHARS},
+        return ToolResult(ToolStatus.OK, head + text[:MAX_FETCH_CHARS],
+                          {"url": url, "chars": len(text), "published_at": published,
+                           "full_text": text,
+                           "content_hash": hashlib.sha256(text.encode()).hexdigest()[:16],
+                           "truncated": len(text) > MAX_FETCH_CHARS},
                           evidence_ids=[url])
 
 

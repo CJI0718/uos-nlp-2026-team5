@@ -19,13 +19,16 @@ import re
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
+from urllib.parse import quote, urlsplit, urlunsplit
 
-from task_a.tools import MAX_FETCH_CHARS, check_url
+from task_a.article import decode_body, extract_article, strip_html
+from task_a.tools import check_url
 
 USER_AGENT = "uos-nlp-team5-factcheck-agent/0.1 (academic research)"
-_SCRIPT_STYLE_RE = re.compile(r"<(script|style|noscript)[^>]*>.*?</\1>", re.I | re.S)
-_TAG_RE = re.compile(r"<[^>]+>")
-_WS_RE = re.compile(r"\s+")
+#: Raw bytes read per page. News pages are often several hundred KB of markup.
+MAX_DOWNLOAD_BYTES = 4 * 1024 * 1024
+#: Extracted text kept per page; the agent pages through it with read_evidence.
+MAX_PAGE_TEXT_CHARS = 100_000
 _DDG_RESULT_RE = re.compile(
     r'<a[^>]+class="[^"]*result__a[^"]*"[^>]+href="(?P<url>[^"]+)"[^>]*>(?P<title>.*?)</a>'
     r'(?:.*?<a[^>]+class="[^"]*result__snippet[^"]*"[^>]*>(?P<snippet>.*?)</a>)?',
@@ -60,12 +63,15 @@ def load_env_file(path, keys: tuple[str, ...] = ENV_FILE_KEYS) -> list[str]:
     return loaded
 
 
-def strip_html(raw_html: str) -> str:
-    """Convert raw HTML into compact plain text suitable for tool observations."""
-    cleaned = _SCRIPT_STYLE_RE.sub(" ", raw_html or "")
-    cleaned = _TAG_RE.sub(" ", cleaned)
-    cleaned = html.unescape(cleaned)
-    return _WS_RE.sub(" ", cleaned).strip()
+
+
+def to_ascii_url(url: str) -> str:
+    """Percent-encode non-ASCII path/query characters (e.g. Korean slugs)."""
+    p = urlsplit(url)
+    host = p.hostname.encode("idna").decode("ascii") if p.hostname else ""
+    netloc = host + (f":{p.port}" if p.port else "")
+    return urlunsplit((p.scheme, netloc, quote(p.path, safe="/%:@!$&'()*+,;=-._~"),
+                       quote(p.query, safe="=&%/:+,;@!$'()*-._~"), p.fragment and ""))
 
 
 def _unwrap_ddg_url(href: str) -> str:
@@ -100,17 +106,27 @@ class LiveWebProvider:
             return self._search_ddg(query, top_k)
         raise ValueError(f"지원하지 않는 검색 provider: {self.provider!r}")
 
-    def fetch(self, url: str) -> str:
+    def fetch(self, url: str) -> dict:
+        """Main text, title and publish date of one page.
+
+        HTML goes through main-content extraction so menus and footers do not
+        make different articles from one site look like copies of each other.
+        """
         denied = check_url(url, self.allowed_hosts)
         if denied:
             raise PermissionError(denied)
-        req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+        req = urllib.request.Request(to_ascii_url(url), headers={"User-Agent": USER_AGENT})
         with urllib.request.urlopen(req, timeout=self.timeout) as resp:
-            raw = resp.read(MAX_FETCH_CHARS * 8).decode("utf-8", errors="replace")
+            body = resp.read(MAX_DOWNLOAD_BYTES)
             content_type = (resp.headers.get("Content-Type") or "").lower()
-        if "html" in content_type or "<html" in raw[:500].lower():
-            return strip_html(raw)[:MAX_FETCH_CHARS]
-        return raw[:MAX_FETCH_CHARS]
+        raw = decode_body(body, content_type)
+        if "html" in content_type or "<html" in raw[:2000].lower():
+            art = extract_article(raw, url)
+            return {"text": art.text[:MAX_PAGE_TEXT_CHARS], "title": art.title,
+                    "published_at": art.published_at, "date_source": art.date_source,
+                    "extractor": art.method}
+        return {"text": raw[:MAX_PAGE_TEXT_CHARS], "title": "", "published_at": None,
+                "extractor": "plain"}
 
     def _search_tavily(self, query: str, top_k: int, api_key: str,
                        end_date: str | None = None) -> list[dict]:

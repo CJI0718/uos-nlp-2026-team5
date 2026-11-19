@@ -17,7 +17,6 @@ the URL, so they reveal nothing about which claim a page belongs to.
 from __future__ import annotations
 
 import hashlib
-import html
 import json
 import re
 import shutil
@@ -29,31 +28,15 @@ import urllib.request
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from urllib.parse import quote, urlsplit, urlunsplit
+from urllib.parse import urlsplit
 
+from task_a.article import decode_body, extract_article
 from task_a.tools import check_url
-from task_a.web import USER_AGENT, strip_html
+from task_a.web import USER_AGENT, to_ascii_url
 
 MIN_TEXT_CHARS = 300
 MAX_TEXT_CHARS = 100_000
 MAX_DOWNLOAD_BYTES = 8 * 1024 * 1024
-
-_BOILERPLATE_RE = re.compile(
-    r"<(head|script|style|noscript|svg|nav|header|footer|aside|form|template)\b[^>]*>.*?</\1\s*>",
-    re.I | re.S)
-_COMMENT_RE = re.compile(r"<!--.*?-->", re.S)
-_TITLE_RE = re.compile(r"<title[^>]*>(.*?)</title>", re.I | re.S)
-_META_RE = re.compile(r"<meta\b[^>]*>", re.I)
-_ATTR_RE = re.compile(r'([a-zA-Z_:.-]+)\s*=\s*("([^"]*)"|\'([^\']*)\')')
-_JSONLD_DATE_RE = re.compile(r'"datePublished"\s*:\s*"([^"]+)"')
-_TIME_RE = re.compile(r"<time\b[^>]*\bdatetime\s*=\s*[\"']([^\"']+)[\"']", re.I)
-_CHARSET_RE = re.compile(rb"<meta[^>]+charset\s*=\s*[\"']?([A-Za-z0-9_-]+)", re.I)
-
-_PUBLISHED_META = ("article:published_time", "og:published_time", "datepublished",
-                   "pubdate", "publishdate", "date", "dc.date", "dc.date.issued",
-                   "citation_publication_date", "citation_date")
-_TITLE_META = ("og:title", "twitter:title", "citation_title")
-
 
 @dataclass
 class Fetched:
@@ -70,6 +53,8 @@ class Extracted:
     text: str
     published_at: str | None = None
     source_type: str = "html"
+    extractor: str = ""
+    date_source: str | None = None
 
 
 @dataclass
@@ -87,15 +72,6 @@ def doc_id_for(url: str) -> str:
 # --------------------------------------------------------------------------
 # Fetching
 # --------------------------------------------------------------------------
-
-def to_ascii_url(url: str) -> str:
-    """Percent-encode non-ASCII path/query characters (e.g. Korean slugs)."""
-    p = urlsplit(url)
-    host = p.hostname.encode("idna").decode("ascii") if p.hostname else ""
-    netloc = host + (f":{p.port}" if p.port else "")
-    return urlunsplit((p.scheme, netloc, quote(p.path, safe="/%:@!$&'()*+,;=-._~"),
-                       quote(p.query, safe="=&%/:+,;@!$'()*-._~"), p.fragment and ""))
-
 
 def http_fetch(url: str, timeout: float = 20.0) -> Fetched:
     denied = check_url(url, None)
@@ -124,48 +100,10 @@ def http_fetch(url: str, timeout: float = 20.0) -> Fetched:
 # Extraction
 # --------------------------------------------------------------------------
 
-def _decode(body: bytes, content_type: str) -> str:
-    charset = None
-    m = re.search(r"charset=([A-Za-z0-9_-]+)", content_type)
-    if m:
-        charset = m.group(1)
-    else:
-        m2 = _CHARSET_RE.search(body[:4096])
-        if m2:
-            charset = m2.group(1).decode("ascii", "ignore")
-    for enc in (charset, "utf-8"):
-        if not enc:
-            continue
-        try:
-            return body.decode(enc)
-        except (LookupError, UnicodeDecodeError):
-            continue
-    return body.decode("utf-8", errors="replace")
-
-
-def _meta_tags(raw: str) -> dict[str, str]:
-    out: dict[str, str] = {}
-    for tag in _META_RE.findall(raw):
-        attrs = {k.lower(): (v1 if v1 else v2) for k, _, v1, v2 in _ATTR_RE.findall(tag)}
-        key = (attrs.get("property") or attrs.get("name") or attrs.get("itemprop") or "").lower()
-        if key and "content" in attrs and key not in out:
-            out[key] = html.unescape(attrs["content"]).strip()
-    return out
-
-
-def extract_html(raw: str) -> Extracted:
-    meta = _meta_tags(raw)
-    title = next((meta[k] for k in _TITLE_META if meta.get(k)), "")
-    if not title:
-        m = _TITLE_RE.search(raw)
-        title = strip_html(m.group(1)) if m else ""
-    published = next((meta[k] for k in _PUBLISHED_META if meta.get(k)), None)
-    if not published:
-        m = _JSONLD_DATE_RE.search(raw) or _TIME_RE.search(raw)
-        published = m.group(1) if m else None
-    body = _COMMENT_RE.sub(" ", raw)
-    body = _BOILERPLATE_RE.sub(" ", body)
-    return Extracted(title=title, text=strip_html(body), published_at=published)
+def extract_html(raw: str, url: str | None = None) -> Extracted:
+    art = extract_article(raw, url)
+    return Extracted(title=art.title, text=art.text, published_at=art.published_at,
+                     extractor=art.method, date_source=art.date_source)
 
 
 def extract_pdf(body: bytes) -> Extracted | None:
@@ -190,9 +128,9 @@ def extract(fetched: Fetched) -> Extracted | None:
     is_pdf = "pdf" in fetched.content_type or fetched.body[:5] == b"%PDF-"
     if is_pdf:
         return extract_pdf(fetched.body)
-    raw = _decode(fetched.body, fetched.content_type)
+    raw = decode_body(fetched.body, fetched.content_type)
     if "html" in fetched.content_type or "<html" in raw[:2000].lower():
-        return extract_html(raw)
+        return extract_html(raw, fetched.url)
     text = re.sub(r"\s+", " ", raw).strip()
     return Extracted(title="", text=text, source_type="text")
 
@@ -263,7 +201,7 @@ def build_corpus(
             published = _parse_time(ext.published_at)
             limits = [cutoffs.get(c) for c in entry["claim_ids"] if cutoffs.get(c)]
             if published and limits and published > min(limits):
-                status, detail = "after_cutoff", f"published_at {ext.published_at}"
+                status, detail = "after_cutoff", f"published_at {ext.published_at} ({ext.date_source})"
             elif content_hash in seen_hashes:
                 status, detail = "duplicate_text", f"same text as {seen_hashes[content_hash]}"
             else:
@@ -282,7 +220,7 @@ def build_corpus(
                 "content_hash": content_hash,
                 "retrieved_at": retrieved_at,
             })
-            record.update(chars=len(ext.text), truncated=truncated)
+            record.update(chars=len(ext.text), truncated=truncated, extractor=ext.extractor or None)
             result.gold_map.append({k: record[k] for k in
                                     ("evidence_id", "source_url", "reference_evidence_ids", "claim_ids")})
         result.report.append(record)
