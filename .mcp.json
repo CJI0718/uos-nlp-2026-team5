@@ -7,9 +7,13 @@
         "python",
         "scripts/mcp_stdio.py",
         "--arm",
-        "C2",
+        "C1",
+        "--run-id",
+        "dev-interactive",
         "--out",
-        "results/exp-mcp/run.jsonl"
+        "results/raw/dev-interactive/run.jsonl",
+        "--missions-dir",
+        "results/raw/dev-interactive/missions"
       ]
     }
   }

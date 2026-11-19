@@ -29,7 +29,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from task_a.schema import read_jsonl  # noqa: E402
-from task_a.score_run import load_gold, load_grades, score_run, score_transition  # noqa: E402
+from task_a.score_run import (  # noqa: E402
+    constant_baselines, load_gold, load_grades, score_run, score_transition,
+)
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -54,6 +56,7 @@ def main(argv: list[str] | None = None) -> int:
     summary = {"run": str(args.run), "episodes": len(rows),
                "gold_cases": len(gold),
                "unreviewed_gold": sum(1 for label in gold.values() if label is None),
+               "reference_baselines": constant_baselines(gold),
                "c1": score_run(rows, gold, grades)}
 
     if args.c2 is not None:

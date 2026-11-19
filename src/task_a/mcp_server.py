@@ -2,24 +2,34 @@
 
 Allows ANY existing AI agent (Antigravity, Claude Code, Cursor, Codex, etc.) to
 solve Task A claims and execute verification-gated follow-up missions while:
-1. Enforcing strict answer-leakage isolation (never opens `gold.jsonl` or
-   `evaluation.md`).
+1. Refusing scorer-only inputs: `gold.jsonl`, `evaluation.md`, and the reference
+   evidence file (`evidence.jsonl`) cannot be loaded as claims or corpus, and
+   corpus ids may not encode claim ids.
 2. Enforcing arm constraints (`C0` closed-book, `C1` fixed corpus, `C2` corpus +
-   external web) and per-episode tool budgets.
-3. Automatically writing standard `RunLog` JSONL records so `scripts/score_run.py`
-   can grade the external agent's run identically to `runner.py`.
+   external web) and per-episode tool budgets. C1/C2 refuse to start without a
+   corpus instead of silently serving an empty one.
+3. Running follow-up missions only from `finish_verification`, gated on the
+   final verdict and on evidence actually read in the episode.
+4. Writing standard `RunLog` JSONL records so `scripts/score_run.py` can grade
+   the external agent's run.
+
+What this module cannot do: stop a host agent that has its own file, shell or
+web tools from reading the repository. That isolation is the job of the
+workspace built by `scripts/make_agent_workspace.py`.
 """
 
 from __future__ import annotations
 
 import json
+import re
+import subprocess
 import sys
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from task_a.missions import ALL_MISSIONS, MissionExecutor
+from task_a.missions import MissionExecutor
 from task_a.retrieve import BigramTokenizer, CorpusBackend, KiwiTokenizer
 from task_a.schema import (
     AgentResult,
@@ -45,7 +55,74 @@ class ActiveEpisode:
     tool_calls: int = 0
     external_calls: int = 0
     events: list[ToolEvent] = field(default_factory=list)
-    last_mission: dict | None = None
+
+    @property
+    def read_evidence_ids(self) -> frozenset[str]:
+        """Ids whose full text the agent opened. Search snippets do not count."""
+        return frozenset(
+            evidence_id
+            for event in self.events
+            if event.tool in READ_TOOLS and event.status == ToolStatus.OK
+            for evidence_id in event.evidence_ids
+        )
+
+
+READ_TOOLS = ("read_evidence", "fetch_url")
+
+#: Conditions the environment can actually produce. The scorer knows four, but
+#: missing/conflict/misleading need corpus variants that do not exist yet, and a
+#: log that names a condition the environment never applied is a false record.
+IMPLEMENTED_CONDITIONS = ("sufficient",)
+
+#: Fields that exist only in the scorer-side reference evidence file.
+REFERENCE_ONLY_FIELDS = frozenset({"claim_id", "check_status", "locator", "content"})
+_CLAIM_ID = re.compile(r"FC\d{3}", re.IGNORECASE)
+_SCORER_ONLY_NAMES = ("gold", "evaluation.md", "evidence.jsonl")
+
+
+def _refuse_scorer_only(path: str | Path, role: str) -> None:
+    name = str(path).lower()
+    if any(marker in name for marker in _SCORER_ONLY_NAMES):
+        raise PermissionError(
+            f"정답 누출 차단: 채점 전용 파일({path})은 에이전트 환경의 {role}로 쓸 수 없습니다.")
+
+
+def load_agent_corpus(path: str | Path) -> list[EvidenceUnit]:
+    """Load and validate the agent-visible corpus.
+
+    Rejects the reference evidence file and any corpus whose ids reveal which
+    claim a document belongs to; both would hand the agent part of the answer.
+    """
+    _refuse_scorer_only(path, "코퍼스")
+    units: list[EvidenceUnit] = []
+    for line_no, row in enumerate(read_jsonl(path), start=1):
+        leaked = REFERENCE_ONLY_FIELDS & row.keys()
+        if leaked:
+            raise PermissionError(
+                f"정답 누출 차단: 코퍼스 {line_no}행에 채점 전용 필드 {sorted(leaked)}가 있습니다. "
+                f"참조 근거 파일이 아니라 원문 문서로 코퍼스를 만드세요.")
+        missing = [k for k in ("evidence_id", "title", "text") if not str(row.get(k) or "").strip()]
+        if missing:
+            raise ValueError(f"코퍼스 {line_no}행에 필수 필드 {missing}가 없습니다.")
+        if _CLAIM_ID.search(str(row["evidence_id"])):
+            raise PermissionError(
+                f"정답 누출 차단: 코퍼스 {line_no}행 evidence_id({row['evidence_id']!r})가 "
+                f"주장 ID를 포함합니다. 어떤 문서가 어느 주장의 근거인지 드러납니다.")
+        units.append(EvidenceUnit(**{k: v for k, v in row.items()
+                                     if k in EvidenceUnit.__dataclass_fields__}))
+    return units
+
+
+def current_commit(root: str | Path) -> str | None:
+    """`git rev-parse HEAD`, suffixed '+dirty' when tracked files changed."""
+    try:
+        head = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"],
+                              capture_output=True, text=True, check=True, timeout=10).stdout.strip()
+        dirty = subprocess.run(["git", "-C", str(root), "status", "--porcelain", "--untracked-files=no"],
+                               capture_output=True, text=True, check=True, timeout=10).stdout.strip()
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return f"{head}+dirty" if dirty else head
 
 
 class AgentEnvironment:
@@ -68,9 +145,20 @@ class AgentEnvironment:
         web_provider=None,
         max_tool_calls: int = 12,
         max_external_calls: int = 4,
+        code_commit: str | None = None,
+        prompt_version: str = "skill-v2",
     ) -> None:
-        if "gold" in str(claims_path).lower() or "evaluation.md" in str(claims_path).lower():
-            raise PermissionError("정답 누출 차단: 에이전트 환경은 gold 또는 evaluation.md를 열 수 없습니다.")
+        _refuse_scorer_only(claims_path, "주장 입력")
+        if arm not in ("C0", "C1", "C2"):
+            raise ValueError(f"알 수 없는 arm: {arm!r}")
+        if condition not in IMPLEMENTED_CONDITIONS:
+            raise ValueError(
+                f"condition={condition!r}은 아직 구현되지 않았습니다(구현됨: {IMPLEMENTED_CONDITIONS}). "
+                f"적용되지 않은 조건이 로그에 기록되는 것을 막기 위해 실행을 거부합니다.")
+        if arm != "C0" and not (corpus_path and Path(corpus_path).exists()):
+            raise FileNotFoundError(
+                f"{arm} 조건에는 에이전트용 코퍼스가 필요합니다(받은 경로: {corpus_path}). "
+                f"빈 코퍼스로 실행하면 C1이 사실상 C0가 됩니다. data/README.md의 코퍼스 형식을 보세요.")
 
         self.claims: dict[str, Claim] = {
             r["claim_id"]: Claim.from_dict(r) for r in read_jsonl(claims_path)
@@ -83,19 +171,15 @@ class AgentEnvironment:
             condition=condition,
             policy=policy,
             model_id=model_id,
-            prompt_version="skill-v1",
+            prompt_version=prompt_version,
             data_version="claims-2026-11-07",
+            code_commit=code_commit,
         )
         self.log = RunLog(out_path)
         self.max_tool_calls = max_tool_calls
         self.max_external_calls = max_external_calls
 
-        corpus_units: list[EvidenceUnit] = []
-        if arm != "C0" and corpus_path and Path(corpus_path).exists():
-            corpus_units = [
-                EvidenceUnit(**{k: v for k, v in r.items() if k in EvidenceUnit.__dataclass_fields__})
-                for r in read_jsonl(corpus_path)
-            ]
+        corpus_units: list[EvidenceUnit] = load_agent_corpus(corpus_path) if arm != "C0" else []
 
         tok = KiwiTokenizer() if tokenizer == "kiwi" else BigramTokenizer()
         web = web_provider if arm == "C2" else None
@@ -158,9 +242,6 @@ class AgentEnvironment:
             result = self.finish_episode(args)
             return {"status": "finished", "result": result.to_dict()}
 
-        if name == "execute_mission":
-            return self._run_mission_tool(ep, args)
-
         if self.arm == "C0":
             return {
                 "status": ToolStatus.BLOCKED.value,
@@ -218,29 +299,6 @@ class AgentEnvironment:
             "remaining_tool_calls": self.max_tool_calls - ep.tool_calls,
         }
 
-    def _run_mission_tool(self, ep: ActiveEpisode, args: dict) -> dict:
-        res = self.missions.execute_mission(
-            claim_id=ep.claim.claim_id,
-            mission_type=str(args.get("mission_type", "no_op")),
-            verdict=str(args.get("verdict", "")),
-            title=str(args.get("title", ep.claim.claim_id)),
-            summary=str(args.get("summary", "")),
-            cited_evidence_ids=args.get("cited_evidence_ids") or [],
-            abstain=bool(args.get("abstain", False)),
-            correction=args.get("correction"),
-            distortion_type=args.get("distortion_type"),
-            event_start_kst=args.get("event_start_kst"),
-            tracking_condition=args.get("tracking_condition"),
-            tracking_queries=args.get("tracking_queries"),
-        )
-        if res.status == ToolStatus.OK:
-            ep.last_mission = res.payload
-        return {
-            "status": res.status.value,
-            "observation": res.observation,
-            "mission": res.payload,
-        }
-
     def finish_episode(self, args: dict) -> AgentResult:
         if self.active is None:
             raise RuntimeError("종료할 활성 에피소드가 없습니다.")
@@ -258,10 +316,8 @@ class AgentEnvironment:
             external_calls=ep.external_calls,
             elapsed_ms=elapsed,
         )
-        mission_output = args.get("mission_output") or ep.last_mission
-        mission_type = args.get("mission_type") or (
-            ep.last_mission.get("mission_type") if ep.last_mission else None
-        )
+        mission_type = args.get("mission_type") or None
+        mission_output = self._run_mission(ep, args, verdict, cited) if mission_type else None
 
         result = AgentResult(
             claim_id=ep.claim.claim_id,
@@ -283,6 +339,33 @@ class AgentEnvironment:
         self.log.append(self.config, result)
         self.active = None
         return result
+
+    def _run_mission(self, ep: ActiveEpisode, args: dict, verdict: Verdict,
+                     cited: list[str]) -> dict:
+        """Run the requested mission against the submitted verdict.
+
+        A blocked mission does not fail the episode: the verdict is still
+        recorded, and the block is logged so the scorer can count it.
+        """
+        res = self.missions.execute_mission(
+            claim_id=ep.claim.claim_id,
+            mission_type=str(args.get("mission_type")),
+            verdict=verdict.value,
+            title=str(args.get("mission_title") or ep.claim.claim_id),
+            summary=str(args.get("mission_summary") or args.get("justification") or ""),
+            cited_evidence_ids=cited,
+            abstain=bool(args.get("abstain", False)),
+            correction=args.get("correction"),
+            distortion_type=args.get("distortion_type"),
+            event_start_kst=args.get("event_start_kst"),
+            tracking_condition=args.get("tracking_condition"),
+            tracking_queries=args.get("tracking_queries"),
+            observed_evidence_ids=ep.read_evidence_ids,
+        )
+        out = {"status": res.status.value, "observation": res.observation}
+        if res.status == ToolStatus.OK:
+            out.update(res.payload)
+        return out
 
     def mcp_tools(self) -> list[dict]:
         """Return MCP tool definitions for any MCP-compatible host agent."""
@@ -315,33 +398,13 @@ class AgentEnvironment:
                 "inputSchema": spec.parameters,
             })
         tools.append({
-            "name": "execute_mission",
-            "description": (
-                "검증 결과를 바탕으로 후속 업무(Mission) 또는 장기 추적을 실행합니다. "
-                "검증 게이팅: 미확인(NEI/abstain) 정보로는 실행형 미션이 차단되며, "
-                "반박(refuted)된 정보는 반드시 correction(정정 사실)을 포함해야 합니다."
-            ),
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "mission_type": {"type": "string", "enum": sorted(ALL_MISSIONS)},
-                    "verdict": {"type": "string", "enum": ["supported", "refuted", "not_enough_evidence"]},
-                    "abstain": {"type": "boolean"},
-                    "title": {"type": "string"},
-                    "summary": {"type": "string"},
-                    "cited_evidence_ids": {"type": "array", "items": {"type": "string"}},
-                    "correction": {"type": "string"},
-                    "distortion_type": {"type": "string"},
-                    "event_start_kst": {"type": "string", "description": "event_manager용 KST 시각 (YYYY-MM-DD HH:MM)"},
-                    "tracking_condition": {"type": "string", "description": "continuous_tracking용 재검증 조건"},
-                    "tracking_queries": {"type": "array", "items": {"type": "string"}},
-                },
-                "required": ["mission_type", "verdict", "title", "summary"],
-            },
-        })
-        tools.append({
             "name": FINISH_TOOL,
-            "description": "검증 에피소드를 종료하고 최종 판정·근거·왜곡 분석·후속 미션 결과를 제출합니다.",
+            "description": (
+                "검증 에피소드를 종료하고 최종 판정·근거·왜곡 분석을 제출합니다. mission_type을 주면 "
+                "서버가 이 최종 판정으로 검증 게이트를 적용한 뒤 후속 미션을 실행합니다: "
+                "미확인(not_enough_evidence/abstain)이면 실행형 미션 차단, 실행형 미션은 이번 "
+                "에피소드에서 read_evidence/fetch_url로 읽은 근거만 인용 가능, 반박이면 correction 필수."
+            ),
             "inputSchema": FINISH_SCHEMA,
         })
         return tools

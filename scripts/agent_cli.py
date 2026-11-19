@@ -4,18 +4,27 @@ Provides the exact same tools and leakage boundaries as `mcp_stdio.py`, while
 persisting active episode state in a local state file so CLI/bash-based agents
 can invoke one tool per command and automatically log to `RunLog`.
 
-Examples:
+Examples (fictional values, not an evaluation case):
     uv run python scripts/agent_cli.py list --limit 5
-    uv run python scripts/agent_cli.py start FC002 --arm C1 --out results/exp-cli/c1.jsonl
-    uv run python scripts/agent_cli.py search "Vision Pro 사전예약 2024년 1월 19일"
-    uv run python scripts/agent_cli.py calc tz_convert --time "2024-01-19 05:00" --from-tz PST --to-tz KST
-    uv run python scripts/agent_cli.py mission event_manager --verdict refuted \
-        --title "비전 프로 사전예약" --summary "시간대 오보 정정 반영" \
-        --correction "2024-01-19 22:00 KST" --event-start-kst "2024-01-19 22:00"
-    uv run python scripts/agent_cli.py finish --verdict refuted --cited EV_FC002_apple \
-        --justification "공식 발표는 05:00 PST로 한국시간 22:00이다." \
-        --correction "2024-01-19 22:00 KST" --distortion-type timezone_or_date_error \
-        --problematic-span "오전 5시(한국시간)" --mission-type event_manager
+    uv run python scripts/agent_cli.py start <CLAIM_ID> --arm C1 --model-id <agent+model>
+    uv run python scripts/agent_cli.py search "Acme Orbit launch keynote time"
+    uv run python scripts/agent_cli.py read DOC_acme_keynote
+    uv run python scripts/agent_cli.py calc tz_convert --time "2025-03-04 10:00" --from-tz PST --to-tz KST
+    uv run python scripts/agent_cli.py finish --verdict refuted --cited DOC_acme_keynote \
+        --justification "공식 발표는 10:00 PST이고 한국시간으로 다음 날 03:00이다." \
+        --correction "2025-03-05 03:00 KST" --distortion-type timezone_or_date_error \
+        --problematic-span "오전 2시(한국시간)" --mission-type event_manager \
+        --mission-title "Acme Orbit 공개 행사 (KST 정정)" --event-start-kst "2025-03-05 03:00"
+
+Missions run only inside `finish`, gated on the submitted verdict. There is no
+separate mission command, so an action cannot be unlocked by one verdict and
+followed by another.
+
+Security limit: this adapter is driven through a shell, and the state file it
+keeps between commands is a plain JSON file. An agent with shell access can read
+the repository and edit that file, so CLI mode is only an isolation boundary
+when the agent runs in a workspace that has no copy of gold data and no access
+to this repository (see scripts/make_agent_workspace.py). Prefer MCP mode.
 """
 
 from __future__ import annotations
@@ -28,7 +37,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from task_a.mcp_server import ActiveEpisode, AgentEnvironment  # noqa: E402
+from task_a.mcp_server import (  # noqa: E402
+    IMPLEMENTED_CONDITIONS, ActiveEpisode, AgentEnvironment, current_commit,
+)
 from task_a.schema import ToolEvent, ToolStatus  # noqa: E402
 from task_a.web import LiveWebProvider  # noqa: E402
 
@@ -47,7 +58,6 @@ def _save_state(path: Path, env: AgentEnvironment, extra: dict) -> None:
             "tool_calls": ep.tool_calls,
             "external_calls": ep.external_calls,
             "events": [e.to_dict() for e in ep.events],
-            "last_mission": ep.last_mission,
         },
     }
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -72,6 +82,8 @@ def _load_env(state_path: Path) -> tuple[AgentEnvironment, dict]:
         missions_dir=meta.get("missions_dir"),
         tokenizer=meta.get("tokenizer", "kiwi"),
         web_provider=web,
+        code_commit=meta.get("code_commit"),
+        prompt_version=meta.get("prompt_version", "skill-v2"),
     )
     active = meta.get("active")
     if active:
@@ -100,7 +112,6 @@ def _load_env(state_path: Path) -> tuple[AgentEnvironment, dict]:
             tool_calls=active["tool_calls"],
             external_calls=active["external_calls"],
             events=events,
-            last_mission=active.get("last_mission"),
         )
     return env, meta
 
@@ -120,13 +131,13 @@ def main(argv: list[str] | None = None) -> int:
     p_start = sub.add_parser("start", help="에피소드 시작")
     p_start.add_argument("claim_id")
     p_start.add_argument("--claims", type=Path, default=ROOT / "data/task_a/claims.jsonl")
-    p_start.add_argument("--corpus", type=Path, default=None)
+    p_start.add_argument("--corpus", type=Path, default=ROOT / "data/raw/task_a/corpus_c1.jsonl")
     p_start.add_argument("--arm", choices=["C0", "C1", "C2"], default="C1")
-    p_start.add_argument("--condition", default="sufficient",
-                         choices=["sufficient", "missing", "conflict", "misleading"])
+    p_start.add_argument("--condition", default="sufficient", choices=list(IMPLEMENTED_CONDITIONS))
     p_start.add_argument("--out", type=Path, default=ROOT / "results/exp-cli/run.jsonl")
     p_start.add_argument("--run-id", default="exp-cli")
-    p_start.add_argument("--model-id", default="external-cli-agent")
+    p_start.add_argument("--model-id", default="unrecorded")
+    p_start.add_argument("--prompt-version", default="skill-v2")
     p_start.add_argument("--tokenizer", choices=["kiwi", "bigram"], default="kiwi")
     p_start.add_argument("--cache", type=Path, default=ROOT / "data/cache/tools.jsonl")
     p_start.add_argument("--missions-dir", type=Path, default=ROOT / "missions")
@@ -163,23 +174,6 @@ def main(argv: list[str] | None = None) -> int:
     p_fetch = sub.add_parser("fetch", help="외부 URL 원문 읽기 (fetch_url, C2 전용)")
     p_fetch.add_argument("url")
 
-    p_mission = sub.add_parser("mission", help="검증 게이팅 기반 후속 Mission / Tracking 실행")
-    p_mission.add_argument("mission_type", choices=[
-        "no_op", "event_manager", "news_to_artifact", "opportunity_execution",
-        "app_safe_trial", "continuous_tracking", "hold_abstain",
-    ])
-    p_mission.add_argument("--verdict", required=True,
-                           choices=["supported", "refuted", "not_enough_evidence"])
-    p_mission.add_argument("--abstain", action="store_true")
-    p_mission.add_argument("--title", required=True)
-    p_mission.add_argument("--summary", required=True)
-    p_mission.add_argument("--cited", nargs="*", default=[])
-    p_mission.add_argument("--correction", default=None)
-    p_mission.add_argument("--distortion-type", default=None)
-    p_mission.add_argument("--event-start-kst", default=None)
-    p_mission.add_argument("--tracking-condition", default=None)
-    p_mission.add_argument("--tracking-queries", nargs="*", default=[])
-
     p_finish = sub.add_parser("finish", help="최종 판정 및 왜곡/미션 결과 제출 (finish_verification)")
     p_finish.add_argument("--verdict", required=True,
                           choices=["supported", "refuted", "not_enough_evidence"])
@@ -192,12 +186,21 @@ def main(argv: list[str] | None = None) -> int:
                                    "no_further_tools_helpful", "conflict_unresolved"])
     p_finish.add_argument("--distortion-type", default=None)
     p_finish.add_argument("--problematic-span", default=None)
-    p_finish.add_argument("--mission-type", default=None)
+    p_finish.add_argument("--mission-type", default=None, choices=[
+        "no_op", "event_manager", "news_to_artifact", "opportunity_execution",
+        "app_safe_trial", "continuous_tracking", "hold_abstain",
+    ])
+    p_finish.add_argument("--mission-title", default=None)
+    p_finish.add_argument("--mission-summary", default=None)
+    p_finish.add_argument("--event-start-kst", default=None)
+    p_finish.add_argument("--tracking-condition", default=None)
+    p_finish.add_argument("--tracking-queries", nargs="*", default=[])
 
     args = parser.parse_args(argv)
 
     if args.cmd == "list":
-        env = AgentEnvironment(claims_path=args.claims, out_path=args.out, tokenizer="bigram")
+        env = AgentEnvironment(claims_path=args.claims, out_path=args.out, arm="C0",
+                               tokenizer="bigram")
         print(json.dumps(env.list_claims(args.limit, args.only_pending), ensure_ascii=False, indent=2))
         return 0
 
@@ -215,6 +218,8 @@ def main(argv: list[str] | None = None) -> int:
             "missions_dir": str(args.missions_dir),
             "live_web": args.live_web,
             "web_provider": args.web_provider,
+            "code_commit": current_commit(ROOT),
+            "prompt_version": args.prompt_version,
         }
         web = LiveWebProvider(provider=args.web_provider) if (args.arm == "C2" and args.live_web) else None
         env = AgentEnvironment(
@@ -229,6 +234,8 @@ def main(argv: list[str] | None = None) -> int:
             missions_dir=args.missions_dir,
             tokenizer=args.tokenizer,
             web_provider=web,
+            code_commit=meta["code_commit"],
+            prompt_version=args.prompt_version,
         )
         out = env.start_episode(args.claim_id)
         _save_state(args.state, env, meta)
@@ -252,20 +259,6 @@ def main(argv: list[str] | None = None) -> int:
         out = env.call_tool("search_web", {"query": args.query, "top_k": args.top_k})
     elif args.cmd == "fetch":
         out = env.call_tool("fetch_url", {"url": args.url})
-    elif args.cmd == "mission":
-        out = env.call_tool("execute_mission", {
-            "mission_type": args.mission_type,
-            "verdict": args.verdict,
-            "abstain": args.abstain,
-            "title": args.title,
-            "summary": args.summary,
-            "cited_evidence_ids": args.cited,
-            "correction": args.correction,
-            "distortion_type": args.distortion_type,
-            "event_start_kst": args.event_start_kst,
-            "tracking_condition": args.tracking_condition,
-            "tracking_queries": args.tracking_queries,
-        })
     elif args.cmd == "finish":
         out = env.call_tool("finish_verification", {
             "verdict": args.verdict,
@@ -277,6 +270,11 @@ def main(argv: list[str] | None = None) -> int:
             "distortion_type": args.distortion_type,
             "problematic_span": args.problematic_span,
             "mission_type": args.mission_type,
+            "mission_title": args.mission_title,
+            "mission_summary": args.mission_summary,
+            "event_start_kst": args.event_start_kst,
+            "tracking_condition": args.tracking_condition,
+            "tracking_queries": args.tracking_queries,
         })
     else:
         raise SystemExit(f"Unknown command: {args.cmd}")

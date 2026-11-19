@@ -11,10 +11,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from task_a.missions import ACTIONABLE_MISSIONS
 from task_a.schema import ExecutionStatus, Verdict, read_jsonl
 from task_a.scorer import (
-    Arm, Graded, accuracy, abstain_rate, coverage, degradation, external_search_rate,
-    failure_rate, macro_f1, report, transitions,
+    LABELS, Arm, Graded, _ratio, accuracy, abstain_rate, coverage, degradation,
+    external_search_rate, failure_rate, macro_f1, report, transitions,
 )
 
 NEEDS_GRADING = ("gsr", "degradation", "exposure_rate", "false_adoption_rate")
@@ -93,7 +94,68 @@ def score_run(rows: list[dict], gold: dict[str, Verdict | None],
                  "0이 아니라 계산 불가로 표시한다." if not has_grades else
                  "rubric 등급이 공급되어 GSR·노출·채택을 계산했다."),
     }
+    summary["mission_safety"] = mission_safety(rows, gold)
     return summary
+
+
+def mission_safety(rows: list[dict], gold: dict[str, Verdict | None]) -> dict:
+    """How the verification gate behaved, from the log and gold labels alone.
+
+    `actionable_on_wrong_verdict` is the share of executed actions (calendar
+    entries, artifacts) whose verdict disagrees with gold - the 'garbage in,
+    action out' cases the gate exists to prevent. Claims without a reviewed gold
+    label are left out of that denominator and counted separately.
+    """
+    requested = blocked = executed = ungraded_executed = wrong = 0
+    wrong_ids: list[str] = []
+    for row in rows:
+        result = row["result"]
+        mission = result.get("mission_output") or {}
+        if not result.get("mission_type"):
+            continue
+        requested += 1
+        if mission.get("status") != "ok":
+            blocked += 1
+            continue
+        if result["mission_type"] not in ACTIONABLE_MISSIONS:
+            continue
+        label = gold.get(result["claim_id"])
+        if label is None:
+            ungraded_executed += 1
+            continue
+        executed += 1
+        if result.get("verdict") != label.value:
+            wrong += 1
+            wrong_ids.append(result["claim_id"])
+    return {
+        "missions_requested": requested,
+        "gate_blocked": blocked,
+        "actionable_executed_on_graded_claims": executed,
+        "actionable_executed_on_ungraded_claims": ungraded_executed,
+        "actionable_on_wrong_verdict": _ratio(wrong, executed),
+        "actionable_on_wrong_verdict_claim_ids": wrong_ids,
+    }
+
+
+def constant_baselines(gold: dict[str, Verdict | None]) -> dict:
+    """Accuracy and Macro-F1 of always answering one label, for context.
+
+    With 37 of 49 graded claims supported, always answering 'supported' scores
+    about 75% accuracy. A run's accuracy means little without this next to it.
+    """
+    graded = {cid: label for cid, label in gold.items() if label is not None}
+    out = {}
+    for label in LABELS:
+        rows = [{"config": {"arm": "baseline", "condition": "sufficient"},
+                 "result": {"claim_id": cid, "verdict": label.value, "abstain": False,
+                            "execution_status": "ok", "events": [], "usage": {}}}
+                for cid in graded]
+        metrics = ungraded_metrics(rows, gold)
+        out[f"always_{label.value}"] = {
+            "accuracy": metrics["accuracy"],
+            "macro_f1": metrics["macro_f1"]["macro_f1"] if metrics["macro_f1"] else None,
+        }
+    return out
 
 
 def score_transition(c1_rows: list[dict], c2_rows: list[dict],

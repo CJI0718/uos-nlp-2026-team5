@@ -380,10 +380,12 @@ class ToolRegistry:
             return ToolResult(ToolStatus.SOURCE_UNAVAILABLE, f"조회 실패: {exc}")
         if not body or not body.strip():
             return ToolResult(ToolStatus.EMPTY, "본문이 비어 있다.")
+        # The URL is the citation id for web evidence, so record it as read.
         return ToolResult(ToolStatus.OK, body[:MAX_FETCH_CHARS],
                           {"url": url, "chars": len(body),
                            "content_hash": hashlib.sha256(body.encode()).hexdigest()[:16],
-                           "truncated": len(body) > MAX_FETCH_CHARS})
+                           "truncated": len(body) > MAX_FETCH_CHARS},
+                          evidence_ids=[url])
 
 
 # `finish_verification` is not a registry tool: it is the episode's exit signal.
@@ -416,12 +418,17 @@ FINISH_SCHEMA = {
             "type": "string",
             "enum": ["no_op", "event_manager", "news_to_artifact", "opportunity_execution",
                      "app_safe_trial", "continuous_tracking", "hold_abstain"],
-            "description": "검증 결과에 따라 결정한 후속 업무(Mission) 유형(선택)",
+            "description": ("검증 결과에 따라 실행할 후속 업무(Mission) 유형(선택). 서버가 이 제출의 "
+                            "최종 판정·인용 근거·정정으로 검증 게이트를 적용한 뒤 실행한다."),
         },
-        "mission_output": {
-            "type": "object",
-            "description": "생성한 후속 Mission 결과물 정보 또는 장기 추적 등록 명세(선택)",
+        "mission_title": {"type": "string", "description": "미션 결과물 제목(선택)"},
+        "mission_summary": {"type": "string", "description": "미션 결과물에 들어갈 검증 요약(선택)"},
+        "event_start_kst": {
+            "type": "string",
+            "description": "event_manager용 검증된 KST 시각 'YYYY-MM-DD HH:MM'. 반박이면 correction에 같은 HH:MM이 있어야 한다.",
         },
+        "tracking_condition": {"type": "string", "description": "continuous_tracking용 재검증 조건"},
+        "tracking_queries": {"type": "array", "items": {"type": "string"}},
     },
     "required": ["verdict", "abstain", "cited_evidence_ids", "justification", "stop_reason"],
 }

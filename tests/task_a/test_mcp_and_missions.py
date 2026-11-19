@@ -23,7 +23,7 @@ FC002 = Claim(
 )
 
 APPLE = EvidenceUnit(
-    evidence_id="EV_FC002_apple",
+    evidence_id="DOC_apple_vp",
     title="Apple Vision Pro available in the US on February 2",
     text="Pre-orders begin on January 19, 2024 at 5:00 a.m. PST.",
     publisher="Apple",
@@ -92,6 +92,7 @@ def test_verification_gate_blocks_unverified_or_uncorrected_action(tmp_path):
         verdict="refuted",
         title="비전 프로 사전예약",
         summary="시간대 오보",
+        cited_evidence_ids=["DOC_apple_vp"],
         event_start_kst="2024-01-19 05:00",
     )
     assert uncorrected.status == ToolStatus.INVALID_INPUT
@@ -104,7 +105,7 @@ def test_verification_gate_blocks_unverified_or_uncorrected_action(tmp_path):
         verdict="refuted",
         title="비전 프로 사전예약 (정정)",
         summary="05:00 PST를 22:00 KST로 정정 반영",
-        cited_evidence_ids=["EV_FC002_apple"],
+        cited_evidence_ids=["DOC_apple_vp"],
         correction="2024-01-19 22:00 KST",
         distortion_type="timezone_or_date_error",
         event_start_kst="2024-01-19 22:00",
@@ -158,12 +159,15 @@ def test_agent_environment_blocks_gold_leakage(tmp_path):
 def test_mcp_exposes_no_filesystem_tools(tmp_path):
     claims_path = tmp_path / "claims.jsonl"
     write_jsonl(claims_path, [FC002.to_dict()])
-    env = AgentEnvironment(claims_path=claims_path, out_path=tmp_path / "out.jsonl", tokenizer="bigram")
+    env = AgentEnvironment(claims_path=claims_path, out_path=tmp_path / "out.jsonl",
+                           arm="C0", tokenizer="bigram")
     server = MCPStdioServer(env)
 
     tools_resp = server.handle_request({"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
     names = {t["name"] for t in tools_resp["result"]["tools"]}
     assert not any(n in names for n in {"read_file", "list_dir", "run_shell", "execute_code"})
+    # Missions run only from finish_verification, so there is no separate unlock tool.
+    assert "execute_mission" not in names
 
 
 def test_agent_environment_enforces_budget_but_allows_finish(tmp_path):
@@ -187,7 +191,7 @@ def test_agent_environment_enforces_budget_but_allows_finish(tmp_path):
     env.start_episode("FC002")
 
     # 1st tool call succeeds
-    first = env.call_tool("read_evidence", {"evidence_id": "EV_FC002_apple"})
+    first = env.call_tool("read_evidence", {"evidence_id": "DOC_apple_vp"})
     assert first["status"] == "ok"
 
     # 2nd tool call is blocked by budget
@@ -199,7 +203,7 @@ def test_agent_environment_enforces_budget_but_allows_finish(tmp_path):
     fin = env.finish_episode({
         "verdict": "refuted",
         "abstain": False,
-        "cited_evidence_ids": ["EV_FC002_apple"],
+        "cited_evidence_ids": ["DOC_apple_vp"],
         "justification": "05:00 PST = 22:00 KST",
         "stop_reason": "budget_exhausted",
     })
@@ -215,7 +219,7 @@ def test_mcp_server_end_to_end_and_scoring_compatibility(tmp_path):
 
     write_jsonl(claims_path, [FC002.to_dict()])
     write_jsonl(corpus_path, [{
-        "evidence_id": "EV_FC002_apple",
+        "evidence_id": "DOC_apple_vp",
         "title": APPLE.title,
         "text": APPLE.text,
         "publisher": "Apple",
@@ -240,10 +244,10 @@ def test_mcp_server_end_to_end_and_scoring_compatibility(tmp_path):
 
     tools_resp = server.handle_request({"jsonrpc": "2.0", "id": 2, "method": "tools/list"})
     tool_names = {t["name"] for t in tools_resp["result"]["tools"]}
-    assert {"start_episode", "search_evidence", "calculate_comparison",
-            "execute_mission", FINISH_TOOL} <= tool_names
+    assert {"start_episode", "search_evidence", "read_evidence", "calculate_comparison",
+            FINISH_TOOL} <= tool_names
 
-    # 2. start_episode -> search -> calc -> mission -> finish
+    # 2. start_episode -> search -> read -> calc -> finish (with mission)
     server.handle_request({
         "jsonrpc": "2.0", "id": 3, "method": "tools/call",
         "params": {"name": "start_episode", "arguments": {"claim_id": "FC002"}},
@@ -253,26 +257,14 @@ def test_mcp_server_end_to_end_and_scoring_compatibility(tmp_path):
         "params": {"name": "search_evidence", "arguments": {"query": "Pre-orders January 19 PST"}},
     })
     server.handle_request({
+        "jsonrpc": "2.0", "id": 45, "method": "tools/call",
+        "params": {"name": "read_evidence", "arguments": {"evidence_id": "DOC_apple_vp"}},
+    })
+    server.handle_request({
         "jsonrpc": "2.0", "id": 5, "method": "tools/call",
         "params": {
             "name": "calculate_comparison",
             "arguments": {"op": "tz_convert", "time": "2024-01-19 05:00", "from_tz": "PST", "to_tz": "KST"},
-        },
-    })
-    server.handle_request({
-        "jsonrpc": "2.0", "id": 6, "method": "tools/call",
-        "params": {
-            "name": "execute_mission",
-            "arguments": {
-                "mission_type": "event_manager",
-                "verdict": "refuted",
-                "title": "Vision Pro 사전예약",
-                "summary": "22:00 KST로 시간대 정정",
-                "cited_evidence_ids": ["EV_FC002_apple"],
-                "correction": "2024-01-19 22:00 KST",
-                "distortion_type": "timezone_or_date_error",
-                "event_start_kst": "2024-01-19 22:00",
-            },
         },
     })
     finish_resp = server.handle_request({
@@ -282,13 +274,15 @@ def test_mcp_server_end_to_end_and_scoring_compatibility(tmp_path):
             "arguments": {
                 "verdict": "refuted",
                 "abstain": False,
-                "cited_evidence_ids": ["EV_FC002_apple"],
+                "cited_evidence_ids": ["DOC_apple_vp"],
                 "justification": "05:00 PST는 22:00 KST이므로 오전 5시 한국시간 주장은 반박됨",
                 "correction": "2024-01-19 22:00 KST",
                 "stop_reason": "evidence_sufficient",
                 "distortion_type": "timezone_or_date_error",
                 "problematic_span": "오전 5시(한국시간)",
                 "mission_type": "event_manager",
+                "mission_title": "Vision Pro 사전예약",
+                "event_start_kst": "2024-01-19 22:00",
             },
         },
     })
@@ -296,6 +290,9 @@ def test_mcp_server_end_to_end_and_scoring_compatibility(tmp_path):
     assert payload["status"] == "finished"
     assert payload["result"]["distortion_type"] == "timezone_or_date_error"
     assert payload["result"]["mission_type"] == "event_manager"
+    mission = payload["result"]["mission_output"]
+    assert mission["status"] == "ok"
+    assert "20240119T220000" in Path(mission["artifact_path"]).read_text(encoding="utf-8")
 
     # 3. Score with the existing scorer!
     rows = [json.loads(line) for line in out_path.read_text(encoding="utf-8").splitlines() if line.strip()]

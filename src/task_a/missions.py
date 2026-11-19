@@ -5,12 +5,19 @@ Implements STEP 3~4 and Continuous Claim Tracking from
 verification results:
 
 1. Verification Gate ('Garbage In, Action Out' prevention):
+   - The gate reads the episode's FINAL verdict. `AgentEnvironment` runs a
+     mission only from `finish_verification`, so an agent cannot unlock an
+     action with one verdict and then submit another.
    - Actionable missions (`event_manager`, `news_to_artifact`,
      `opportunity_execution`, `app_safe_trial`) CANNOT be executed when the
      claim is unverified (`not_enough_evidence` or `abstain=True`).
+   - Actionable missions must cite evidence, and every cited id must have been
+     read in this episode (`read_evidence` or `fetch_url`). A citation the
+     agent never opened does not count as verification.
    - When a claim is `refuted`, an actionable mission MUST use the verified
      `correction` (e.g., corrected KST time or corrected figure) rather than
-     propagating the distorted claim text.
+     propagating the distorted claim text. For `event_manager` the scheduled
+     time must appear in that correction.
 2. Concrete Outputs:
    - `event_manager`: writes an RFC 5545 `.ics` file under `missions/events/`.
    - `news_to_artifact` / `opportunity_execution` / `app_safe_trial`: writes a
@@ -57,14 +64,38 @@ class MissionRecord:
         return asdict(self)
 
 
+_HHMM = re.compile(r"(\d{1,2}):(\d{2})")
+
+
+def _time_in_correction(event_start_kst: str, correction: str) -> bool:
+    """True when the event's HH:MM appears in the correction text.
+
+    Deterministic and deliberately narrow: '22:00' must be written as a clock
+    time in the correction. A correction phrased only as '오후 10시' is
+    rejected rather than interpreted.
+    """
+    match = _HHMM.search(event_start_kst or "")
+    if not match:
+        return False
+    hh, mm = int(match.group(1)), match.group(2)
+    return any(int(h) == hh and m == mm for h, m in _HHMM.findall(correction or ""))
+
+
 def validate_mission_gate(
     mission_type: str,
     verdict: str | Verdict | None,
     *,
     abstain: bool = False,
     correction: str | None = None,
+    cited_evidence_ids: list[str] | None = None,
+    observed_evidence_ids: set[str] | frozenset[str] | None = None,
+    event_start_kst: str | None = None,
 ) -> str | None:
-    """Return an error reason if the mission violates the verification gate."""
+    """Return an error reason if the mission violates the verification gate.
+
+    `observed_evidence_ids` is the set the environment saw the agent read. When
+    it is None (direct library use) only the presence of citations is checked.
+    """
     if mission_type not in ALL_MISSIONS:
         return f"알 수 없는 mission_type: {mission_type!r} (허용: {sorted(ALL_MISSIONS)})"
 
@@ -76,10 +107,29 @@ def validate_mission_gate(
                 f"실행형 미션({mission_type})을 수행할 수 없습니다. "
                 f"'continuous_tracking' 또는 'hold_abstain'을 선택하세요."
             )
+        cited = [c for c in (cited_evidence_ids or []) if str(c).strip()]
+        if not cited:
+            return (
+                f"검증 게이팅 차단: 실행형 미션({mission_type})은 판정 근거(cited_evidence_ids)를 "
+                f"하나 이상 인용해야 합니다."
+            )
+        if observed_evidence_ids is not None:
+            unread = [c for c in cited if c not in observed_evidence_ids]
+            if unread:
+                return (
+                    f"검증 게이팅 차단: 이번 에피소드에서 read_evidence/fetch_url로 읽지 않은 근거를 "
+                    f"인용했습니다: {unread}"
+                )
         if verdict_val == Verdict.REFUTED.value and not (correction and correction.strip()):
             return (
                 f"검증 게이팅 차단: 반박(refuted)된 주장에 대해 실행형 미션({mission_type})을 "
                 f"수행하려면 반드시 정정된 사실(correction)을 함께 제공해야 합니다."
+            )
+        if (mission_type == "event_manager" and verdict_val == Verdict.REFUTED.value
+                and not _time_in_correction(event_start_kst or "", correction or "")):
+            return (
+                "검증 게이팅 차단: 반박된 일정의 event_start_kst 시각(HH:MM)이 correction에 "
+                "없습니다. 정정된 시각으로만 일정을 만들 수 있습니다."
             )
     return None
 
@@ -120,9 +170,13 @@ class MissionExecutor:
         event_start_kst: str | None = None,
         tracking_condition: str | None = None,
         tracking_queries: list[str] | None = None,
+        observed_evidence_ids: set[str] | frozenset[str] | None = None,
     ) -> ToolResult:
         gate_error = validate_mission_gate(
-            mission_type, verdict, abstain=abstain, correction=correction
+            mission_type, verdict, abstain=abstain, correction=correction,
+            cited_evidence_ids=cited_evidence_ids,
+            observed_evidence_ids=observed_evidence_ids,
+            event_start_kst=event_start_kst,
         )
         if gate_error:
             return ToolResult(ToolStatus.INVALID_INPUT, gate_error)
