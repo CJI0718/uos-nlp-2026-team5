@@ -242,3 +242,68 @@ def test_finish_response_does_not_reveal_repository_paths(tmp_path):
     assert shown.endswith(".ics") and "/" not in shown and str(tmp_path) not in json.dumps(out)
     logged = read_jsonl(tmp_path / "run.jsonl")[-1]["result"]["mission_output"]["artifact_path"]
     assert Path(logged).is_absolute() and Path(logged).exists()
+
+
+# --- C2 web search respects the claim's evidence_cutoff ---------------------
+
+class _DatedWeb:
+    def __init__(self):
+        self.calls = []
+
+    def search(self, query, top_k, end_date=None):
+        self.calls.append(end_date)
+        return [{"title": "old", "url": "https://a.example/old", "snippet": "s", "published_date": "2025-02-01"},
+                {"title": "late", "url": "https://a.example/late", "snippet": "s", "published_date": "2025-04-01"},
+                {"title": "undated", "url": "https://a.example/undated", "snippet": "s", "published_date": None}]
+
+    def fetch(self, url):
+        return "body"
+
+
+def _c2_env(tmp_path, web, cutoff="2025-03-01T00:00:00+09:00"):
+    claims = tmp_path / "claims.jsonl"
+    write_jsonl(claims, [{**CLAIM.to_dict(), "evidence_cutoff": cutoff}])
+    corpus = tmp_path / "corpus.jsonl"
+    write_jsonl(corpus, [DOC])
+    return AgentEnvironment(claims_path=claims, corpus_path=corpus, arm="C2", web_provider=web,
+                            out_path=tmp_path / "run.jsonl", missions_dir=tmp_path / "m",
+                            cache_path=tmp_path / "cache.jsonl", tokenizer="bigram")
+
+
+def test_web_results_after_the_cutoff_are_dropped(tmp_path):
+    web = _DatedWeb()
+    env = _c2_env(tmp_path, web)
+    env.start_episode("FC900")
+    obs = env.call_tool("search_web", {"query": "Acme keynote"})["observation"]
+
+    assert web.calls == ["2025-03-01"]                 # the cutoff reaches the provider
+    assert "a.example/old" in obs and "a.example/undated" in obs
+    assert "a.example/late" not in obs and "1건은 제외" in obs
+    assert "발행: 미상" in obs
+
+
+def test_web_provider_without_date_support_still_works(tmp_path):
+    class Plain:
+        def search(self, query, top_k):
+            return [{"title": "t", "url": "https://b.example/x", "snippet": "s"}]
+
+        def fetch(self, url):
+            return "body"
+
+    env = _c2_env(tmp_path, Plain())
+    env.start_episode("FC900")
+    assert "b.example/x" in env.call_tool("search_web", {"query": "q"})["observation"]
+
+
+def test_cache_separates_requests_with_different_cutoffs(tmp_path):
+    web = _DatedWeb()
+    env = _c2_env(tmp_path, web)
+    env.start_episode("FC900")
+    env.call_tool("search_web", {"query": "same"})
+    env2 = _c2_env(tmp_path / "b", web, cutoff="2025-05-01")
+    env2.backend = env.backend                        # share one cache
+    env2.registry.backend = env.backend
+    env2.start_episode("FC900")
+    obs = env2.call_tool("search_web", {"query": "same"})["observation"]
+    assert web.calls == ["2025-03-01", "2025-05-01"]   # not served from the other cutoff's cache
+    assert "a.example/late" in obs

@@ -228,6 +228,7 @@ class AgentEnvironment:
             raise ValueError(f"존재하지 않는 claim_id: {claim_id!r}")
         claim = self.claims[claim_id]
         self.active = ActiveEpisode(claim=claim)
+        self.registry.evidence_cutoff = claim.evidence_cutoff
         return {
             "status": "started",
             "arm": self.arm,

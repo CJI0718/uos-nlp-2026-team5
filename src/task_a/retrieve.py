@@ -13,6 +13,8 @@ it is expressed in construction rather than in a runtime flag.
 
 from __future__ import annotations
 
+import inspect
+
 import math
 import re
 from typing import Protocol
@@ -188,9 +190,11 @@ class CorpusBackend:
     def lookup(self, evidence_id: str) -> EvidenceUnit | None:
         return self._by_id.get(evidence_id)
 
-    def web_search(self, query: str, top_k: int) -> list[dict]:
+    def web_search(self, query: str, top_k: int, end_date: str | None = None) -> list[dict]:
         if self.web is None:
             raise PermissionError("C1 조건: 외부 검색이 비활성화되어 있다")
+        if end_date and "end_date" in inspect.signature(self.web.search).parameters:
+            return self.web.search(query, top_k, end_date=end_date)
         return self.web.search(query, top_k)
 
     def fetch(self, url: str) -> str:

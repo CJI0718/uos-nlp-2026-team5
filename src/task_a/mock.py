@@ -42,7 +42,7 @@ class MockBackend:
         self.calls.append(("lookup", {"evidence_id": evidence_id}))
         return self.corpus.get(evidence_id)
 
-    def web_search(self, query: str, top_k: int) -> list[dict]:
+    def web_search(self, query: str, top_k: int, end_date: str | None = None) -> list[dict]:
         self.calls.append(("web_search", {"query": query, "top_k": top_k}))
         return self.web[:top_k]
 

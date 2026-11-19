@@ -142,10 +142,13 @@ class CachingBackend:
     def lookup(self, evidence_id: str):
         return self.inner.lookup(evidence_id) if hasattr(self.inner, "lookup") else None
 
-    def web_search(self, query: str, top_k: int) -> list[dict]:
+    def web_search(self, query: str, top_k: int, end_date: str | None = None) -> list[dict]:
         self._assert_external_allowed()
-        return self._cached_call("search_web", {"query": query, "top_k": top_k},
-                                 lambda: self.inner.web_search(query, top_k))
+        args = {"query": query, "top_k": top_k}
+        if end_date:
+            args["end_date"] = end_date   # a different cutoff is a different request
+        return self._cached_call("search_web", args,
+                                 lambda: self.inner.web_search(query, top_k, end_date=end_date))
 
     def fetch(self, url: str) -> str:
         self._assert_external_allowed()

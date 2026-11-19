@@ -31,7 +31,7 @@ class ToolBackend(Protocol):
 
     def search_corpus(self, query: str, top_k: int) -> list[tuple[EvidenceUnit, float]]: ...
 
-    def web_search(self, query: str, top_k: int) -> list[dict]: ...
+    def web_search(self, query: str, top_k: int, end_date: str | None = None) -> list[dict]: ...
 
     def fetch(self, url: str) -> str: ...
 
@@ -80,6 +80,14 @@ def _parse_time(value: str) -> datetime:
                 parsed = parsed.replace(year=2000, month=1, day=1)
             return parsed
     raise ValueError(f"unparseable time: {value!r}")
+
+
+def _cutoff_date(value: str | None) -> str | None:
+    """'2026-10-30T01:37:43+09:00' -> '2026-10-30'; None when absent or unparseable."""
+    if not value:
+        return None
+    match = re.match(r"(\d{4}-\d{2}-\d{2})", str(value).strip())
+    return match.group(1) if match else None
 
 
 def calculate_comparison(op: str, **kwargs) -> ToolResult:
@@ -244,6 +252,8 @@ class ToolRegistry:
     ) -> None:
         self.backend = backend
         self.show_provenance = show_provenance
+        #: The active claim's evidence_cutoff; set by the environment per episode.
+        self.evidence_cutoff: str | None = None
         self.top_k = top_k
         self.allowed_hosts = allowed_hosts
         self.specs: dict[str, ToolSpec] = {}
@@ -374,16 +384,28 @@ class ToolRegistry:
     def _search_web(self, query: str, top_k: int | None = None) -> ToolResult:
         if not query or not query.strip():
             return ToolResult(ToolStatus.INVALID_INPUT, "빈 질의")
+        cutoff = _cutoff_date(self.evidence_cutoff)
         try:
-            hits = self.backend.web_search(query.strip(), min(top_k or self.top_k, self.top_k))
+            k = min(top_k or self.top_k, self.top_k)
+            hits = (self.backend.web_search(query.strip(), k, end_date=cutoff) if cutoff
+                    else self.backend.web_search(query.strip(), k))
         except Exception as exc:  # network/provider failure is not a fact verdict
             return ToolResult(ToolStatus.SOURCE_UNAVAILABLE, f"웹 검색 실패: {exc}")
-        if not hits:
-            return ToolResult(ToolStatus.EMPTY, "웹 검색 결과가 없다. 근거 부족을 의미하지는 않는다.")
-        lines = [f"[{i}] {h.get('title', '')}\n    {h.get('url', '')}\n    {h.get('snippet', '')}"
-                 for i, h in enumerate(hits, start=1)]
-        return ToolResult(ToolStatus.OK, "\n\n".join(lines),
-                          {"query": query, "count": len(hits), "urls": [h.get("url") for h in hits]})
+        kept, dropped = [], []
+        for h in hits:
+            published = (h.get("published_date") or "")[:10]
+            (dropped if cutoff and published and published > cutoff else kept).append(h)
+        note = (f"\n\n(근거 허용 시점 {cutoff} 이후 발행된 결과 {len(dropped)}건은 제외했다.)"
+                if dropped else "")
+        if not kept:
+            return ToolResult(ToolStatus.EMPTY, "웹 검색 결과가 없다. 근거 부족을 의미하지는 않는다." + note,
+                              {"query": query, "dropped_after_cutoff": [h.get("url") for h in dropped]})
+        lines = [f"[{i}] {h.get('title', '')}\n    {h.get('url', '')}"
+                 f"\n    발행: {(h.get('published_date') or '미상')[:10]}\n    {h.get('snippet', '')}"
+                 for i, h in enumerate(kept, start=1)]
+        return ToolResult(ToolStatus.OK, "\n\n".join(lines) + note,
+                          {"query": query, "count": len(kept), "urls": [h.get("url") for h in kept],
+                           "dropped_after_cutoff": [h.get("url") for h in dropped]})
 
     def _fetch_url(self, url: str) -> ToolResult:
         denied = check_url(url, self.allowed_hosts)

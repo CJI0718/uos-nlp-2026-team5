@@ -86,7 +86,8 @@ class LiveWebProvider:
     timeout: float = 15.0
     allowed_hosts: frozenset[str] | None = None
 
-    def search(self, query: str, top_k: int = 5) -> list[dict]:
+    def search(self, query: str, top_k: int = 5, end_date: str | None = None) -> list[dict]:
+        """`end_date` (YYYY-MM-DD) is passed to Tavily; DuckDuckGo has no date filter."""
         key = self.api_key or os.environ.get("TAVILY_API_KEY")
         mode = self.provider
         if mode == "auto":
@@ -94,7 +95,7 @@ class LiveWebProvider:
         if mode == "tavily":
             if not key:
                 raise RuntimeError("TAVILY_API_KEY 환경변수가 설정되지 않았습니다.")
-            return self._search_tavily(query, top_k, key)
+            return self._search_tavily(query, top_k, key, end_date)
         if mode == "ddg":
             return self._search_ddg(query, top_k)
         raise ValueError(f"지원하지 않는 검색 provider: {self.provider!r}")
@@ -111,13 +112,21 @@ class LiveWebProvider:
             return strip_html(raw)[:MAX_FETCH_CHARS]
         return raw[:MAX_FETCH_CHARS]
 
-    def _search_tavily(self, query: str, top_k: int, api_key: str) -> list[dict]:
-        payload = json.dumps({
+    def _search_tavily(self, query: str, top_k: int, api_key: str,
+                       end_date: str | None = None) -> list[dict]:
+        body = {
             "api_key": api_key,
             "query": query,
             "max_results": max(1, min(top_k, 10)),
             "include_answer": False,
-        }).encode("utf-8")
+            "search_depth": "basic",          # 1 credit; never upgraded automatically
+            "include_published_date": True,
+        }
+        if end_date:
+            # Undated results are kept (official pages often carry no date);
+            # the tool layer drops results dated after the cutoff.
+            body["end_date"] = end_date
+        payload = json.dumps(body).encode("utf-8")
         req = urllib.request.Request(
             "https://api.tavily.com/search",
             data=payload,
@@ -132,6 +141,7 @@ class LiveWebProvider:
                 "title": item.get("title", ""),
                 "url": item.get("url", ""),
                 "snippet": item.get("content", ""),
+                "published_date": item.get("published_date"),
             })
         return out
 
