@@ -361,3 +361,19 @@ def test_score_run_and_transitions(tmp_path):
     graded = to_graded([_run_row("FC002", Arm.C1, "refuted")], {"FC002": Verdict.REFUTED}, {})
     assert graded[0].v is True
     assert graded[0].grounded is False
+
+
+def test_env_file_loads_only_allowlisted_keys_without_overriding(tmp_path, monkeypatch):
+    from task_a.web import load_env_file
+
+    env = tmp_path / ".env"
+    env.write_text("# comment\nexport TAVILY_API_KEY='tvly-test'\nOPENAI_API_KEY=sk-x\n", encoding="utf-8")
+    monkeypatch.delenv("TAVILY_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    assert load_env_file(env) == ["TAVILY_API_KEY"]
+    import os
+    assert os.environ["TAVILY_API_KEY"] == "tvly-test" and "OPENAI_API_KEY" not in os.environ
+
+    monkeypatch.setenv("TAVILY_API_KEY", "from-shell")
+    assert load_env_file(env) == [] and os.environ["TAVILY_API_KEY"] == "from-shell"
+    assert load_env_file(tmp_path / "missing.env") == []

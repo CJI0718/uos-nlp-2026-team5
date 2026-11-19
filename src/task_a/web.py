@@ -33,6 +33,33 @@ _DDG_RESULT_RE = re.compile(
 )
 
 
+#: Only these keys are taken from a .env file; nothing else is imported.
+ENV_FILE_KEYS = ("TAVILY_API_KEY",)
+
+
+def load_env_file(path, keys: tuple[str, ...] = ENV_FILE_KEYS) -> list[str]:
+    """Set allow-listed keys from a KEY=VALUE file without overriding the environment.
+
+    Returns the names that were set (never the values). A missing file is not
+    an error: the key may come from the shell instead.
+    """
+    try:
+        lines = open(path, encoding="utf-8").read().splitlines()
+    except OSError:
+        return []
+    loaded = []
+    for line in lines:
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        name, value = line.removeprefix("export ").split("=", 1)
+        name, value = name.strip(), value.strip().strip("'\"")
+        if name in keys and value and not os.environ.get(name):
+            os.environ[name] = value
+            loaded.append(name)
+    return loaded
+
+
 def strip_html(raw_html: str) -> str:
     """Convert raw HTML into compact plain text suitable for tool observations."""
     cleaned = _SCRIPT_STYLE_RE.sub(" ", raw_html or "")

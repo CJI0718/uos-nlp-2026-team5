@@ -22,7 +22,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from task_a.mcp_server import (  # noqa: E402
     GATE_MODES, IMPLEMENTED_CONDITIONS, AgentEnvironment, MCPStdioServer, current_commit,
 )
-from task_a.web import LiveWebProvider  # noqa: E402
+from task_a.web import LiveWebProvider, load_env_file  # noqa: E402
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -54,6 +54,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    load_env_file(ROOT / ".env")  # TAVILY_API_KEY only; the shell environment wins
     web = LiveWebProvider(provider=args.web_provider) if (args.arm == "C2" and args.live_web) else None
     env = AgentEnvironment(
         claims_path=args.claims,
