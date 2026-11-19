@@ -39,7 +39,7 @@ uv run python scripts/score_run.py --run results/exp-001-c1/run.jsonl --c2 resul
 ## 조건 비교 실험
 
 `scripts/run_action_safety.py`는 합성 사례 6건으로 Skill·출처 정보 표시·서버 게이트(`--gate off|verdict|provenance`)를 바꿔 가며 잘못된 일정 등록을 셉니다([exp-002](../results/exp-002-action-safety/summary.md)).
-같은 실행기의 `--suite real`은 실제 웹 사례([data/task_a/real_cases/](../data/task_a/real_cases/README.md))로 같은 설계를 돌립니다(exp-003, 아직 실행 전).
+같은 실행기의 `--suite real`은 실제 웹 사례([data/task_a/real_cases/](../data/task_a/real_cases/README.md))로 같은 설계를 돌립니다([exp-003](../results/exp-003-real-web/summary.md), 2026-11-20 Haiku·Sonnet 42세션 실행).
 - 서버는 C2 웹 전용(`--web-only`)입니다. 고정 코퍼스 없이 Tavily 검색과 페이지 열람만 쓰고, 사례의 `evidence_cutoff`를 검색과 열람에 모두 적용합니다.
 - 조건은 `base`(Skill 없음, 게이트 없음), `skill`(Skill만), `skill_prov_gate`(Skill + 출처 분석 표시 + 출처 독립성 게이트)입니다. exp-002에서 남은 질문인 "Skill 위에 게이트가 더하는 것이 있나"를 실제 웹에서 봅니다.
 - 출처군은 사람이 붙인 표시 없이 서버가 본문 겹침으로 정합니다(`--provenance-mode auto`). 웹 문서는 공식 여부를 판단하지 않으므로, 게이트는 서로 다른 출처군 2개 이상을 요구합니다.
@@ -81,6 +81,7 @@ uv run python scripts/run_comparison.py score              # results/<exp-id>/su
 - 코퍼스는 수집한 날의 페이지입니다. 같은 결과를 재현하려면 팀이 한 번 만든 파일을 Git 밖에서 공유해야 합니다(`content_hash`로 같은 파일인지 확인).
 - 페이지 본문은 Trafilatura로 추출합니다(2026-11-20부터). 본문이 200자 미만으로 나오면 태그 제거 방식으로 대신하므로, 그런 문서에는 메뉴 문구가 남을 수 있습니다.
 - `missing`·`conflict`·`misleading` 조건은 코퍼스 변형이 없어서 구현되지 않았습니다. 서버가 실행을 거부합니다. 성능 하락·오도 근거 노출·채택 지표는 아직 만들 수 없습니다.
+- [exp-003-real-web](../results/exp-003-real-web/summary.md)에서도 Skill만으로 잘못된 등록이 0/4였고, 게이트를 더하면 맞는 등록이 7/10에서 2/10으로 줄었습니다. 같은 실험에서 계산기가 유럽 시간대를 몰라 시간대 변환의 45/64가 실패했고, 웹 검색의 43/86이 기준 시점 필터 뒤 빈 결과였습니다.
 - [exp-002-action-safety](../results/exp-002-action-safety/summary.md)에서는 Skill만으로 합성 사례의 잘못된 등록이 0/12가 되어, Skill 위에 얹은 게이트의 추가 효과는 보이지 않았습니다. Skill 없이 게이트만 두면 잘못된 실행은 막지만 정상 등록도 2/6으로 줄었습니다.
 - 실제 모델 실행은 [exp-001-compare](../results/exp-001-compare/summary.md) 하나입니다(주장 20건, sufficient 조건, C1만). 하네스는 웹을 쓰는 Claude Code보다 정확도가 낫지 않았고, 틀린 답은 주로 코퍼스 공백과 `read_evidence`의 4,000자 제한 때문이었습니다.
   그 뒤 본문 추출과 이어 읽기(`offset`)를 넣었지만, 같은 주장으로 다시 실행하지는 않았습니다.
