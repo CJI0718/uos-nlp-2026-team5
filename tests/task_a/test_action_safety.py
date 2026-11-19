@@ -99,7 +99,7 @@ def test_gate_mode_is_recorded_in_the_log(tmp_path):
     env = _env(tmp_path, gate="off", show_provenance=False, data_version="action-safety-v1")
     _act(env, "AS01", _reprints("AS01")[:1])
     config = read_jsonl(tmp_path / "run.jsonl")[-1]["config"]
-    assert config["extra"] == {"gate": "off", "show_provenance": False}
+    assert config["extra"] == {"gate": "off", "show_provenance": False, "provenance_mode": "labeled"}
     assert config["data_version"] == "action-safety-v1"
 
 
@@ -174,3 +174,85 @@ def test_runner_conditions_match_the_design(tmp_path):
         assert ("--hide-provenance" in server) == (not cfg["provenance"])
         assert ("--append-system-prompt" in cmd) == cfg["skill"]
         assert cmd[cmd.index("--tools") + 1] == "" and "AS01" in prompt
+
+
+
+# --- automatic provenance (no hand labels) ----------------------------------
+
+def test_auto_grouping_blocks_reprints_without_using_labels(tmp_path):
+    env = _env(tmp_path, gate="provenance", provenance_mode="auto")
+    out = _act(env, "AS01", _reprints("AS01"))
+    assert out["status"] == "invalid_input"
+
+
+def test_auto_mode_treats_a_blog_that_cites_the_article_as_derivative(tmp_path):
+    env = _env(tmp_path, gate="provenance", provenance_mode="auto")
+    blog = [i for i, d in CORPUS.items() if d["source_type"] == "blog" and "orbit" in d["source_url"]]
+    out = _act(env, "AS03", _reprints("AS03")[:1] + blog, start="2025-05-20 18:00")
+    assert out["status"] == "invalid_input" and "2차 문서" in out["observation"]
+
+
+def test_auto_mode_still_allows_an_official_source(tmp_path):
+    env = _env(tmp_path, gate="provenance", provenance_mode="auto")
+    out = _act(env, "AS05", _docs("novatech", "official") + _reprints("AS05")[:1], start="2025-07-08 10:00")
+    assert out["status"] == "ok"
+
+
+def test_read_output_reports_overlap_in_auto_mode(tmp_path):
+    env = _env(tmp_path, provenance_mode="auto", show_provenance=True)
+    env.start_episode("AS01")
+    first, second = _reprints("AS01")[:2]
+    env.call_tool("read_evidence", {"evidence_id": first})
+    obs = env.call_tool("read_evidence", {"evidence_id": second})["observation"]
+    assert "[서버 출처 분석]" in obs and first in obs
+
+    hidden = _env(tmp_path / "h", provenance_mode="auto", show_provenance=False)
+    hidden.start_episode("AS01")
+    hidden.call_tool("read_evidence", {"evidence_id": first})
+    assert "[서버 출처 분석]" not in hidden.call_tool("read_evidence", {"evidence_id": second})["observation"]
+
+
+def test_auto_grouping_matches_hand_labels_except_known_cases():
+    from task_a.provenance import group_documents
+    docs = {i: d for i, d in CORPUS.items() if not d["provenance_group"].startswith("grp-noise")}
+    auto = group_documents({i: d["text"] for i, d in docs.items()})
+    ids = list(docs)
+    disagree = {(docs[a]["source_type"], docs[b]["source_type"])
+                for k, a in enumerate(ids) for b in ids[k + 1:]
+                if (docs[a]["provenance_group"] == docs[b]["provenance_group"]) != (auto[a] == auto[b])}
+    # Only the paraphrasing blog differs; the derivative rule covers it in the gate.
+    assert disagree <= {("news", "blog"), ("blog", "news")}
+
+
+def test_two_different_web_pages_count_as_independent(tmp_path):
+    class Web:
+        pages = {"https://x.example/a": "Acme says the keynote is March 4 at 10:00 PST. " * 8,
+                 "https://y.example/b": "Orbit launch event: keynote 10am Pacific, March fourth, livestream. " * 8,
+                 "https://z.example/c": "Acme says the keynote is March 4 at 10:00 PST. " * 8 + "Extra line."}
+
+        def search(self, query, top_k):
+            return []
+
+        def fetch(self, url):
+            return self.pages[url]
+
+    from task_a.schema import write_jsonl
+    claims = tmp_path / "claims.jsonl"
+    write_jsonl(claims, [{"claim_id": "AS90", "text": "t", "evidence_cutoff": None}])
+    corpus = tmp_path / "corpus.jsonl"
+    write_jsonl(corpus, [{"evidence_id": f"DOC_{i}", "title": "t", "text": "x"} for i in range(3)])
+
+    def run(urls):
+        env = AgentEnvironment(claims_path=claims, corpus_path=corpus, arm="C2", web_provider=Web(),
+                               gate="provenance", provenance_mode="auto", out_path=tmp_path / "r.jsonl",
+                               missions_dir=tmp_path / "m", tokenizer="bigram")
+        env.start_episode("AS90")
+        for u in urls:
+            env.call_tool("fetch_url", {"url": u})
+        return env.call_tool("finish_verification", {
+            "verdict": "supported", "abstain": False, "cited_evidence_ids": urls, "justification": "j",
+            "stop_reason": "evidence_sufficient", "mission_type": "event_manager",
+            "event_start_kst": "2025-03-05 03:00"})["result"]["mission_output"]["status"]
+
+    assert run(["https://x.example/a", "https://z.example/c"]) == "invalid_input"   # same text
+    assert run(["https://x.example/a", "https://y.example/b"]) == "ok"              # independent

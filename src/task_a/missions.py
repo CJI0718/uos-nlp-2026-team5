@@ -153,13 +153,16 @@ def independence_error(cited: list[str], evidence_meta: dict[str, dict]) -> str 
     metas = [evidence_meta.get(c) or {} for c in cited]
     if any(m.get("source_type") in PRIMARY_SOURCE_TYPES for m in metas):
         return None
-    groups = {m.get("provenance_group") or f"solo:{c}" for c, m in zip(cited, metas)}
+    # A document that passes on another report is not an independent source.
+    groups = {m.get("provenance_group") or f"solo:{c}"
+              for c, m in zip(cited, metas) if not m.get("derivative")}
     if len(groups) >= 2:
         return None
     return (
         "검증 게이팅 차단: 인용한 근거가 모두 같은 출처군"
-        f"({sorted(groups)})이고 1차 출처(공식 발표·원문)가 없습니다. 같은 원문을 옮긴 문서는 "
-        "여러 개여도 독립 근거 하나입니다. 1차 출처를 읽어 인용하거나 실행을 보류하세요."
+        f"({sorted(groups) or '없음'})이거나 다른 보도를 옮긴 2차 문서이고, 1차 출처(공식 발표·원문)가 "
+        "없습니다. 같은 원문을 옮긴 문서는 여러 개여도 독립 근거 하나입니다. 1차 출처를 읽어 인용하거나 "
+        "실행을 보류하세요."
     )
 
 

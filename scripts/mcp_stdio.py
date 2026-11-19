@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from task_a.mcp_server import (  # noqa: E402
-    GATE_MODES, IMPLEMENTED_CONDITIONS, AgentEnvironment, MCPStdioServer, current_commit,
+    GATE_MODES, IMPLEMENTED_CONDITIONS, PROVENANCE_MODES, AgentEnvironment, MCPStdioServer, current_commit,
 )
 from task_a.web import LiveWebProvider, load_env_file  # noqa: E402
 
@@ -47,6 +47,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--gate", choices=list(GATE_MODES), default="verdict",
                         help="미션 통제: verdict(기본) / provenance(출처 독립성 추가) / off(실험 기준선 전용)")
     parser.add_argument("--data-version", default="claims-2026-11-07")
+    parser.add_argument("--provenance-mode", choices=list(PROVENANCE_MODES), default="labeled",
+                        help="labeled: 코퍼스 출처군 사용, 없으면 본문 겹침으로 묶음 / auto: 항상 본문 겹침으로 묶음")
     parser.add_argument("--hide-provenance", action="store_true",
                         help="검색·열람 결과에서 출처유형·출처군 표시를 뺀다 (실험 조건용)")
     return parser.parse_args(argv)
@@ -73,6 +75,7 @@ def main(argv: list[str] | None = None) -> int:
         gate=args.gate,
         show_provenance=not args.hide_provenance,
         data_version=args.data_version,
+        provenance_mode=args.provenance_mode,
     )
     MCPStdioServer(env).serve_forever()
     return 0

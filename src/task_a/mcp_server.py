@@ -43,6 +43,8 @@ from task_a.schema import (
     Verdict,
     read_jsonl,
 )
+from task_a.provenance import containment, group_documents, is_derivative, shingles
+from task_a.provenance import THRESHOLD as PROVENANCE_THRESHOLD
 from task_a.toollog import CachingBackend, RunConfig, RunLog, ToolCache
 from task_a.tools import FINISH_SCHEMA, FINISH_TOOL, ToolRegistry
 
@@ -55,6 +57,8 @@ class ActiveEpisode:
     tool_calls: int = 0
     external_calls: int = 0
     events: list[ToolEvent] = field(default_factory=list)
+    #: Full text of each document read in this episode, for provenance grouping.
+    read_texts: dict[str, str] = field(default_factory=dict)
 
     @property
     def read_evidence_ids(self) -> frozenset[str]:
@@ -74,6 +78,9 @@ READ_TOOLS = ("read_evidence", "fetch_url")
 #: log that names a condition the environment never applied is a false record.
 IMPLEMENTED_CONDITIONS = ("sufficient",)
 GATE_MODES = ("verdict", "provenance", "off")
+#: labeled: use the corpus provenance_group when present, group the rest by text.
+#: auto:    ignore corpus labels and group every read document by text overlap.
+PROVENANCE_MODES = ("labeled", "auto")
 
 #: Fields that exist only in the scorer-side reference evidence file.
 REFERENCE_ONLY_FIELDS = frozenset({"claim_id", "check_status", "locator", "content"})
@@ -152,6 +159,7 @@ class AgentEnvironment:
         gate: str = "verdict",
         show_provenance: bool = True,
         data_version: str = "claims-2026-11-07",
+        provenance_mode: str = "labeled",
     ) -> None:
         """`gate` selects how missions are controlled:
         verdict    the default gate (final verdict, read citations, correction)
@@ -160,6 +168,10 @@ class AgentEnvironment:
         """
         if gate not in GATE_MODES:
             raise ValueError(f"알 수 없는 gate: {gate!r} (허용: {GATE_MODES})")
+        if provenance_mode not in PROVENANCE_MODES:
+            raise ValueError(f"알 수 없는 provenance_mode: {provenance_mode!r} (허용: {PROVENANCE_MODES})")
+        self.provenance_mode = provenance_mode
+        self.show_provenance = show_provenance
         _refuse_scorer_only(claims_path, "주장 입력")
         if arm not in ("C0", "C1", "C2"):
             raise ValueError(f"알 수 없는 arm: {arm!r}")
@@ -186,7 +198,8 @@ class AgentEnvironment:
             prompt_version=prompt_version,
             data_version=data_version,
             code_commit=code_commit,
-            extra={"gate": gate, "show_provenance": show_provenance},
+            extra={"gate": gate, "show_provenance": show_provenance,
+                   "provenance_mode": provenance_mode},
         )
         self.gate = gate
         self.log = RunLog(out_path)
@@ -311,9 +324,12 @@ class AgentEnvironment:
             external=is_external,
         )
         ep.events.append(event)
+        observation = res.observation
+        if name in READ_TOOLS and res.status == ToolStatus.OK:
+            observation += self._record_read(ep, name, res)
         return {
             "status": res.status.value,
-            "observation": res.observation,
+            "observation": observation,
             "evidence_ids": res.evidence_ids,
             "ranks": res.ranks,
             "step": ep.step,
@@ -383,7 +399,7 @@ class AgentEnvironment:
             tracking_queries=args.get("tracking_queries"),
             observed_evidence_ids=ep.read_evidence_ids,
             enforce_gate=self.gate != "off",
-            evidence_meta=self._evidence_meta(cited),
+            evidence_meta=self._evidence_meta(ep, cited),
             require_independent=self.gate == "provenance",
         )
         out = {"status": res.status.value, "observation": res.observation}
@@ -391,13 +407,47 @@ class AgentEnvironment:
             out.update(res.payload)
         return out
 
-    def _evidence_meta(self, ids: list[str]) -> dict[str, dict]:
+    def _unit(self, evidence_id: str):
+        return self.backend.lookup(evidence_id) if hasattr(self.backend, "lookup") else None
+
+    def _record_read(self, ep: ActiveEpisode, tool: str, res) -> str:
+        """Keep the read text and, when provenance is shown, report overlaps.
+
+        Returns text to append to the observation ('' when nothing to add).
+        """
+        for evidence_id in res.evidence_ids:
+            unit = self._unit(evidence_id) if tool == "read_evidence" else None
+            text = unit.text if unit is not None else res.observation
+            earlier = dict(ep.read_texts)
+            ep.read_texts[evidence_id] = text
+            labelled = unit is not None and unit.provenance_group and self.provenance_mode == "labeled"
+            if not self.show_provenance or labelled:
+                continue
+            mine = shingles(text)
+            overlaps = [f"{other}({containment(mine, shingles(t)):.2f})" for other, t in earlier.items()
+                        if other != evidence_id and containment(mine, shingles(t)) >= PROVENANCE_THRESHOLD]
+            notes = []
+            if overlaps:
+                notes.append("본문이 겹치는(같은 원문을 옮겼을 수 있는) 문서: " + ", ".join(overlaps))
+            if is_derivative(text):
+                notes.append("다른 보도를 옮겼다고 밝힌 2차 문서")
+            return ("\n\n[서버 출처 분석] " + " / ".join(notes)) if notes else \
+                "\n\n[서버 출처 분석] 이번 에피소드에서 읽은 다른 문서와 본문이 겹치지 않음"
+        return ""
+
+    def _evidence_meta(self, ep: ActiveEpisode, ids: list[str]) -> dict[str, dict]:
+        """Source type, provenance group and derivative flag of each cited document."""
+        auto = group_documents(ep.read_texts)
         meta = {}
         for evidence_id in ids:
-            unit = self.backend.lookup(evidence_id) if hasattr(self.backend, "lookup") else None
-            if unit is not None:
-                meta[evidence_id] = {"source_type": unit.source_type,
-                                     "provenance_group": unit.provenance_group}
+            unit = self._unit(evidence_id)
+            label = unit.provenance_group if (unit is not None and self.provenance_mode == "labeled") else None
+            text = ep.read_texts.get(evidence_id, unit.text if unit is not None else "")
+            meta[evidence_id] = {
+                "source_type": unit.source_type if unit is not None else None,
+                "provenance_group": label or auto.get(evidence_id),
+                "derivative": is_derivative(text),
+            }
         return meta
 
     def _finish_description(self) -> str:
