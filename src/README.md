@@ -15,6 +15,7 @@ task_a/
   toollog.py      append-only 실행 로그, 외부 응답 캐시, 비용 집계
   scorer.py       정확도, Macro-F1, GSR, 오염 노출·채택률, C1→C2 복구율·역효과율 산식
   score_run.py    채점 — gold.jsonl을 여는 유일한 모듈. 상수 답 기준선과 미션 안전성 포함
+  corpus_build.py 원문 URL에서 C1 코퍼스·채점용 대응표·수집 보고서 생성 (scripts/build_corpus.py)
   mock.py         오프라인 테스트용 모의 코퍼스 백엔드 (MockBackend)
 ```
 

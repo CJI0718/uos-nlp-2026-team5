@@ -10,8 +10,8 @@
 uv sync --python 3.12
 uv run pytest -q
 
-# 0) 에이전트용 코퍼스 준비 (C1·C2 필수, 형식은 data/README.md)
-#    data/raw/task_a/corpus_c1.jsonl
+# 0) 에이전트용 코퍼스 수집 (C1·C2 필수, 원문 사이트에 접속, 결과는 data/README.md)
+uv run python scripts/build_corpus.py
 
 # 1) 격리 작업공간 생성 — 저장소 밖, gold 없음, 내장 파일·셸·웹 도구 차단
 uv run python scripts/make_agent_workspace.py \
@@ -52,7 +52,9 @@ uv run python scripts/score_run.py --run results/exp-001-c1/run.jsonl --c2 resul
 이 장에 모아 둡니다. 2026-11-19 검토에서 확인한 내용입니다.
 
 **아직 없는 것**
-- 에이전트용 코퍼스가 없습니다. 원문 수집이 필요하고, 기사 37건은 본문이 없으며 21건은 발췌도 없습니다. 그래서 지금은 C0만 실행할 수 있습니다.
+- 코퍼스에는 참조 근거의 원문 54개만 있고 방해 문서가 없습니다. 어떤 문서를 몇 개 넣을지는 팀이 정해야 합니다. FC021·FC036·FC038·FC045는 원문을 받지 못해 C1에서 근거가 없습니다.
+- 코퍼스는 수집한 날의 페이지입니다. 같은 결과를 재현하려면 팀이 한 번 만든 파일을 Git 밖에서 공유해야 합니다(`content_hash`로 같은 파일인지 확인).
+- 페이지 본문 추출은 단순 태그 제거라서 일부 문서 앞부분에 메뉴·검색창 문구가 남습니다.
 - `missing`·`conflict`·`misleading` 조건은 코퍼스 변형이 없어서 구현되지 않았습니다. 서버가 실행을 거부합니다. 성능 하락·오도 근거 노출·채택 지표는 아직 만들 수 없습니다.
 - 실제 모델 실행 결과는 하나도 없습니다.
 

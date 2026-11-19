@@ -46,8 +46,8 @@
 | [skills/](skills/factcheck-mission-agent/SKILL.md) | 외부 AI 에이전트 장착용 4단계 팩트체크·왜곡특정·미션수행 Skill |
 | [missions/](missions/README.md) | 검증 게이팅 통과 후 생성되는 후속 미션 결과물(`.ics`, `.md`) 및 장기 추적 레지스트리 |
 | [tests/](tests/) | 오프라인 단위·통합 테스트 |
-| [scripts/](scripts/) | 데이터 추출(`extract_fc_data.py`), MCP 서버(`mcp_stdio.py`), 격리 작업공간(`make_agent_workspace.py`), CLI 어댑터(`agent_cli.py`), 채점(`score_run.py`) |
-| [data/](data/README.md) | 주장 50개(에이전트 입력), 참조 판정·근거(채점기 전용), 에이전트용 코퍼스 형식(아직 미구축) |
+| [scripts/](scripts/) | 데이터 추출(`extract_fc_data.py`), 원문 코퍼스 수집(`build_corpus.py`), MCP 서버(`mcp_stdio.py`), 격리 작업공간(`make_agent_workspace.py`), CLI 어댑터(`agent_cli.py`), 채점(`score_run.py`) |
+| [data/](data/README.md) | 주장 50개(에이전트 입력), 참조 판정·근거(채점기 전용), 원문 코퍼스 수집 방법과 결과 |
 | [experiments/](experiments/README.md) | 실행 방법과 실험 기록 양식 |
 | [results/](results/README.md) · [reports/](reports/README.md) | 결과 요약, 보고서 |
 | [docs/decisions/](docs/decisions/README.md) | 확정한 결정 |
@@ -59,7 +59,10 @@
 uv sync --python 3.12
 uv run pytest -q
 
-# 1) 격리 작업공간 생성 (C1·C2는 data/raw/task_a/corpus_c1.jsonl 코퍼스가 있어야 함)
+# 0) C1·C2용 원문 코퍼스 수집 (원문 사이트 접속, Git 제외 위치에 저장)
+uv run python scripts/build_corpus.py
+
+# 1) 격리 작업공간 생성
 uv run python scripts/make_agent_workspace.py --workspace ~/agent-runs/exp-001-c0 \
     --run-id exp-001-c0 --arm C0 --model-id claude-code-<버전>+<모델ID>
 
