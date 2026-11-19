@@ -36,6 +36,16 @@ uv run python scripts/score_run.py --run results/exp-001-c1/run.jsonl --c2 resul
 - 에이전트·모델: `--model-id`로 기록합니다. 비교할 때는 이 값만 바꾸고 나머지는 고정합니다.
 - `--condition`: 지금은 `sufficient`만 구현되어 있습니다. 아래 "범위와 남은 한계"를 봅니다.
 
+## 조건 비교 실험
+
+`scripts/run_comparison.py`는 같은 주장을 세 조건(도구 없음, 그냥 Claude Code+웹, 하네스)과 여러 모델로 실행하고 채점합니다. 모델을 호출하므로 승인된 예산 안에서만 실행합니다.
+
+```bash
+uv run python scripts/run_comparison.py run --dry-run      # 세션 수와 명령 확인
+uv run python scripts/run_comparison.py run --workers 6    # 실행 (실패는 재시도하지 않음)
+uv run python scripts/run_comparison.py score              # results/<exp-id>/summary.json, episodes.jsonl
+```
+
 ## 실험 기록
 
 `finish_verification`이 호출될 때마다 결과 로그의 `config`에 `run_id`, `arm`, `condition`, `model_id`, `prompt_version`,
@@ -57,7 +67,7 @@ uv run python scripts/score_run.py --run results/exp-001-c1/run.jsonl --c2 resul
 - 코퍼스는 수집한 날의 페이지입니다. 같은 결과를 재현하려면 팀이 한 번 만든 파일을 Git 밖에서 공유해야 합니다(`content_hash`로 같은 파일인지 확인).
 - 페이지 본문 추출은 단순 태그 제거라서 일부 문서 앞부분에 메뉴·검색창 문구가 남습니다.
 - `missing`·`conflict`·`misleading` 조건은 코퍼스 변형이 없어서 구현되지 않았습니다. 서버가 실행을 거부합니다. 성능 하락·오도 근거 노출·채택 지표는 아직 만들 수 없습니다.
-- 실제 모델 실행 결과는 하나도 없습니다.
+- 실제 모델 실행은 [exp-001-compare](../results/exp-001-compare/summary.md) 하나입니다(주장 20건, sufficient 조건, C1만). 하네스는 웹을 쓰는 Claude Code보다 정확도가 낫지 않았고, 틀린 답은 주로 코퍼스 공백과 `read_evidence`의 4,000자 제한 때문이었습니다.
 
 **평가 설계의 한계**
 - 자동 채점은 판정 라벨(정확도, Macro-F1, 커버리지)과 미션 안전성까지입니다. gold에 `distortion_type` 필드가 없어서 왜곡 유형·구간·정정문은 채점하지 않습니다. 근거 충분성(E)과 시점·범위(T)는 사람 채점이 필요합니다.

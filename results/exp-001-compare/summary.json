@@ -1,0 +1,752 @@
+{
+  "claims": [
+    "FC002",
+    "FC003",
+    "FC004",
+    "FC005",
+    "FC008",
+    "FC010",
+    "FC013",
+    "FC015",
+    "FC018",
+    "FC020",
+    "FC021",
+    "FC023",
+    "FC026",
+    "FC030",
+    "FC039",
+    "FC040",
+    "FC041",
+    "FC043",
+    "FC044",
+    "FC047"
+  ],
+  "n_claims": 20,
+  "gold_distribution": {
+    "not_enough_evidence": 1,
+    "refuted": 11,
+    "supported": 8
+  },
+  "always_supported_accuracy": 0.4,
+  "table": [
+    {
+      "model": "haiku",
+      "condition": "closed_book",
+      "episodes": 20,
+      "models_seen": [
+        "claude-haiku-5-5"
+      ],
+      "accuracy": {
+        "numerator": 13,
+        "denominator": 20,
+        "value": 0.65
+      },
+      "macro_f1": {
+        "macro_f1": 0.476191,
+        "per_class": {
+          "supported": {
+            "precision": 0.666667,
+            "recall": 0.5,
+            "f1": 0.571429,
+            "support": 8
+          },
+          "refuted": {
+            "precision": 0.9,
+            "recall": 0.818182,
+            "f1": 0.857143,
+            "support": 11
+          },
+          "not_enough_evidence": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1
+          }
+        },
+        "graded": 20,
+        "labels_included": [
+          "supported",
+          "refuted",
+          "not_enough_evidence"
+        ]
+      },
+      "coverage": {
+        "numerator": 20,
+        "denominator": 20,
+        "value": 1.0
+      },
+      "abstain_rate": {
+        "numerator": 3,
+        "denominator": 20,
+        "value": 0.15
+      },
+      "refuted_recall": {
+        "numerator": 9,
+        "denominator": 11,
+        "value": 0.818182
+      },
+      "supported_recall": {
+        "numerator": 4,
+        "denominator": 8,
+        "value": 0.5
+      },
+      "execution_status": {
+        "ok": 20
+      },
+      "cost_usd_total": 0.0283,
+      "cost_usd_reported_for": 20,
+      "duration_s_median": 6.175,
+      "mean_turns": 2.0,
+      "sessions_with_leak_markers": [],
+      "tool_use_totals": {
+        "StructuredOutput": 20
+      }
+    },
+    {
+      "model": "haiku",
+      "condition": "harness",
+      "episodes": 20,
+      "models_seen": [
+        "claude-haiku-5-5"
+      ],
+      "accuracy": {
+        "numerator": 16,
+        "denominator": 20,
+        "value": 0.8
+      },
+      "macro_f1": {
+        "macro_f1": 0.684982,
+        "per_class": {
+          "supported": {
+            "precision": 1.0,
+            "recall": 0.625,
+            "f1": 0.769231,
+            "support": 8
+          },
+          "refuted": {
+            "precision": 1.0,
+            "recall": 0.909091,
+            "f1": 0.952381,
+            "support": 11
+          },
+          "not_enough_evidence": {
+            "precision": 0.2,
+            "recall": 1.0,
+            "f1": 0.333333,
+            "support": 1
+          }
+        },
+        "graded": 20,
+        "labels_included": [
+          "supported",
+          "refuted",
+          "not_enough_evidence"
+        ]
+      },
+      "coverage": {
+        "numerator": 20,
+        "denominator": 20,
+        "value": 1.0
+      },
+      "abstain_rate": {
+        "numerator": 0,
+        "denominator": 20,
+        "value": 0.0
+      },
+      "refuted_recall": {
+        "numerator": 10,
+        "denominator": 11,
+        "value": 0.909091
+      },
+      "supported_recall": {
+        "numerator": 5,
+        "denominator": 8,
+        "value": 0.625
+      },
+      "execution_status": {
+        "ok": 20
+      },
+      "cost_usd_total": 0.125,
+      "cost_usd_reported_for": 20,
+      "duration_s_median": 13.879,
+      "mean_turns": 7.85,
+      "sessions_with_leak_markers": [
+        "FC005",
+        "FC013",
+        "FC015",
+        "FC020",
+        "FC021",
+        "FC039",
+        "FC040",
+        "FC041"
+      ],
+      "tool_use_totals": {
+        "mcp__factcheck-mission__calculate_comparison": 6,
+        "mcp__factcheck-mission__fetch_url": 3,
+        "mcp__factcheck-mission__finish_verification": 20,
+        "mcp__factcheck-mission__read_evidence": 26,
+        "mcp__factcheck-mission__search_evidence": 60,
+        "mcp__factcheck-mission__search_web": 2,
+        "mcp__factcheck-mission__start_episode": 20
+      },
+      "missions": {
+        "continuous_tracking:ok": 5,
+        "event_manager:invalid_input": 1,
+        "news_to_artifact:ok": 3,
+        "no_op:ok": 11
+      }
+    },
+    {
+      "model": "haiku",
+      "condition": "plain_web",
+      "episodes": 20,
+      "models_seen": [
+        "claude-haiku-5-5"
+      ],
+      "accuracy": {
+        "numerator": 18,
+        "denominator": 20,
+        "value": 0.9
+      },
+      "macro_f1": {
+        "macro_f1": 0.826777,
+        "per_class": {
+          "supported": {
+            "precision": 1.0,
+            "recall": 0.75,
+            "f1": 0.857143,
+            "support": 8
+          },
+          "refuted": {
+            "precision": 0.916667,
+            "recall": 1.0,
+            "f1": 0.956522,
+            "support": 11
+          },
+          "not_enough_evidence": {
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.666667,
+            "support": 1
+          }
+        },
+        "graded": 20,
+        "labels_included": [
+          "supported",
+          "refuted",
+          "not_enough_evidence"
+        ]
+      },
+      "coverage": {
+        "numerator": 20,
+        "denominator": 20,
+        "value": 1.0
+      },
+      "abstain_rate": {
+        "numerator": 0,
+        "denominator": 20,
+        "value": 0.0
+      },
+      "refuted_recall": {
+        "numerator": 11,
+        "denominator": 11,
+        "value": 1.0
+      },
+      "supported_recall": {
+        "numerator": 6,
+        "denominator": 8,
+        "value": 0.75
+      },
+      "execution_status": {
+        "ok": 20
+      },
+      "cost_usd_total": 0.3566,
+      "cost_usd_reported_for": 20,
+      "duration_s_median": 12.659,
+      "mean_turns": 4.25,
+      "sessions_with_leak_markers": [],
+      "tool_use_totals": {
+        "StructuredOutput": 21,
+        "WebFetch": 20,
+        "WebSearch": 24
+      }
+    },
+    {
+      "model": "opus",
+      "condition": "closed_book",
+      "episodes": 20,
+      "models_seen": [
+        "claude-opus-5-5"
+      ],
+      "accuracy": {
+        "numerator": 16,
+        "denominator": 20,
+        "value": 0.8
+      },
+      "macro_f1": {
+        "macro_f1": 0.575251,
+        "per_class": {
+          "supported": {
+            "precision": 1.0,
+            "recall": 0.625,
+            "f1": 0.769231,
+            "support": 8
+          },
+          "refuted": {
+            "precision": 0.916667,
+            "recall": 1.0,
+            "f1": 0.956522,
+            "support": 11
+          },
+          "not_enough_evidence": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1
+          }
+        },
+        "graded": 20,
+        "labels_included": [
+          "supported",
+          "refuted",
+          "not_enough_evidence"
+        ]
+      },
+      "coverage": {
+        "numerator": 20,
+        "denominator": 20,
+        "value": 1.0
+      },
+      "abstain_rate": {
+        "numerator": 1,
+        "denominator": 20,
+        "value": 0.05
+      },
+      "refuted_recall": {
+        "numerator": 11,
+        "denominator": 11,
+        "value": 1.0
+      },
+      "supported_recall": {
+        "numerator": 5,
+        "denominator": 8,
+        "value": 0.625
+      },
+      "execution_status": {
+        "ok": 20
+      },
+      "cost_usd_total": 0.9685,
+      "cost_usd_reported_for": 20,
+      "duration_s_median": 10.517,
+      "mean_turns": 2.0,
+      "sessions_with_leak_markers": [],
+      "tool_use_totals": {
+        "StructuredOutput": 20
+      }
+    },
+    {
+      "model": "opus",
+      "condition": "harness",
+      "episodes": 20,
+      "models_seen": [
+        "claude-opus-5-5"
+      ],
+      "accuracy": {
+        "numerator": 16,
+        "denominator": 20,
+        "value": 0.8
+      },
+      "macro_f1": {
+        "macro_f1": 0.575251,
+        "per_class": {
+          "supported": {
+            "precision": 1.0,
+            "recall": 0.625,
+            "f1": 0.769231,
+            "support": 8
+          },
+          "refuted": {
+            "precision": 0.916667,
+            "recall": 1.0,
+            "f1": 0.956522,
+            "support": 11
+          },
+          "not_enough_evidence": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1
+          }
+        },
+        "graded": 20,
+        "labels_included": [
+          "supported",
+          "refuted",
+          "not_enough_evidence"
+        ]
+      },
+      "coverage": {
+        "numerator": 20,
+        "denominator": 20,
+        "value": 1.0
+      },
+      "abstain_rate": {
+        "numerator": 0,
+        "denominator": 20,
+        "value": 0.0
+      },
+      "refuted_recall": {
+        "numerator": 11,
+        "denominator": 11,
+        "value": 1.0
+      },
+      "supported_recall": {
+        "numerator": 5,
+        "denominator": 8,
+        "value": 0.625
+      },
+      "execution_status": {
+        "ok": 20
+      },
+      "cost_usd_total": 3.6756,
+      "cost_usd_reported_for": 20,
+      "duration_s_median": 28.253,
+      "mean_turns": 6.7,
+      "sessions_with_leak_markers": [
+        "FC002",
+        "FC021",
+        "FC039",
+        "FC040",
+        "FC043",
+        "FC047"
+      ],
+      "tool_use_totals": {
+        "mcp__factcheck-mission__calculate_comparison": 7,
+        "mcp__factcheck-mission__finish_verification": 20,
+        "mcp__factcheck-mission__read_evidence": 34,
+        "mcp__factcheck-mission__search_evidence": 33,
+        "mcp__factcheck-mission__start_episode": 20
+      },
+      "missions": {
+        "continuous_tracking:ok": 3,
+        "event_manager:ok": 1,
+        "news_to_artifact:ok": 2,
+        "no_op:ok": 14
+      }
+    },
+    {
+      "model": "opus",
+      "condition": "plain_web",
+      "episodes": 20,
+      "models_seen": [
+        "claude-opus-5-5"
+      ],
+      "accuracy": {
+        "numerator": 18,
+        "denominator": 20,
+        "value": 0.9
+      },
+      "macro_f1": {
+        "macro_f1": 0.629952,
+        "per_class": {
+          "supported": {
+            "precision": 1.0,
+            "recall": 0.875,
+            "f1": 0.933333,
+            "support": 8
+          },
+          "refuted": {
+            "precision": 0.916667,
+            "recall": 1.0,
+            "f1": 0.956522,
+            "support": 11
+          },
+          "not_enough_evidence": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1
+          }
+        },
+        "graded": 20,
+        "labels_included": [
+          "supported",
+          "refuted",
+          "not_enough_evidence"
+        ]
+      },
+      "coverage": {
+        "numerator": 20,
+        "denominator": 20,
+        "value": 1.0
+      },
+      "abstain_rate": {
+        "numerator": 0,
+        "denominator": 20,
+        "value": 0.0
+      },
+      "refuted_recall": {
+        "numerator": 11,
+        "denominator": 11,
+        "value": 1.0
+      },
+      "supported_recall": {
+        "numerator": 7,
+        "denominator": 8,
+        "value": 0.875
+      },
+      "execution_status": {
+        "ok": 20
+      },
+      "cost_usd_total": 1.9799,
+      "cost_usd_reported_for": 20,
+      "duration_s_median": 20.964,
+      "mean_turns": 4.25,
+      "sessions_with_leak_markers": [],
+      "tool_use_totals": {
+        "StructuredOutput": 20,
+        "WebFetch": 18,
+        "WebSearch": 27
+      }
+    },
+    {
+      "model": "sonnet",
+      "condition": "closed_book",
+      "episodes": 20,
+      "models_seen": [
+        "claude-sonnet-5-5"
+      ],
+      "accuracy": {
+        "numerator": 16,
+        "denominator": 20,
+        "value": 0.8
+      },
+      "macro_f1": {
+        "macro_f1": 0.569697,
+        "per_class": {
+          "supported": {
+            "precision": 0.857143,
+            "recall": 0.75,
+            "f1": 0.8,
+            "support": 8
+          },
+          "refuted": {
+            "precision": 0.909091,
+            "recall": 0.909091,
+            "f1": 0.909091,
+            "support": 11
+          },
+          "not_enough_evidence": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1
+          }
+        },
+        "graded": 20,
+        "labels_included": [
+          "supported",
+          "refuted",
+          "not_enough_evidence"
+        ]
+      },
+      "coverage": {
+        "numerator": 20,
+        "denominator": 20,
+        "value": 1.0
+      },
+      "abstain_rate": {
+        "numerator": 2,
+        "denominator": 20,
+        "value": 0.1
+      },
+      "refuted_recall": {
+        "numerator": 10,
+        "denominator": 11,
+        "value": 0.909091
+      },
+      "supported_recall": {
+        "numerator": 6,
+        "denominator": 8,
+        "value": 0.75
+      },
+      "execution_status": {
+        "ok": 20
+      },
+      "cost_usd_total": 0.3714,
+      "cost_usd_reported_for": 20,
+      "duration_s_median": 4.944,
+      "mean_turns": 2.1,
+      "sessions_with_leak_markers": [],
+      "tool_use_totals": {
+        "StructuredOutput": 20
+      }
+    },
+    {
+      "model": "sonnet",
+      "condition": "harness",
+      "episodes": 20,
+      "models_seen": [
+        "claude-sonnet-5-5"
+      ],
+      "accuracy": {
+        "numerator": 16,
+        "denominator": 20,
+        "value": 0.8
+      },
+      "macro_f1": {
+        "macro_f1": 0.684982,
+        "per_class": {
+          "supported": {
+            "precision": 1.0,
+            "recall": 0.625,
+            "f1": 0.769231,
+            "support": 8
+          },
+          "refuted": {
+            "precision": 1.0,
+            "recall": 0.909091,
+            "f1": 0.952381,
+            "support": 11
+          },
+          "not_enough_evidence": {
+            "precision": 0.2,
+            "recall": 1.0,
+            "f1": 0.333333,
+            "support": 1
+          }
+        },
+        "graded": 20,
+        "labels_included": [
+          "supported",
+          "refuted",
+          "not_enough_evidence"
+        ]
+      },
+      "coverage": {
+        "numerator": 20,
+        "denominator": 20,
+        "value": 1.0
+      },
+      "abstain_rate": {
+        "numerator": 0,
+        "denominator": 20,
+        "value": 0.0
+      },
+      "refuted_recall": {
+        "numerator": 10,
+        "denominator": 11,
+        "value": 0.909091
+      },
+      "supported_recall": {
+        "numerator": 5,
+        "denominator": 8,
+        "value": 0.625
+      },
+      "execution_status": {
+        "ok": 20
+      },
+      "cost_usd_total": 1.5768,
+      "cost_usd_reported_for": 20,
+      "duration_s_median": 10.958,
+      "mean_turns": 6.2,
+      "sessions_with_leak_markers": [
+        "FC002",
+        "FC013",
+        "FC021",
+        "FC039",
+        "FC040",
+        "FC041"
+      ],
+      "tool_use_totals": {
+        "mcp__factcheck-mission__calculate_comparison": 6,
+        "mcp__factcheck-mission__fetch_url": 3,
+        "mcp__factcheck-mission__finish_verification": 20,
+        "mcp__factcheck-mission__read_evidence": 21,
+        "mcp__factcheck-mission__search_evidence": 31,
+        "mcp__factcheck-mission__search_web": 3,
+        "mcp__factcheck-mission__start_episode": 20
+      },
+      "missions": {
+        "continuous_tracking:ok": 5,
+        "event_manager:ok": 1,
+        "no_op:ok": 14
+      }
+    },
+    {
+      "model": "sonnet",
+      "condition": "plain_web",
+      "episodes": 20,
+      "models_seen": [
+        "claude-sonnet-5-5"
+      ],
+      "accuracy": {
+        "numerator": 16,
+        "denominator": 20,
+        "value": 0.8
+      },
+      "macro_f1": {
+        "macro_f1": 0.569697,
+        "per_class": {
+          "supported": {
+            "precision": 0.857143,
+            "recall": 0.75,
+            "f1": 0.8,
+            "support": 8
+          },
+          "refuted": {
+            "precision": 0.909091,
+            "recall": 0.909091,
+            "f1": 0.909091,
+            "support": 11
+          },
+          "not_enough_evidence": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1
+          }
+        },
+        "graded": 20,
+        "labels_included": [
+          "supported",
+          "refuted",
+          "not_enough_evidence"
+        ]
+      },
+      "coverage": {
+        "numerator": 20,
+        "denominator": 20,
+        "value": 1.0
+      },
+      "abstain_rate": {
+        "numerator": 1,
+        "denominator": 20,
+        "value": 0.05
+      },
+      "refuted_recall": {
+        "numerator": 10,
+        "denominator": 11,
+        "value": 0.909091
+      },
+      "supported_recall": {
+        "numerator": 6,
+        "denominator": 8,
+        "value": 0.75
+      },
+      "execution_status": {
+        "ok": 20
+      },
+      "cost_usd_total": 0.555,
+      "cost_usd_reported_for": 20,
+      "duration_s_median": 5.106,
+      "mean_turns": 2.7,
+      "sessions_with_leak_markers": [],
+      "tool_use_totals": {
+        "StructuredOutput": 20,
+        "WebFetch": 7,
+        "WebSearch": 6
+      }
+    }
+  ]
+}
