@@ -27,6 +27,24 @@ uv run python scripts/extract_fc_data.py
 수집한 원문은 저작권 때문에 `data/raw/`(Git 제외)에 두고 manifest만 커밋합니다.
 참조 판정은 독립 검수 전 초안이고 FC038은 판정 보류 상태입니다.
 
+## 에이전트용 코퍼스 (C1·C2) — 아직 없음
+
+C1·C2는 에이전트가 `search_evidence`·`read_evidence`로 검색하는 고정 코퍼스가 있어야 실행됩니다.
+코퍼스가 없으면 서버가 시작을 거부합니다. 예전에는 빈 코퍼스로 조용히 실행되어 C1이 사실상 C0였습니다.
+
+- 위치: `data/raw/task_a/corpus_c1.jsonl`. 기사 원문이 들어가므로 Git에서 제외되는 `data/raw/` 아래에 둡니다.
+- 한 줄에 문서 하나를 둡니다. 필수 필드는 `evidence_id`, `title`, `text`(문서 본문)이고, 선택 필드는
+  `source_url`, `publisher`, `source_type`, `published_at`, `provenance_group`(같은 보도자료 전재 묶음),
+  `document_validity`입니다.
+- `evidence.jsonl`은 코퍼스로 쓸 수 없습니다. 이 파일은 채점 전용이고, 내용이 판정 문구가 섞인 요약입니다.
+  64건 중 10건에 "맞지 않는다", "실제 실적 확인이 아니다" 같은 문구가 있습니다.
+  서버는 이 파일 경로와 `claim_id`·`check_status`·`locator`·`content` 필드를 거부합니다.
+- `evidence_id`에 주장 ID(`FC002` 등)를 넣지 않습니다. 넣으면 어느 문서가 어느 주장의 근거인지 드러나서 서버가 거부합니다.
+  채점에 쓰는 `sufficient_evidence_ids`와의 대응표는 채점기 쪽에 따로 둡니다.
+- 정답 근거 문서만 넣으면 검색이 너무 쉽습니다. 참조 근거 요약 64건만으로 BM25를 돌리면 50건 중 49건이 1위로 맞습니다.
+  같은 주제의 방해 문서와 전재 기사도 함께 넣습니다.
+- `published_at`이 각 주장의 `evidence_cutoff` 이후인 문서는 넣지 않습니다.
+
 ## 사례 작성 원칙
 
 사례별 권장 필드:

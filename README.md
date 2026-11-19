@@ -32,21 +32,22 @@
 
 자체 제작 LLM 루프를 두지 않고, **기존 AI 에이전트에 MCP(Model Context Protocol) 서버와 `SKILL.md`를 연결**하여 구동합니다:
 
-- **MCP 서버 ([.mcp.json](.mcp.json), [scripts/mcp_stdio.py](scripts/mcp_stdio.py), [src/task_a/mcp_server.py](src/task_a/mcp_server.py))**: JSON-RPC 2.0 `stdio` 표준을 통해 `start_episode`, `search_evidence`, `read_evidence`, `calculate_comparison`, `search_web`, `fetch_url`, `execute_mission`, `finish_verification` 도구를 노출하고 모든 궤적을 `RunLog` JSONL로 자동 기록합니다.
-- **Agent Skill ([skills/factcheck-mission-agent/SKILL.md](skills/factcheck-mission-agent/SKILL.md))**: 4단계 워크플로우(적응적 교차언어/수치 검증 → 7대 왜곡 유형 특정 → 검증 게이팅 미션 실행 → 구조화 판정 제출) 지침서입니다.
-- **CLI 어댑터 ([scripts/agent_cli.py](scripts/agent_cli.py))**: 터미널 기반 에이전트가 쉘 명령으로 동일한 도구를 호출할 수 있는 어댑터입니다.
+- **MCP 서버 ([scripts/mcp_stdio.py](scripts/mcp_stdio.py), [src/task_a/mcp_server.py](src/task_a/mcp_server.py))**: JSON-RPC 2.0 `stdio`로 `start_episode`, `search_evidence`, `read_evidence`, `calculate_comparison`, `search_web`, `fetch_url`, `finish_verification` 도구를 노출하고 모든 궤적을 `RunLog` JSONL로 기록합니다. 후속 미션은 `finish_verification` 안에서 최종 판정으로 검증 게이트를 적용한 뒤 실행합니다.
+- **격리 작업공간 ([scripts/make_agent_workspace.py](scripts/make_agent_workspace.py))**: 저장소 밖에 gold가 없는 실행 디렉터리를 만들고, Claude Code의 내장 파일·셸·웹 도구를 막은 채 MCP 도구만 허용합니다. 실험은 이 작업공간에서만 실행합니다.
+- **Agent Skill ([skills/factcheck-mission-agent/SKILL.md](skills/factcheck-mission-agent/SKILL.md))**: 4단계 워크플로우(근거 탐색 → 결정론적 검산·왜곡 특정 → 검증 게이팅 미션 선택 → 구조화 판정 제출) 지침서입니다. 평가 사례는 들어 있지 않습니다(테스트로 확인).
+- **CLI 어댑터 ([scripts/agent_cli.py](scripts/agent_cli.py))**: 셸로 같은 도구를 호출하는 어댑터입니다. 셸을 쓰는 에이전트는 저장소를 읽을 수 있으므로 격리 경계가 아닙니다.
 
 ## 파일 안내
 
 | 위치 | 내용 |
 | --- | --- |
-| [.mcp.json](.mcp.json) | Claude Code / Cursor / Antigravity용 MCP 서버 설정 파일 |
+| [.mcp.json](.mcp.json) | 개발용 MCP 서버 설정(`dev-interactive`). 실험에는 격리 작업공간을 씁니다 |
 | [src/](src/README.md) | MCP 서버, 도구, BM25/웹 검색, 수치·시간대 계산기, 후속 미션 게이팅, 채점기 |
 | [skills/](skills/factcheck-mission-agent/SKILL.md) | 외부 AI 에이전트 장착용 4단계 팩트체크·왜곡특정·미션수행 Skill |
 | [missions/](missions/README.md) | 검증 게이팅 통과 후 생성되는 후속 미션 결과물(`.ics`, `.md`) 및 장기 추적 레지스트리 |
 | [tests/](tests/) | 오프라인 단위·통합 테스트 |
-| [scripts/](scripts/) | 데이터 추출(`extract_fc_data.py`), MCP 서버(`mcp_stdio.py`), CLI 어댑터(`agent_cli.py`), 채점(`score_run.py`) |
-| [data/](data/README.md) | 주장 50개(에이전트 입력)와 참조 판정·근거(채점기 전용) |
+| [scripts/](scripts/) | 데이터 추출(`extract_fc_data.py`), MCP 서버(`mcp_stdio.py`), 격리 작업공간(`make_agent_workspace.py`), CLI 어댑터(`agent_cli.py`), 채점(`score_run.py`) |
+| [data/](data/README.md) | 주장 50개(에이전트 입력), 참조 판정·근거(채점기 전용), 에이전트용 코퍼스 형식(아직 미구축) |
 | [experiments/](experiments/README.md) | 실행 방법과 실험 기록 양식 |
 | [results/](results/README.md) · [reports/](reports/README.md) | 결과 요약, 보고서 |
 | [docs/decisions/](docs/decisions/README.md) | 확정한 결정 |
@@ -58,19 +59,19 @@
 uv sync --python 3.12
 uv run pytest -q
 
-# 1) MCP 서버 실행 (Claude Code, Cursor, Antigravity 등이 자동 호출)
-uv run python scripts/mcp_stdio.py --arm C2 --out results/exp-mcp/run.jsonl
+# 1) 격리 작업공간 생성 (C1·C2는 data/raw/task_a/corpus_c1.jsonl 코퍼스가 있어야 함)
+uv run python scripts/make_agent_workspace.py --workspace ~/agent-runs/exp-001-c0 \
+    --run-id exp-001-c0 --arm C0 --model-id claude-code-<버전>+<모델ID>
 
-# 2) 또는 에이전트 CLI 어댑터로 에피소드 수행
-uv run python scripts/agent_cli.py start --claim-id FC002 --arm C1 --out /tmp/fc002.jsonl
+# 2) 작업공간의 RUN.md에 적힌 명령으로 주장마다 새 세션 실행 (팀이 승인한 예산 안에서)
 
 # 3) 채점 (gold.jsonl을 읽는 유일한 명령)
-uv run python scripts/score_run.py --run /tmp/fc002.jsonl
+uv run python scripts/score_run.py --run results/exp-001-c0/run.jsonl
 ```
 
 ## 원칙
 
-- 참조 판정(`data/task_a/gold.jsonl`, `evaluation.md`)은 채점기에만 주고 에이전트 환경(`mcp_server.py`, `agent_cli.py`)에서 접근을 원천 차단합니다.
+- 참조 판정(`data/task_a/gold.jsonl`, `evidence.jsonl`, `evaluation.md`)은 채점기에만 줍니다. MCP 서버는 이 파일들을 주장 입력이나 코퍼스로 받지 않고, 에이전트 자체 도구는 격리 작업공간에서 막습니다. 남은 한계는 [실험 안내](experiments/README.md#범위와-남은-한계)에 모아 둡니다.
 - 논문 수치, 설계 제안, 우리가 관찰한 결과를 구분해서 씁니다. 결과를 지어내지 않습니다.
 - API 키, 개인정보, 권한 없는 원문·PDF, 원본 로그는 올리지 않습니다.
 - main 직접 수정 대신 branch → PR로 작업합니다. [협업 안내](CONTRIBUTING.md) · [Agent 지침](AGENTS.md)

@@ -1,42 +1,70 @@
 # 실험 설정과 재현
 
-이 브랜치(`feat/agent-skill-mcp`)에서는 외부 AI 에이전트(Antigravity, Claude Code, Cursor 등)에 [skills/factcheck-mission-agent/SKILL.md](../skills/factcheck-mission-agent/SKILL.md)와 MCP 서버([scripts/mcp_stdio.py](../scripts/mcp_stdio.py))를 장착하여 실험을 수행합니다.
-실험마다 `exp-001`처럼 고유 ID를 부여합니다.
+이 브랜치(`feat/agent-skill-mcp`)에서는 외부 AI 에이전트(Claude Code 등)에 MCP 서버([scripts/mcp_stdio.py](../scripts/mcp_stdio.py))와
+[skills/factcheck-mission-agent/SKILL.md](../skills/factcheck-mission-agent/SKILL.md)를 연결해 실험합니다.
+실험마다 `exp-001`처럼 고유 ID를 붙입니다. 실제 모델 실행은 팀이 승인한 호출 예산 안에서만 합니다.
 
-## 실행 방법
+## 실행 순서
 
 ```bash
 uv sync --python 3.12
+uv run pytest -q
 
-# 1) MCP 서버 구동 (루트의 .mcp.json을 통해 에이전트 클라이언트가 자동 실행하거나 수동 실행)
-#    - C1 조건: 로컬 코퍼스만 사용 (외부 웹 차단, API 키 불필요)
-uv run python scripts/mcp_stdio.py \
-    --arm C1 --condition sufficient \
-    --out results/exp-001/c1-mcp.jsonl
+# 0) 에이전트용 코퍼스 준비 (C1·C2 필수, 형식은 data/README.md)
+#    data/raw/task_a/corpus_c1.jsonl
 
-#    - C2 조건: 코퍼스 + 실시간 외부 웹 검색 (Tavily API 키 없으면 DuckDuckGo HTML 폴백 자동 사용)
-uv run python scripts/mcp_stdio.py \
-    --arm C2 --condition sufficient \
-    --out results/exp-001/c2-mcp.jsonl
+# 1) 격리 작업공간 생성 — 저장소 밖, gold 없음, 내장 파일·셸·웹 도구 차단
+uv run python scripts/make_agent_workspace.py \
+    --workspace ~/agent-runs/exp-001-c1 --run-id exp-001-c1 --arm C1 \
+    --model-id claude-code-<버전>+<모델ID>
 
-# 2) 또는 터미널 기반 에이전트용 CLI 어댑터 사용
-uv run python scripts/agent_cli.py start --claim-id FC002 --arm C1 --out results/exp-001/c1-mcp.jsonl
-uv run python scripts/agent_cli.py tool search_evidence --args '{"query": "Pre-orders January 19 2024 PST"}'
-uv run python scripts/agent_cli.py tool calculate_comparison --args '{"op": "tz_convert", "time": "2024-01-19 05:00", "from_tz": "PST", "to_tz": "KST"}'
-uv run python scripts/agent_cli.py tool execute_mission --args '{"mission_type": "event_manager", "verdict": "refuted", "title": "비전 프로 사전예약", "summary": "22:00 KST로 시간대 정정", "cited_evidence_ids": ["EV_FC002_1"], "correction": "2024-01-19 22:00 KST", "distortion_type": "timezone_or_date_error", "event_start_kst": "2024-01-19 22:00"}'
-uv run python scripts/agent_cli.py finish --args '{"verdict": "refuted", "abstain": false, "cited_evidence_ids": ["EV_FC002_1"], "justification": "05:00 PST는 22:00 KST임", "correction": "2024-01-19 22:00 KST", "stop_reason": "evidence_sufficient", "distortion_type": "timezone_or_date_error", "problematic_span": "오전 5시(한국시간)", "mission_type": "event_manager"}'
+# 2) 작업공간의 RUN.md에 적힌 명령으로 주장마다 새 세션을 실행
+#    로그는 results/exp-001-c1/run.jsonl에 쌓입니다
 
 # 3) 채점 — gold.jsonl을 읽는 유일한 명령
-uv run python scripts/score_run.py \
-    --run results/exp-001/c1-mcp.jsonl \
-    --c2 results/exp-001/c2-mcp.jsonl \
-    --grades data/task_a/grades.jsonl
+uv run python scripts/score_run.py --run results/exp-001-c1/run.jsonl
+uv run python scripts/score_run.py --run results/exp-001-c1/run.jsonl --c2 results/exp-001-c2/run.jsonl
 ```
 
-비교 축은 서로 독립입니다:
-- `--arm` (`C0` / `C1` / `C2`): 도달 가능한 정보 범위 (`C0` 코퍼스·웹 차단, `C1` 코퍼스만 허용, `C2` 코퍼스+외부 웹 허용)
-- `--condition` (`sufficient` / `missing` / `conflict` / `misleading`): 제공된 코퍼스 변형
+저장소 루트의 `.mcp.json`은 개발 중에 도구를 눌러 보는 용도입니다(`run_id=dev-interactive`, 로그는 Git 제외 위치).
+저장소 안에서 실행한 에이전트는 gold 파일을 직접 읽을 수 있으므로, 이 설정으로 만든 로그는 실험 결과로 쓰지 않습니다.
+
+## 비교 축
+
+- `--arm`: 도달 가능한 정보 범위. `C0`는 코퍼스·웹 없음, `C1`은 코퍼스만, `C2`는 코퍼스와 외부 웹(`--live-web`).
+- Skill 유무: `make_agent_workspace.py --no-skill`은 도구만 연결합니다(`prompt_version=tools-only-v2`).
+- 에이전트·모델: `--model-id`로 기록합니다. 비교할 때는 이 값만 바꾸고 나머지는 고정합니다.
+- `--condition`: 지금은 `sufficient`만 구현되어 있습니다. 아래 "범위와 남은 한계"를 봅니다.
 
 ## 실험 기록
 
-`mcp_server.py`는 각 에피소드가 `finish_verification`을 호출할 때 결과 로그(`--out`)의 `config`와 `result`에 실행 설정, 도구 호출 궤적(`events`), 왜곡 특정 정보(`distortion_type`, `problematic_span`), 후속 미션 산출물(`mission_type`, `mission_output`), 도구 사용량(`usage`)을 자동으로 기록합니다.
+`finish_verification`이 호출될 때마다 결과 로그의 `config`에 `run_id`, `arm`, `condition`, `model_id`, `prompt_version`,
+`code_commit`(작업 트리가 바뀌었으면 `+dirty`)이 기록됩니다. `result`에는 판정, 인용 근거, 도구 호출 궤적(`events`),
+왜곡 정보, 미션 결과(`mission_output`, 서버가 생성)가 기록됩니다.
+
+채점 결과에는 다음 항목이 함께 나옵니다.
+- `reference_baselines`: 한 라벨만 답했을 때의 점수. 지금 gold로는 항상 `supported`라고 답해도 정확도가 37/49 = 75.5%이고
+  Macro-F1은 0.287입니다. 정확도는 이 값과 함께 읽어야 합니다.
+- `mission_safety`: 미션 요청 수, 게이트 차단 수, gold와 다른 판정으로 실행된 실행형 미션의 비율.
+
+## 범위와 남은 한계
+
+이 장에 모아 둡니다. 2026-11-19 검토에서 확인한 내용입니다.
+
+**아직 없는 것**
+- 에이전트용 코퍼스가 없습니다. 원문 수집이 필요하고, 기사 37건은 본문이 없으며 21건은 발췌도 없습니다. 그래서 지금은 C0만 실행할 수 있습니다.
+- `missing`·`conflict`·`misleading` 조건은 코퍼스 변형이 없어서 구현되지 않았습니다. 서버가 실행을 거부합니다. 성능 하락·오도 근거 노출·채택 지표는 아직 만들 수 없습니다.
+- 실제 모델 실행 결과는 하나도 없습니다.
+
+**평가 설계의 한계**
+- 자동 채점은 판정 라벨(정확도, Macro-F1, 커버리지)과 미션 안전성까지입니다. gold에 `distortion_type` 필드가 없어서 왜곡 유형·구간·정정문은 채점하지 않습니다. 근거 충분성(E)과 시점·범위(T)는 사람 채점이 필요합니다.
+- 표본이 작습니다. 채점 대상 49건에서 1건은 2%p이고, 반박 11건에서 1건은 재현율 9%p입니다. 근거 부족 정답은 1건뿐이라 Macro-F1이 그 1건에 크게 흔들립니다.
+- gold는 독립 검수 전 초안이고, FC038은 판정 보류입니다.
+- Skill은 같은 50건을 보며 다듬어졌습니다. FC002의 정답 예시와 평가 사례에 나오는 기관명은 지웠지만, 개발용과 평가용 사례가 나뉘어 있지 않아서 Skill 효과는 낙관적으로 추정될 수 있습니다. 나누는 방법은 팀이 정해야 합니다.
+- 2010~2025년의 유명한 사실은 모델이 이미 알고 있을 수 있습니다. 도구 효과는 C0와 비교해서 따로 확인해야 합니다.
+
+**격리의 한계**
+- 격리 작업공간은 Claude Code의 내장 파일·셸·웹 도구를 끄고(`permissions.deny`, `--disallowedTools`), `--strict-mcp-config`로 다른 MCP 서버를 막습니다. 사용자 전역 Skill·플러그인은 끄지 않으므로 실행 환경 기록에 남깁니다.
+- CLI 모드(`scripts/agent_cli.py`)는 셸로 구동하므로 에이전트가 저장소를 읽거나 상태 파일을 고칠 수 있습니다. 격리 경계로 쓰지 않습니다.
+- C2 웹 검색은 `evidence_cutoff`를 강제하지 않습니다. Skill이 지키도록 지시할 뿐입니다.
+- Codex·Cursor용 설정은 생성하지 않습니다. 같은 격리를 각 도구의 설정 형식으로 따로 맞춰야 합니다.
