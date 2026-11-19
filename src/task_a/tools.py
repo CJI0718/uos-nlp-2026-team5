@@ -23,6 +23,8 @@ from task_a.schema import EvidenceUnit, ToolResult, ToolStatus
 
 MAX_SNIPPET_CHARS = 600
 MAX_FETCH_CHARS = 4000
+#: Most results requested from the web provider in one search (Tavily allows 20).
+MAX_WEB_RESULTS = 20
 #: source_type values that describe provenance (shown to the agent when enabled).
 PROVENANCE_SOURCE_TYPES = frozenset({"official", "primary", "news", "reprint", "blog", "sns"})
 
@@ -490,14 +492,18 @@ class ToolRegistry:
         cutoff = _cutoff_date(self.evidence_cutoff)
         try:
             k = min(top_k or self.top_k, self.top_k)
-            hits = (self.backend.web_search(query.strip(), k, end_date=cutoff) if cutoff
-                    else self.backend.web_search(query.strip(), k))
+            # Tavily does not always honour end_date, and the results it dates after
+            # the cutoff are removed here. Ask for more so k can survive the filter;
+            # a basic search costs one credit whatever the result count.
+            hits = (self.backend.web_search(query.strip(), min(MAX_WEB_RESULTS, k * 3), end_date=cutoff)
+                    if cutoff else self.backend.web_search(query.strip(), k))
         except Exception as exc:  # network/provider failure is not a fact verdict
             return ToolResult(ToolStatus.SOURCE_UNAVAILABLE, f"웹 검색 실패: {exc}")
         kept, dropped = [], []
         for h in hits:
             published = (h.get("published_date") or "")[:10]
             (dropped if cutoff and published and published > cutoff else kept).append(h)
+        kept = kept[:k]
         note = (f"\n\n(근거 허용 시점 {cutoff} 이후 발행된 결과 {len(dropped)}건은 제외했다.)"
                 if dropped else "")
         if not kept:

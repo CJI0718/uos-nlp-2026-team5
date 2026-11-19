@@ -307,3 +307,30 @@ def test_cache_separates_requests_with_different_cutoffs(tmp_path):
     obs = env2.call_tool("search_web", {"query": "same"})["observation"]
     assert web.calls == ["2025-03-01", "2025-05-01"]   # not served from the other cutoff's cache
     assert "a.example/late" in obs
+
+
+def test_search_asks_for_more_when_results_after_the_cutoff_are_dropped(tmp_path):
+    """exp-003: Tavily returned 5 late results for 5 requested, leaving nothing."""
+    class LateFirst:
+        def __init__(self):
+            self.requested = []
+
+        def search(self, query, top_k, end_date=None):
+            self.requested.append(top_k)
+            late = [{"title": f"late{i}", "url": f"https://a.example/late{i}", "snippet": "s",
+                     "published_date": "2025-04-01"} for i in range(8)]
+            old = [{"title": f"old{i}", "url": f"https://a.example/old{i}", "snippet": "s",
+                    "published_date": "2025-02-01"} for i in range(7)]
+            return (late + old)[:top_k]
+
+        def fetch(self, url):
+            return "body"
+
+    web = LateFirst()
+    env = _c2_env(tmp_path, web)
+    env.start_episode("FC900")
+    res = env.call_tool("search_web", {"query": "q"})
+    assert web.requested == [15]                                   # 3 x the default 5
+    assert res["status"] == "ok" and "late" not in res["observation"]
+    assert res["observation"].count("a.example/old") == 5          # still at most top_k
+    assert "8건은 제외" in res["observation"]

@@ -133,7 +133,7 @@ class LiveWebProvider:
         body = {
             "api_key": api_key,
             "query": query,
-            "max_results": max(1, min(top_k, 10)),
+            "max_results": max(1, min(top_k, 20)),   # Tavily's maximum; still one credit
             "include_answer": False,
             "search_depth": "basic",          # 1 credit; never upgraded automatically
             "include_published_date": True,
