@@ -150,3 +150,41 @@ def test_missing_argument_is_invalid_input():
 ])
 def test_check_url(url, allowed, should_block):
     assert (check_url(url, allowed) is not None) == should_block
+
+
+# Inputs agents actually sent in exp-003, all rejected before region support.
+@pytest.mark.parametrize("time,src,dst,expected", [
+    ("2026-07-22 14:00", "Europe/London", "Asia/Seoul", "2026-07-22 22:00"),   # BST in July
+    ("2026-07-22 14:00", "BST", "KST", "2026-07-22 22:00"),
+    ("2026-07-22 14:00", "London", "KST", "2026-07-22 22:00"),
+    ("2026-09-09 16:00", "Europe/Paris", "Asia/Seoul", "2026-09-09 23:00"),    # CEST in September
+    ("2026-09-09 16:00", "CEST", "KST", "2026-09-09 23:00"),
+    ("2026-09-09 16:00", "UTC+2", "UTC+9", "2026-09-09 23:00"),
+    ("2026-06-08 10:00", "America/Los_Angeles", "Asia/Seoul", "2026-06-09 02:00"),
+    ("2026-10-28 10:00", "PT", "KST", "2026-10-29 02:00"),
+])
+def test_region_and_offset_timezones(time, src, dst, expected):
+    result = calculate_comparison("tz_convert", time=time, from_tz=src, to_tz=dst)
+    assert result.status == ToolStatus.OK, result.observation
+    assert result.payload["value"] == expected
+
+
+def test_region_names_follow_daylight_saving_but_abbreviations_do_not():
+    summer = calculate_comparison("tz_convert", time="2026-10-28 10:00", from_tz="PT", to_tz="KST")
+    winter = calculate_comparison("tz_convert", time="2026-12-01 10:00", from_tz="PT", to_tz="KST")
+    assert (summer.payload["offset_hours"], winter.payload["offset_hours"]) == (16, 17)
+    # A source that wrote "PST" in October is converted as written (-8), not corrected.
+    literal = calculate_comparison("tz_convert", time="2026-10-28 10:00", from_tz="PST", to_tz="KST")
+    assert literal.payload["value"] == "2026-10-29 03:00"
+
+
+def test_target_region_uses_its_own_date_for_daylight_saving():
+    # 03:00 KST on 8 March 2026 is 7 March in Los Angeles, still standard time.
+    result = calculate_comparison("tz_convert", time="2026-03-08 03:00", from_tz="KST", to_tz="PT")
+    assert result.payload["value"] == "2026-03-07 10:00"
+
+
+def test_unknown_timezone_message_lists_accepted_forms():
+    result = calculate_comparison("tz_convert", time="2026-01-01 00:00", from_tz="Mars/Base", to_tz="KST")
+    assert result.status == ToolStatus.INVALID_INPUT
+    assert "Europe/London" in result.observation and "UTC+9" in result.observation

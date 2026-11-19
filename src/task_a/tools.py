@@ -16,6 +16,7 @@ import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Callable, Protocol
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from urllib.parse import urlsplit
 
 from task_a.schema import EvidenceUnit, ToolResult, ToolStatus
@@ -41,10 +42,25 @@ class ToolBackend(Protocol):
 # tools.md: 'missing·0 분모·NaN·불일치 기간은 계산 실패로 반환한다.'
 # --------------------------------------------------------------------------
 
+#: Fixed-offset abbreviations. An abbreviation names one offset ("PST" is -8
+#: even in July), so a source that wrote the wrong one is converted literally.
 TIMEZONE_OFFSETS = {
-    "UTC": 0, "KST": 9, "JST": 9, "PST": -8, "PDT": -7,
+    "UTC": 0, "GMT": 0, "KST": 9, "JST": 9, "PST": -8, "PDT": -7,
     "EST": -5, "EDT": -4, "CST": -6, "CDT": -5, "MST": -7, "MDT": -6,
+    "BST": 1, "CET": 1, "CEST": 2, "EET": 2, "EEST": 3, "WET": 0, "WEST": 1,
+    "AEST": 10, "AEDT": 11, "HKT": 8, "SGT": 8,
 }
+#: Region names whose offset depends on the date (daylight saving). Converted
+#: with the IANA database, so "PT" on 2026-10-28 is -7 and on 2026-12-01 is -8.
+TIMEZONE_REGIONS = {
+    "PT": "America/Los_Angeles", "PACIFIC": "America/Los_Angeles", "LOS ANGELES": "America/Los_Angeles",
+    "ET": "America/New_York", "EASTERN": "America/New_York", "NEW YORK": "America/New_York",
+    "CT": "America/Chicago", "MT": "America/Denver",
+    "LONDON": "Europe/London", "UK": "Europe/London", "PARIS": "Europe/Paris", "BERLIN": "Europe/Berlin",
+    "CET/CEST": "Europe/Paris", "SEOUL": "Asia/Seoul", "KOREA": "Asia/Seoul", "TOKYO": "Asia/Tokyo",
+    "SYDNEY": "Australia/Sydney", "SINGAPORE": "Asia/Singapore", "HONG KONG": "Asia/Hong_Kong",
+}
+_UTC_OFFSET = re.compile(r"^(?:UTC|GMT)\s*([+-])\s*(\d{1,2})(?::?(\d{2}))?$")
 
 # value -> (target unit, multiplier). Units the 50 cases actually need.
 UNIT_SCALE = {
@@ -82,12 +98,51 @@ def _parse_time(value: str) -> datetime:
     raise ValueError(f"unparseable time: {value!r}")
 
 
+def _resolve_tz(name: str, local: datetime) -> tuple[timedelta, str] | None:
+    """UTC offset of `name` at the wall-clock time `local`, and a label for it.
+
+    Accepts fixed abbreviations (KST, BST, CEST), UTC±N, IANA names
+    (Europe/London) and a few region aliases (PT, London). None if unknown.
+    """
+    key = re.sub(r"\s+", " ", name.strip())
+    upper = key.upper()
+    if upper in TIMEZONE_OFFSETS:
+        return timedelta(hours=TIMEZONE_OFFSETS[upper]), upper
+    m = _UTC_OFFSET.match(upper)
+    if m:
+        hours, minutes = int(m.group(2)), int(m.group(3) or 0)
+        if hours > 14 or minutes >= 60:
+            return None
+        sign = 1 if m.group(1) == "+" else -1
+        return sign * timedelta(hours=hours, minutes=minutes), f"UTC{m.group(1)}{hours}" + (
+            f":{minutes:02d}" if minutes else "")
+    zone_name = TIMEZONE_REGIONS.get(upper.replace("_", " "), key if "/" in key else None)
+    if zone_name is None:
+        return None
+    try:
+        zone = ZoneInfo(zone_name)
+    except (ZoneInfoNotFoundError, ValueError):
+        return None
+    offset = local.replace(tzinfo=zone).utcoffset()
+    return offset, f"{zone_name}({local.replace(tzinfo=zone).tzname()})"
+
+
+def _hours(delta: timedelta) -> int | float:
+    h = delta.total_seconds() / 3600
+    return int(h) if h == int(h) else h
+
+
 def _cutoff_date(value: str | None) -> str | None:
     """'2026-10-30T01:37:43+09:00' -> '2026-10-30'; None when absent or unparseable."""
     if not value:
         return None
     match = re.match(r"(\d{4}-\d{2}-\d{2})", str(value).strip())
     return match.group(1) if match else None
+
+
+def _unknown_tz(name: str) -> str:
+    return (f"지원하지 않는 시간대: {name!r}. 약어(KST, PDT, BST, CEST), UTC+9 같은 오프셋, "
+            f"IANA 이름(Europe/London, America/Los_Angeles), 지역 이름(PT, ET, London, Paris)을 쓸 수 있다.")
 
 
 def calculate_comparison(op: str, **kwargs) -> ToolResult:
@@ -127,17 +182,22 @@ def calculate_comparison(op: str, **kwargs) -> ToolResult:
 
         if op == "tz_convert":
             moment = _parse_time(kwargs["time"])
-            src = kwargs["from_tz"].strip().upper()
-            dst = kwargs["to_tz"].strip().upper()
-            if src not in TIMEZONE_OFFSETS or dst not in TIMEZONE_OFFSETS:
-                return ToolResult(ToolStatus.INVALID_INPUT, f"지원하지 않는 시간대: {src}/{dst}")
-            shift = TIMEZONE_OFFSETS[dst] - TIMEZONE_OFFSETS[src]
-            converted = moment + timedelta(hours=shift)
+            src_in, dst_in = str(kwargs["from_tz"]), str(kwargs["to_tz"])
+            src = _resolve_tz(src_in, moment)
+            if src is None:
+                return ToolResult(ToolStatus.INVALID_INPUT, _unknown_tz(src_in))
+            utc = moment - src[0]
+            # The target offset depends on the target's own wall-clock date (DST).
+            dst = _resolve_tz(dst_in, utc + (_resolve_tz(dst_in, utc) or (timedelta(0),))[0])
+            if dst is None:
+                return ToolResult(ToolStatus.INVALID_INPUT, _unknown_tz(dst_in))
+            converted = utc + dst[0]
+            shift = _hours(dst[0] - src[0])
             return ToolResult(
                 ToolStatus.OK,
-                f"{kwargs['time']} {src} -> {dst}: {shift:+d}시간 = "
-                f"{converted:%Y-%m-%d %H:%M} {dst}",
-                {"op": op, "inputs": {"time": kwargs["time"], "from_tz": src, "to_tz": dst},
+                f"{kwargs['time']} {src[1]} -> {dst[1]}: {shift:+g}시간 = "
+                f"{converted:%Y-%m-%d %H:%M} {dst[1]}",
+                {"op": op, "inputs": {"time": kwargs["time"], "from_tz": src[1], "to_tz": dst[1]},
                  "offset_hours": shift, "value": f"{converted:%Y-%m-%d %H:%M}"},
             )
 
@@ -294,7 +354,10 @@ class ToolRegistry:
                  "a": {"type": "number"}, "b": {"type": "number"},
                  "old": {"type": "number"}, "new": {"type": "number"},
                  "value": {"type": "number"},
-                 "time": {"type": "string"}, "from_tz": {"type": "string"}, "to_tz": {"type": "string"},
+                 "time": {"type": "string"},
+                 "from_tz": {"type": "string",
+                             "description": "KST·PDT·BST·CEST, UTC+9, Europe/London, PT·ET·London 등"},
+                 "to_tz": {"type": "string"},
                  "from_unit": {"type": "string"}, "to_unit": {"type": "string"}},
              "required": ["op"]},
             lambda **kw: calculate_comparison(**kw)))
