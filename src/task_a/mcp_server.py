@@ -241,7 +241,7 @@ class AgentEnvironment:
             raise ValueError(f"존재하지 않는 claim_id: {claim_id!r}")
         claim = self.claims[claim_id]
         self.active = ActiveEpisode(claim=claim)
-        self.registry.evidence_cutoff = claim.evidence_cutoff
+        self.registry.reset_episode(claim.evidence_cutoff)
         return {
             "status": "started",
             "arm": self.arm,
@@ -417,8 +417,10 @@ class AgentEnvironment:
         """
         for evidence_id in res.evidence_ids:
             unit = self._unit(evidence_id) if tool == "read_evidence" else None
-            # The whole page, not just the part shown, so grouping sees the full text.
+            # The whole document, not the window shown, so paging does not change groups.
             text = unit.text if unit is not None else res.payload.get("full_text", res.observation)
+            if evidence_id in ep.read_texts:
+                return ""   # a continuation read; already analysed
             earlier = dict(ep.read_texts)
             ep.read_texts[evidence_id] = text
             labelled = unit is not None and unit.provenance_group and self.provenance_mode == "labeled"

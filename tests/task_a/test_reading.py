@@ -1,4 +1,4 @@
-"""Main-text extraction and publish dates, for the corpus builder and fetch_url."""
+"""Main-text extraction, publish dates, and paging through long documents."""
 
 from __future__ import annotations
 
@@ -6,6 +6,7 @@ from task_a.article import extract_article
 from task_a.mcp_server import AgentEnvironment
 from task_a.provenance import containment, shingles
 from task_a.schema import write_jsonl
+from task_a.tools import MAX_FETCH_CHARS
 
 # Many Korean news sites mark menus and footers with plain <div>s, not <nav>/<footer>,
 # so tag-name rules alone do not remove them.
@@ -74,7 +75,7 @@ def test_date_without_a_meta_tag_is_marked_as_inferred():
     assert art.date_source == "htmldate"
 
 
-# --- fetch_url ----------------------------------------------------------------
+# --- paging -------------------------------------------------------------------
 
 LONG = "".join(f"[{i:03d}] 서론 문단입니다. " for i in range(400)) + "핵심 문장: 발표는 2025년 7월 8일 10시."
 
@@ -93,6 +94,36 @@ def _env(tmp_path, web=None, cutoff=None):
                             missions_dir=tmp_path / "m", tokenizer="bigram", **kw)
 
 
+def test_long_documents_say_where_to_continue(tmp_path):
+    env = _env(tmp_path)
+    env.start_episode("FC900")
+    first = env.call_tool("read_evidence", {"evidence_id": "DOC_long"})["observation"]
+    assert "핵심 문장" not in first
+    assert f"전체 {len(LONG)}자 중 0~{MAX_FETCH_CHARS}자" in first
+    assert f'offset={MAX_FETCH_CHARS}' in first
+
+    last_offset = (len(LONG) // MAX_FETCH_CHARS) * MAX_FETCH_CHARS
+    last = env.call_tool("read_evidence", {"evidence_id": "DOC_long", "offset": last_offset})
+    assert last["status"] == "ok" and "핵심 문장" in last["observation"] and "끝까지 읽음" in last["observation"]
+
+    short = env.call_tool("read_evidence", {"evidence_id": "DOC_short"})["observation"]
+    assert "전체" not in short                                # no paging note when it all fits
+
+
+def test_offset_past_the_end_and_bad_offsets_are_invalid(tmp_path):
+    env = _env(tmp_path)
+    env.start_episode("FC900")
+    assert env.call_tool("read_evidence", {"evidence_id": "DOC_long", "offset": 10**6})["status"] == "invalid_input"
+    assert env.call_tool("read_evidence", {"evidence_id": "DOC_long", "offset": "x"})["status"] == "invalid_input"
+
+
+def test_section_still_jumps_to_a_phrase(tmp_path):
+    env = _env(tmp_path)
+    env.start_episode("FC900")
+    obs = env.call_tool("read_evidence", {"evidence_id": "DOC_long", "section": "핵심 문장"})["observation"]
+    assert "핵심 문장" in obs
+
+
 class _Web:
     def __init__(self, pages):
         self.pages = pages
@@ -104,6 +135,28 @@ class _Web:
     def fetch(self, url):
         self.fetches += 1
         return self.pages[url]
+
+
+def test_fetched_pages_continue_with_read_evidence_without_another_fetch(tmp_path):
+    web = _Web({"https://news.example/a": {"text": LONG, "title": "긴 기사",
+                                           "published_at": "2025-07-01", "date_source": "meta"}})
+    env = _env(tmp_path, web)
+    env.start_episode("FC900")
+    first = env.call_tool("fetch_url", {"url": "https://news.example/a"})
+    assert first["status"] == "ok" and "발행: 2025-07-01" in first["observation"]
+    assert 'read_evidence(evidence_id="https://news.example/a"' in first["observation"]
+
+    before = env.active.external_calls
+    last_offset = (len(LONG) // MAX_FETCH_CHARS) * MAX_FETCH_CHARS
+    more = env.call_tool("read_evidence", {"evidence_id": "https://news.example/a", "offset": last_offset})
+    assert "핵심 문장" in more["observation"]
+    assert web.fetches == 1 and env.active.external_calls == before   # served from this episode
+
+    # The provenance analysis kept the whole page, not the first window.
+    assert env.active.read_texts["https://news.example/a"] == LONG
+
+    env.start_episode("FC900")                                          # a new episode forgets it
+    assert env.call_tool("read_evidence", {"evidence_id": "https://news.example/a"})["status"] == "invalid_input"
 
 
 def test_pages_published_after_the_cutoff_cannot_be_read(tmp_path):

@@ -19,10 +19,12 @@ description: Evidence-grounded fact verification, distortion localization, and v
 1. `start_episode(claim_id)`로 주장, 대상 기간(`target_period`), 근거 허용 시점(`evidence_cutoff`), 원문 발췌(`input_body`)를 확인합니다.
 2. 주장을 **주체 · 관계 · 수치/조건 · 대상 시점**으로 분해합니다.
 3. `search_evidence`로 코퍼스를 찾고, 판단에 쓸 문서는 `read_evidence`로 본문을 읽습니다.
+   - **긴 문서는 끝까지 확인**: 한 번에 4,000자까지만 보입니다. 응답 끝에 `(전체 N자 중 …자. 이어 읽기: …offset=…)`가 있고 찾는 내용이 아직 없으면, 그 `offset`으로 이어 읽거나 `section`에 찾는 문구를 넣습니다. 앞부분에 없다고 "근거 부족"으로 판단하지 않습니다.
    - **다수결 착시 주의**: 여러 문서가 같은 수치·시각을 반복해도 같은 보도자료의 전재일 수 있습니다. 검색 결과의 `출처군`이 같으면 독립 출처로 세지 않습니다.
    - **교차 언어 질의**: 원출처가 해외 기업·기관·논문이면, 한국어 질의로 1차 원문이 나오지 않을 때 영어 질의로 다시 검색합니다.
    - `evidence_cutoff` 이후에 발행된 문서는 근거로 쓰지 않습니다.
 4. C2 조건에서 코퍼스 근거가 없거나, 서로 충돌하거나, 1차 출처가 아니라면 `search_web`과 `fetch_url`로 독립된 1차 출처를 확보합니다.
+   - `fetch_url`로 연 페이지는 `read_evidence(evidence_id=URL, offset=…)`로 이어 읽습니다. 다시 `fetch_url`을 부르면 외부 호출 예산만 씁니다.
 
 ### Step 2. 결정론적 검산과 왜곡 지점·원인 특정
 1. **암산 금지**: 차액(`diff`), 증감률(`pct_change`), 퍼센트포인트 차이(`percentage_point_gap`), 시간대 변환(`tz_convert`), 단위 변환(`scale_unit`), 곱셈·비율(`multiply`, `ratio`)은 `calculate_comparison`으로 계산합니다.

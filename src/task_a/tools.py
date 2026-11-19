@@ -256,6 +256,9 @@ class ToolRegistry:
         self.evidence_cutoff: str | None = None
         self.top_k = top_k
         self.allowed_hosts = allowed_hosts
+        #: Pages opened with fetch_url in this episode, so read_evidence can page
+        #: through them without another network call.
+        self.fetched: dict[str, dict] = {}
         self.specs: dict[str, ToolSpec] = {}
         self._register()
 
@@ -270,10 +273,14 @@ class ToolRegistry:
             self._search_evidence))
         self._add(ToolSpec(
             "read_evidence",
-            "코퍼스 문서의 본문을 읽는다. 검색 결과에서 받은 evidence_id만 사용할 수 있다.",
+            (f"문서 본문을 {MAX_FETCH_CHARS}자씩 읽는다. 코퍼스 evidence_id 또는 이번 에피소드에서 "
+             "fetch_url로 연 URL을 받는다. 본문이 길면 응답 끝의 offset으로 이어 읽는다."),
             {"type": "object",
              "properties": {"evidence_id": {"type": "string"},
-                            "section": {"type": "string", "description": "필요한 구간(선택)"}},
+                            "offset": {"type": "integer",
+                                       "description": "읽기 시작할 글자 위치(선택, 기본 0)"},
+                            "section": {"type": "string",
+                                        "description": "이 문구가 처음 나오는 곳부터 읽기(선택)"}},
              "required": ["evidence_id"]},
             self._read_evidence))
         self._add(ToolSpec(
@@ -301,11 +308,15 @@ class ToolRegistry:
         self._add(ToolSpec(
             "fetch_url",
             (f"허용된 host의 웹 페이지 본문(메뉴·광고 제외)을 앞 {MAX_FETCH_CHARS}자까지 연다. "
-             "로컬·사설 주소는 차단된다."),
+             "로컬·사설 주소는 차단된다. 이어 읽기는 read_evidence(evidence_id=URL, offset)로 한다."),
             {"type": "object",
              "properties": {"url": {"type": "string"}},
              "required": ["url"]},
             self._fetch_url, external=True))
+
+    def reset_episode(self, evidence_cutoff: str | None = None) -> None:
+        self.evidence_cutoff = evidence_cutoff
+        self.fetched = {}
 
     def _add(self, spec: ToolSpec) -> None:
         self.specs[spec.name] = spec
@@ -362,25 +373,53 @@ class ToolRegistry:
             parts.append(f"출처군:{unit.provenance_group}")
         return (sep + " · ".join(parts)) if parts else ""
 
-    def _read_evidence(self, evidence_id: str, section: str | None = None) -> ToolResult:
+    def _read_evidence(self, evidence_id: str, section: str | None = None,
+                       offset: int | None = None) -> ToolResult:
+        if evidence_id in self.fetched:
+            doc = self.fetched[evidence_id]
+            return self._page(evidence_id, doc["title"], evidence_id, doc.get("published_at"),
+                              doc["text"], "", section, offset, {"url": evidence_id})
         unit = self.backend.lookup(evidence_id) if hasattr(self.backend, "lookup") else None
         if unit is None:
             return ToolResult(ToolStatus.INVALID_INPUT,
-                              f"코퍼스에 없는 evidence_id: {evidence_id!r}. 먼저 search_evidence로 찾아라.")
-        body = unit.text
-        if section and section.strip().lower() in body.lower():
-            idx = body.lower().index(section.strip().lower())
-            body = body[max(0, idx - 200): idx + MAX_FETCH_CHARS]
+                              f"없는 evidence_id: {evidence_id!r}. 코퍼스 문서는 search_evidence로, "
+                              f"웹 문서는 fetch_url로 먼저 연다.")
+        return self._page(unit.evidence_id, unit.title, unit.source_url or "unknown",
+                          unit.published_at, unit.text, self._provenance_line(unit, sep=chr(10)),
+                          section, offset,
+                          {"evidence_id": unit.evidence_id, "source_url": unit.source_url,
+                           "published_at": unit.published_at,
+                           "provenance_group": unit.provenance_group,
+                           "content_hash": unit.content_hash
+                           or hashlib.sha256(unit.text.encode()).hexdigest()[:16]})
+
+    @staticmethod
+    def _page(doc_id: str, title: str, source: str, published: str | None, text: str,
+              provenance: str, section: str | None, offset: int | None, payload: dict) -> ToolResult:
+        """One window of a document, with where to continue when more remains."""
+        try:
+            start = max(0, int(offset or 0))
+        except (TypeError, ValueError):
+            return ToolResult(ToolStatus.INVALID_INPUT, f"offset은 정수여야 한다: {offset!r}")
+        if section and section.strip() and not offset:
+            idx = text.lower().find(section.strip().lower())
+            if idx >= 0:
+                start = max(0, idx - 200)
+        if start >= len(text) and text:
+            return ToolResult(ToolStatus.INVALID_INPUT,
+                              f"offset {start}이 본문 길이({len(text)}자)를 넘는다.")
+        end = min(len(text), start + MAX_FETCH_CHARS)
+        if start == 0 and end == len(text):
+            position = ""
         else:
-            body = body[:MAX_FETCH_CHARS]
-        return ToolResult(
-            ToolStatus.OK,
-            f"{unit.evidence_id} | {unit.title}\n출처: {unit.source_url or 'unknown'}\n"
-            f"발행: {unit.published_at or 'unknown'}{self._provenance_line(unit, sep=chr(10))}\n\n{body}",
-            {"evidence_id": unit.evidence_id, "source_url": unit.source_url,
-             "published_at": unit.published_at, "provenance_group": unit.provenance_group,
-             "content_hash": unit.content_hash or hashlib.sha256(unit.text.encode()).hexdigest()[:16]},
-            evidence_ids=[unit.evidence_id])
+            more = (f" 이어 읽기: read_evidence(evidence_id=\"{doc_id}\", offset={end})"
+                    if end < len(text) else " 끝까지 읽음.")
+            position = f"\n\n(전체 {len(text)}자 중 {start}~{end}자.{more})"
+        head = f"{doc_id} | {title}\n출처: {source}\n발행: {published or '미상'}{provenance}\n\n"
+        return ToolResult(ToolStatus.OK, head + text[start:end] + position,
+                          {**payload, "offset": start, "end": end, "chars": len(text),
+                           "full_text": text},
+                          evidence_ids=[doc_id])
 
     def _search_web(self, query: str, top_k: int | None = None) -> ToolResult:
         if not query or not query.strip():
@@ -416,7 +455,6 @@ class ToolRegistry:
             raw = self.backend.fetch(url)
         except Exception as exc:
             return ToolResult(ToolStatus.SOURCE_UNAVAILABLE, f"조회 실패: {exc}")
-        # Live providers return {text, title, published_at, date_source}; simple ones a string.
         doc = raw if isinstance(raw, dict) else {"text": raw or ""}
         text = (doc.get("text") or "").strip()
         if not text:
@@ -431,14 +469,14 @@ class ToolRegistry:
         shown = published
         if published and doc.get("date_source") == "htmldate":
             shown = f"{published} (페이지에서 추정한 날짜, 수정일일 수 있음)"
-        head = f"{url} | {doc.get('title') or ''}\n발행: {shown or '미상'}\n\n"
+        doc = {"text": text, "title": doc.get("title") or "", "published_at": shown}
+        self.fetched[url] = doc
         # The URL is the citation id for web evidence, so record it as read.
-        return ToolResult(ToolStatus.OK, head + text[:MAX_FETCH_CHARS],
-                          {"url": url, "chars": len(text), "published_at": published,
-                           "full_text": text,
+        return self._page(url, doc["title"], url, shown, text, "", None, None,
+                          {"url": url, "published_at": published, "extractor": raw.get("extractor")
+                           if isinstance(raw, dict) else None,
                            "content_hash": hashlib.sha256(text.encode()).hexdigest()[:16],
-                           "truncated": len(text) > MAX_FETCH_CHARS},
-                          evidence_ids=[url])
+                           "truncated": len(text) > MAX_FETCH_CHARS})
 
 
 # `finish_verification` is not a registry tool: it is the episode's exit signal.
