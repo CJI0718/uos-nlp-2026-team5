@@ -160,11 +160,16 @@ class AgentEnvironment:
         show_provenance: bool = True,
         data_version: str = "claims-2026-11-07",
         provenance_mode: str = "labeled",
+        web_only: bool = False,
     ) -> None:
         """`gate` selects how missions are controlled:
         verdict    the default gate (final verdict, read citations, correction)
         provenance verdict gate plus source independence (primary source or 2+ groups)
         off        no gate; the agent's request runs as asked. Experiment baseline only.
+
+        `web_only` (C2 only) runs without a fixed corpus: search_evidence is not
+        offered and evidence comes from search_web / fetch_url alone. For
+        real-web experiments whose evidence is not in any corpus.
         """
         if gate not in GATE_MODES:
             raise ValueError(f"알 수 없는 gate: {gate!r} (허용: {GATE_MODES})")
@@ -179,7 +184,9 @@ class AgentEnvironment:
             raise ValueError(
                 f"condition={condition!r}은 아직 구현되지 않았습니다(구현됨: {IMPLEMENTED_CONDITIONS}). "
                 f"적용되지 않은 조건이 로그에 기록되는 것을 막기 위해 실행을 거부합니다.")
-        if arm != "C0" and not (corpus_path and Path(corpus_path).exists()):
+        if web_only and (arm != "C2" or web_provider is None):
+            raise ValueError("web_only는 웹 제공자가 있는 C2에서만 쓸 수 있습니다(--live-web).")
+        if arm != "C0" and not web_only and not (corpus_path and Path(corpus_path).exists()):
             raise FileNotFoundError(
                 f"{arm} 조건에는 에이전트용 코퍼스가 필요합니다(받은 경로: {corpus_path}). "
                 f"빈 코퍼스로 실행하면 C1이 사실상 C0가 됩니다. data/README.md의 코퍼스 형식을 보세요.")
@@ -199,14 +206,15 @@ class AgentEnvironment:
             data_version=data_version,
             code_commit=code_commit,
             extra={"gate": gate, "show_provenance": show_provenance,
-                   "provenance_mode": provenance_mode},
+                   "provenance_mode": provenance_mode, "web_only": web_only},
         )
         self.gate = gate
         self.log = RunLog(out_path)
         self.max_tool_calls = max_tool_calls
         self.max_external_calls = max_external_calls
 
-        corpus_units: list[EvidenceUnit] = load_agent_corpus(corpus_path) if arm != "C0" else []
+        corpus_units: list[EvidenceUnit] = (
+            load_agent_corpus(corpus_path) if arm != "C0" and not web_only else [])
 
         tok = KiwiTokenizer() if tokenizer == "kiwi" else BigramTokenizer()
         web = web_provider if arm == "C2" else None
@@ -217,6 +225,9 @@ class AgentEnvironment:
             self.backend = base_backend
 
         self.registry = ToolRegistry(self.backend, show_provenance=show_provenance)
+        if web_only:
+            # No corpus to search; read_evidence stays for paging through fetched pages.
+            self.registry.specs.pop("search_evidence")
         self.missions = MissionExecutor(missions_dir or Path("missions"))
         self.active: ActiveEpisode | None = None
 

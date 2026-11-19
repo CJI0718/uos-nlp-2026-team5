@@ -179,3 +179,27 @@ def test_plain_string_providers_still_work(tmp_path):
     env.start_episode("FC900")
     res = env.call_tool("fetch_url", {"url": "https://x.example/"})
     assert res["status"] == "ok" and "본문 텍스트" in res["observation"] and "발행: 미상" in res["observation"]
+
+
+# --- web-only C2 --------------------------------------------------------------
+
+def test_web_only_c2_needs_no_corpus_and_offers_no_corpus_search(tmp_path):
+    import pytest
+
+    claims = tmp_path / "claims.jsonl"
+    write_jsonl(claims, [{"claim_id": "RW01", "text": "t"}])
+    web = _Web({"https://news.example/a": {"text": LONG, "title": "t", "published_at": None}})
+    env = AgentEnvironment(claims_path=claims, corpus_path=None, arm="C2", web_provider=web,
+                           web_only=True, out_path=tmp_path / "run.jsonl", missions_dir=tmp_path / "m",
+                           cache_path=tmp_path / "cache.jsonl", tokenizer="bigram")
+    assert "search_evidence" not in env.registry.specs and "read_evidence" in env.registry.specs
+    assert env.config.extra["web_only"] is True
+    env.start_episode("RW01")
+    assert env.call_tool("fetch_url", {"url": "https://news.example/a"})["status"] == "ok"
+
+    with pytest.raises(ValueError):
+        AgentEnvironment(claims_path=claims, arm="C1", web_only=True, out_path=tmp_path / "x.jsonl",
+                         tokenizer="bigram")
+    with pytest.raises(ValueError):   # web-only without a provider would have no evidence at all
+        AgentEnvironment(claims_path=claims, arm="C2", web_only=True, out_path=tmp_path / "y.jsonl",
+                         tokenizer="bigram")

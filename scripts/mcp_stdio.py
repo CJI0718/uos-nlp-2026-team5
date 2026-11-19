@@ -29,7 +29,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--claims", type=Path, default=ROOT / "data/task_a/claims.jsonl")
     parser.add_argument("--corpus", type=Path, default=ROOT / "data/raw/task_a/corpus_c1.jsonl",
-                        help="에이전트용 코퍼스(JSONL). C1·C2에서 필수. 형식은 data/README.md")
+                        help="에이전트용 코퍼스(JSONL). C1·C2에서 필수(--web-only 제외). 형식은 data/README.md")
     parser.add_argument("--arm", choices=["C0", "C1", "C2"], default="C1")
     parser.add_argument("--condition", default="sufficient", choices=list(IMPLEMENTED_CONDITIONS),
                         help="missing/conflict/misleading은 코퍼스 변형이 아직 없어 거부됩니다")
@@ -49,6 +49,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--data-version", default="claims-2026-11-07")
     parser.add_argument("--provenance-mode", choices=list(PROVENANCE_MODES), default="labeled",
                         help="labeled: 코퍼스 출처군 사용, 없으면 본문 겹침으로 묶음 / auto: 항상 본문 겹침으로 묶음")
+    parser.add_argument("--web-only", action="store_true",
+                        help="C2에서 고정 코퍼스 없이 웹 검색·열람만 쓴다 (실제 웹 사례 실험용)")
+    parser.add_argument("--max-tool-calls", type=int, default=12)
+    parser.add_argument("--max-external-calls", type=int, default=4,
+                        help="search_web·fetch_url 호출 상한 (Tavily 크레딧 상한이기도 함)")
     parser.add_argument("--hide-provenance", action="store_true",
                         help="검색·열람 결과에서 출처유형·출처군 표시를 뺀다 (실험 조건용)")
     return parser.parse_args(argv)
@@ -76,6 +81,9 @@ def main(argv: list[str] | None = None) -> int:
         show_provenance=not args.hide_provenance,
         data_version=args.data_version,
         provenance_mode=args.provenance_mode,
+        web_only=args.web_only,
+        max_tool_calls=args.max_tool_calls,
+        max_external_calls=args.max_external_calls,
     )
     MCPStdioServer(env).serve_forever()
     return 0

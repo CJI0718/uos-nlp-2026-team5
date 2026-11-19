@@ -39,6 +39,19 @@ uv run python scripts/score_run.py --run results/exp-001-c1/run.jsonl --c2 resul
 ## 조건 비교 실험
 
 `scripts/run_action_safety.py`는 합성 사례 6건으로 Skill·출처 정보 표시·서버 게이트(`--gate off|verdict|provenance`)를 바꿔 가며 잘못된 일정 등록을 셉니다([exp-002](../results/exp-002-action-safety/summary.md)).
+같은 실행기의 `--suite real`은 실제 웹 사례([data/task_a/real_cases/](../data/task_a/real_cases/README.md))로 같은 설계를 돌립니다(exp-003, 아직 실행 전).
+- 서버는 C2 웹 전용(`--web-only`)입니다. 고정 코퍼스 없이 Tavily 검색과 페이지 열람만 쓰고, 사례의 `evidence_cutoff`를 검색과 열람에 모두 적용합니다.
+- 조건은 `base`(Skill 없음, 게이트 없음), `skill`(Skill만), `skill_prov_gate`(Skill + 출처 분석 표시 + 출처 독립성 게이트)입니다. exp-002에서 남은 질문인 "Skill 위에 게이트가 더하는 것이 있나"를 실제 웹에서 봅니다.
+- 출처군은 사람이 붙인 표시 없이 서버가 본문 겹침으로 정합니다(`--provenance-mode auto`). 웹 문서는 공식 여부를 판단하지 않으므로, 게이트는 서로 다른 출처군 2개 이상을 요구합니다.
+- 사례 7건 × 조건 3개 × 모델 3개 = 63세션입니다. 세션마다 도구 호출 16회, 외부 호출(검색+열람) 8회가 상한입니다.
+- gold는 제가 공식 문서와 대조해 제안한 것이라 `status: proposed`입니다. 실행기는 모든 사례가 `confirmed`가 되기 전에는 실제 실행을 거부합니다(`--dry-run`만 가능).
+
+```bash
+uv run python scripts/run_action_safety.py run --suite real --dry-run     # 세션 수, 명령, 미확정 gold 확인
+uv run python scripts/run_action_safety.py run --suite real --workers 3   # gold 확정 후 실행
+uv run python scripts/run_action_safety.py score --suite real             # results/exp-003-real-web/
+```
+
 `scripts/run_comparison.py`는 같은 주장을 세 조건(도구 없음, 그냥 Claude Code+웹, 하네스)과 여러 모델로 실행하고 채점합니다. 모델을 호출하므로 승인된 예산 안에서만 실행합니다.
 
 ```bash
@@ -66,10 +79,11 @@ uv run python scripts/run_comparison.py score              # results/<exp-id>/su
 **아직 없는 것**
 - 코퍼스에는 참조 근거의 원문 54개만 있고 방해 문서가 없습니다. 어떤 문서를 몇 개 넣을지는 팀이 정해야 합니다. FC021·FC036·FC038·FC045는 원문을 받지 못해 C1에서 근거가 없습니다.
 - 코퍼스는 수집한 날의 페이지입니다. 같은 결과를 재현하려면 팀이 한 번 만든 파일을 Git 밖에서 공유해야 합니다(`content_hash`로 같은 파일인지 확인).
-- 페이지 본문 추출은 단순 태그 제거라서 일부 문서 앞부분에 메뉴·검색창 문구가 남습니다.
+- 페이지 본문은 Trafilatura로 추출합니다(2026-11-20부터). 본문이 200자 미만으로 나오면 태그 제거 방식으로 대신하므로, 그런 문서에는 메뉴 문구가 남을 수 있습니다.
 - `missing`·`conflict`·`misleading` 조건은 코퍼스 변형이 없어서 구현되지 않았습니다. 서버가 실행을 거부합니다. 성능 하락·오도 근거 노출·채택 지표는 아직 만들 수 없습니다.
 - [exp-002-action-safety](../results/exp-002-action-safety/summary.md)에서는 Skill만으로 합성 사례의 잘못된 등록이 0/12가 되어, Skill 위에 얹은 게이트의 추가 효과는 보이지 않았습니다. Skill 없이 게이트만 두면 잘못된 실행은 막지만 정상 등록도 2/6으로 줄었습니다.
 - 실제 모델 실행은 [exp-001-compare](../results/exp-001-compare/summary.md) 하나입니다(주장 20건, sufficient 조건, C1만). 하네스는 웹을 쓰는 Claude Code보다 정확도가 낫지 않았고, 틀린 답은 주로 코퍼스 공백과 `read_evidence`의 4,000자 제한 때문이었습니다.
+  그 뒤 본문 추출과 이어 읽기(`offset`)를 넣었지만, 같은 주장으로 다시 실행하지는 않았습니다.
 
 **평가 설계의 한계**
 - 자동 채점은 판정 라벨(정확도, Macro-F1, 커버리지)과 미션 안전성까지입니다. gold에 `distortion_type` 필드가 없어서 왜곡 유형·구간·정정문은 채점하지 않습니다. 근거 충분성(E)과 시점·범위(T)는 사람 채점이 필요합니다.
@@ -81,5 +95,6 @@ uv run python scripts/run_comparison.py score              # results/<exp-id>/su
 **격리의 한계**
 - 격리 작업공간은 Claude Code의 내장 파일·셸·웹 도구를 끄고(`permissions.deny`, `--disallowedTools`), `--strict-mcp-config`로 다른 MCP 서버를 막습니다. 사용자 전역 Skill·플러그인은 끄지 않으므로 실행 환경 기록에 남깁니다.
 - CLI 모드(`scripts/agent_cli.py`)는 셸로 구동하므로 에이전트가 저장소를 읽거나 상태 파일을 고칠 수 있습니다. 격리 경계로 쓰지 않습니다.
-- C2 웹 검색은 `evidence_cutoff`를 강제하지 않습니다. Skill이 지키도록 지시할 뿐입니다.
+- C2의 `evidence_cutoff`는 발행일이 있는 문서에만 적용됩니다. 검색은 Tavily `end_date`와 발행일로 거르고, `fetch_url`은 발행일이 cutoff 이후인 페이지를 열지 않습니다.
+  발행일이 없는 검색 결과는 남기 때문에, 그 스니펫으로 사후 정보가 보일 수 있습니다. 2026-11-20 점검에서 cutoff를 2026-03-20으로 둔 검색에 WWDC 2026이 "진행되었다"는 위키백과 스니펫이 나왔습니다.
 - Codex·Cursor용 설정은 생성하지 않습니다. 같은 격리를 각 도구의 설정 형식으로 따로 맞춰야 합니다.

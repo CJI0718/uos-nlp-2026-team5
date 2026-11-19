@@ -99,7 +99,8 @@ def test_gate_mode_is_recorded_in_the_log(tmp_path):
     env = _env(tmp_path, gate="off", show_provenance=False, data_version="action-safety-v1")
     _act(env, "AS01", _reprints("AS01")[:1])
     config = read_jsonl(tmp_path / "run.jsonl")[-1]["config"]
-    assert config["extra"] == {"gate": "off", "show_provenance": False, "provenance_mode": "labeled"}
+    assert config["extra"] == {"gate": "off", "show_provenance": False, "provenance_mode": "labeled",
+                              "web_only": False}
     assert config["data_version"] == "action-safety-v1"
 
 
@@ -256,3 +257,47 @@ def test_two_different_web_pages_count_as_independent(tmp_path):
 
     assert run(["https://x.example/a", "https://z.example/c"]) == "invalid_input"   # same text
     assert run(["https://x.example/a", "https://y.example/b"]) == "ok"              # independent
+
+
+# --- real-web suite -----------------------------------------------------------
+
+def _runner():
+    spec = importlib.util.spec_from_file_location("run_action_safety", ROOT / "scripts/run_action_safety.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_real_suite_runs_web_only_c2_with_the_case_files(tmp_path):
+    mod = _runner()
+    paths = mod.job_paths(tmp_path / "raw", tmp_path / "w", "haiku", "skill_prov_gate", "RW04")
+    cmd, prompt = mod.build_command("haiku", "skill_prov_gate", "RW04", paths, "exp-t", "9", "real")
+    server = json.loads(cmd[cmd.index("--mcp-config") + 1])["mcpServers"]["factcheck-mission"]["args"]
+    for flag in ("--live-web", "--web-only"):
+        assert flag in server
+    assert server[server.index("--arm") + 1] == "C2" and "--corpus" not in server
+    assert server[server.index("--provenance-mode") + 1] == "auto"
+    assert server[server.index("--claims") + 1].endswith("real_cases/claims.jsonl")
+    assert "RW04" in prompt
+
+
+def test_real_suite_refuses_unconfirmed_gold():
+    mod = _runner()
+    gold = read_jsonl(ROOT / "data/task_a/real_cases/gold_cases.jsonl")
+    pending = mod.unconfirmed_cases("real", [g["claim_id"] for g in gold])
+    assert pending == [g["claim_id"] for g in gold if g["status"] != "confirmed"]
+    assert mod.unconfirmed_cases("synthetic", ["AS01"]) == []
+    if pending:
+        with pytest.raises(SystemExit, match="확인하지 않은 gold"):
+            mod.main(["run", "--suite", "real", "--claims", pending[0], "--models", "haiku",
+                      "--work-root", "/tmp/never-used"])
+
+
+def test_real_cases_keep_answers_out_of_the_agent_files():
+    claims = (ROOT / "data/task_a/real_cases/claims.jsonl").read_text(encoding="utf-8")
+    for key in ("should_act", "correct_event_start_kst", "status", "label"):
+        assert f'"{key}"' not in claims
+    gold = read_jsonl(ROOT / "data/task_a/real_cases/gold_cases.jsonl")
+    ids = [json.loads(line)["claim_id"] for line in claims.splitlines()]
+    assert ids == [g["claim_id"] for g in gold]
+    assert all(g["should_act"] == (g["correct_event_start_kst"] is not None) for g in gold)
