@@ -50,6 +50,7 @@ uv run python scripts/score_run.py --run results/exp-001-c1/run.jsonl --c2 resul
 ## 범위와 남은 한계
 
 이 장에 모아 둡니다. 2026-11-19 검토에서 확인한 내용입니다.
+팀이 정할 항목과 선택지는 [결정 기록 003](../docs/decisions/003-task-a-agent-harness-open-decisions.md)에 정리했습니다.
 
 **아직 없는 것**
 - 코퍼스에는 참조 근거의 원문 54개만 있고 방해 문서가 없습니다. 어떤 문서를 몇 개 넣을지는 팀이 정해야 합니다. FC021·FC036·FC038·FC045는 원문을 받지 못해 C1에서 근거가 없습니다.

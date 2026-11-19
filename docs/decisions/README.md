@@ -3,6 +3,7 @@
 2026-10-23, **팩트체크 Agent로 연구의 큰 방향**을 합의했습니다. 구체적 domain·모델·데이터·예산·실험 조건은 미확정입니다.
 
 - [001 · 큰 방향 합의 기록](001-fact-checking-direction.md)
+- [003 · Task A 에이전트 실험 — 팀이 정할 항목 (제안, 2026-11-19)](003-task-a-agent-harness-open-decisions.md)
 
 파일 이름 예: 001-task-definition.md
 
