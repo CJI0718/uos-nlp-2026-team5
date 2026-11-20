@@ -5,6 +5,11 @@ Connect any MCP-compatible AI agent (Antigravity, Claude Code, Cursor, Codex):
     uv run python scripts/mcp_stdio.py --arm C1 --model-id <agent+model> --out results/exp-001/c1.jsonl
     uv run python scripts/mcp_stdio.py --arm C2 --live-web --model-id <agent+model> --out results/exp-001/c2.jsonl
 
+Verify any claim a user brings (no preset claims, live web, results in ./missions):
+
+    uv run python scripts/mcp_stdio.py --arm C2 --live-web --web-only --allow-user-claims \
+        --no-preset-claims --model-id <agent+model> --out results/user/run.jsonl
+
 For experiments, do not point an agent at this repository directly: build an
 isolated workspace with scripts/make_agent_workspace.py so the agent cannot
 open gold files with its own tools.
@@ -54,6 +59,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--max-tool-calls", type=int, default=12)
     parser.add_argument("--max-external-calls", type=int, default=4,
                         help="search_web·fetch_url 호출 상한 (Tavily 크레딧 상한이기도 함)")
+    parser.add_argument("--allow-user-claims", action="store_true",
+                        help="submit_claim 도구를 켠다: 미리 등록하지 않은 주장 텍스트를 바로 검증")
+    parser.add_argument("--no-preset-claims", action="store_true",
+                        help="--claims 파일을 읽지 않는다(--allow-user-claims와 함께)")
     parser.add_argument("--hide-provenance", action="store_true",
                         help="검색·열람 결과에서 출처유형·출처군 표시를 뺀다 (실험 조건용)")
     return parser.parse_args(argv)
@@ -64,7 +73,7 @@ def main(argv: list[str] | None = None) -> int:
     load_env_file(ROOT / ".env")  # TAVILY_API_KEY only; the shell environment wins
     web = LiveWebProvider(provider=args.web_provider) if (args.arm == "C2" and args.live_web) else None
     env = AgentEnvironment(
-        claims_path=args.claims,
+        claims_path=None if args.no_preset_claims else args.claims,
         out_path=args.out,
         arm=args.arm,
         condition=args.condition,
@@ -84,6 +93,7 @@ def main(argv: list[str] | None = None) -> int:
         web_only=args.web_only,
         max_tool_calls=args.max_tool_calls,
         max_external_calls=args.max_external_calls,
+        allow_user_claims=args.allow_user_claims,
     )
     MCPStdioServer(env).serve_forever()
     return 0

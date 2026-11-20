@@ -32,6 +32,10 @@ uv run python scripts/extract_fc_data.py
 uv run python scripts/make_agent_workspace.py --workspace ~/agent-runs/exp-001-c0 \
     --run-id exp-001-c0 --arm C0 --model-id <agent+model>
 
+# 사용자가 보여 준 주장을 바로 검증 (미리 등록한 주장 없이, 실제 웹, 결과는 ./missions)
+uv run python scripts/mcp_stdio.py --arm C2 --live-web --web-only \
+    --allow-user-claims --no-preset-claims --model-id <agent+model> --out results/user/run.jsonl
+
 # CLI 어댑터 (격리 경계 아님)
 uv run python scripts/agent_cli.py list --limit 5
 

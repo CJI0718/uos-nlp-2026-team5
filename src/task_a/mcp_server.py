@@ -20,12 +20,14 @@ workspace built by `scripts/make_agent_workspace.py`.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import subprocess
 import sys
 import time
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -72,6 +74,12 @@ class ActiveEpisode:
 
 
 READ_TOOLS = ("read_evidence", "fetch_url")
+
+KST = timezone(timedelta(hours=9))
+#: Limits for a claim a user submits directly (submit_claim).
+MAX_USER_CLAIM_CHARS = 1_000
+MAX_USER_BODY_CHARS = 20_000
+_ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
 
 #: Conditions the environment can actually produce. The scorer knows four, but
 #: missing/conflict/misleading need corpus variants that do not exist yet, and a
@@ -140,7 +148,7 @@ class AgentEnvironment:
     def __init__(
         self,
         *,
-        claims_path: str | Path,
+        claims_path: str | Path | None,
         out_path: str | Path,
         arm: str = "C1",
         condition: str = "sufficient",
@@ -161,6 +169,7 @@ class AgentEnvironment:
         data_version: str = "claims-2026-11-07",
         provenance_mode: str = "labeled",
         web_only: bool = False,
+        allow_user_claims: bool = False,
     ) -> None:
         """`gate` selects how missions are controlled:
         verdict    the default gate (final verdict, read citations, correction)
@@ -170,6 +179,10 @@ class AgentEnvironment:
         `web_only` (C2 only) runs without a fixed corpus: search_evidence is not
         offered and evidence comes from search_web / fetch_url alone. For
         real-web experiments whose evidence is not in any corpus.
+
+        `allow_user_claims` offers `submit_claim`, so a user can verify any
+        claim text instead of one from `claims_path` (which may then be None).
+        Off by default so experiment tool lists stay unchanged.
         """
         if gate not in GATE_MODES:
             raise ValueError(f"알 수 없는 gate: {gate!r} (허용: {GATE_MODES})")
@@ -177,7 +190,10 @@ class AgentEnvironment:
             raise ValueError(f"알 수 없는 provenance_mode: {provenance_mode!r} (허용: {PROVENANCE_MODES})")
         self.provenance_mode = provenance_mode
         self.show_provenance = show_provenance
-        _refuse_scorer_only(claims_path, "주장 입력")
+        if claims_path is None and not allow_user_claims:
+            raise ValueError("claims_path가 없으면 allow_user_claims를 켜야 합니다(검증할 주장이 없음).")
+        if claims_path is not None:
+            _refuse_scorer_only(claims_path, "주장 입력")
         if arm not in ("C0", "C1", "C2"):
             raise ValueError(f"알 수 없는 arm: {arm!r}")
         if condition not in IMPLEMENTED_CONDITIONS:
@@ -193,7 +209,8 @@ class AgentEnvironment:
 
         self.claims: dict[str, Claim] = {
             r["claim_id"]: Claim.from_dict(r) for r in read_jsonl(claims_path)
-        }
+        } if claims_path is not None else {}
+        self.allow_user_claims = allow_user_claims
         self.arm = arm
         self.condition = condition
         self.config = RunConfig(
@@ -206,7 +223,8 @@ class AgentEnvironment:
             data_version=data_version,
             code_commit=code_commit,
             extra={"gate": gate, "show_provenance": show_provenance,
-                   "provenance_mode": provenance_mode, "web_only": web_only},
+                   "provenance_mode": provenance_mode, "web_only": web_only,
+                   "allow_user_claims": allow_user_claims},
         )
         self.gate = gate
         self.log = RunLog(out_path)
@@ -264,6 +282,55 @@ class AgentEnvironment:
             "claim": claim.to_dict(),
         }
 
+    def submit_claim(self, args: dict) -> dict:
+        """Start an episode for a claim the user typed or pasted (no gold, no preset id).
+
+        The claim is kept for this server's lifetime so list_claims shows it and the
+        run log names it. Identical text + source gets the same id, so a repeat
+        submission re-verifies instead of piling up copies.
+        """
+        if not self.allow_user_claims:
+            raise ValueError("이 서버는 사용자 주장 입력(submit_claim)을 허용하지 않습니다(--allow-user-claims).")
+        text = str(args.get("text") or "").strip()
+        if not text:
+            raise ValueError("text(검증할 주장 한 문장)가 필요합니다.")
+        if len(text) > MAX_USER_CLAIM_CHARS:
+            raise ValueError(f"주장은 {MAX_USER_CLAIM_CHARS}자 이하로 줄여 주세요(받은 길이 {len(text)}자). "
+                             f"기사 본문은 input_body에 넣습니다.")
+        body = args.get("input_body")
+        body = str(body).strip()[:MAX_USER_BODY_CHARS] if body else None
+        source_url = str(args.get("source_url")).strip() if args.get("source_url") else None
+        now = datetime.now(KST).replace(microsecond=0)
+        claim_date = self._user_date(args.get("claim_date"), "claim_date") or now.isoformat()
+        cutoff = self._user_date(args.get("evidence_cutoff"), "evidence_cutoff")
+        digest = hashlib.sha1(f"{text}\n{source_url or ''}".encode("utf-8")).hexdigest()[:8].upper()
+        claim = Claim(
+            claim_id=f"USER-{digest}",
+            text=text,
+            family_id="user_submitted",
+            language=str(args.get("language") or "ko"),
+            source_url=source_url,
+            source_type="사용자 입력",
+            claim_date=claim_date,
+            target_period=str(args["target_period"]).strip() if args.get("target_period") else None,
+            evidence_cutoff=cutoff,
+            input_body=body,
+        )
+        self.claims[claim.claim_id] = claim
+        out = self.start_episode(claim.claim_id)
+        if cutoff is None:
+            out["note"] = "evidence_cutoff가 없어 지금까지 발행된 모든 근거를 쓸 수 있습니다."
+        return out
+
+    @staticmethod
+    def _user_date(value, field_name: str) -> str | None:
+        if value in (None, ""):
+            return None
+        value = str(value).strip()
+        if not _ISO_DATE.match(value):
+            raise ValueError(f"{field_name}는 'YYYY-MM-DD' 또는 ISO 8601 형식이어야 합니다(받은 값 {value!r}).")
+        return value
+
     def call_tool(self, name: str, args: dict | None = None) -> dict:
         args = args or {}
         if self.active is None:
@@ -273,7 +340,9 @@ class AgentEnvironment:
             else:
                 return {
                     "status": ToolStatus.INVALID_INPUT.value,
-                    "observation": "활성 에피소드가 없습니다. 먼저 start_episode(claim_id)를 호출하세요.",
+                    "observation": "활성 에피소드가 없습니다. 먼저 start_episode(claim_id)"
+                                   + (" 또는 submit_claim(text)" if self.allow_user_claims else "")
+                                   + "를 호출하세요.",
                 }
 
         ep = self.active
@@ -500,6 +569,27 @@ class AgentEnvironment:
                 },
             },
         ]
+        if self.allow_user_claims:
+            tools.append({
+                "name": "submit_claim",
+                "description": (
+                    "사용자가 보여 준 주장(기사·게시글의 한 문장)을 새 검증 에피소드로 시작합니다. "
+                    "미리 등록된 claim_id가 없을 때 씁니다. 응답은 start_episode와 같습니다."),
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "text": {"type": "string", "description": "검증할 주장 한 문장"},
+                        "source_url": {"type": "string", "description": "주장이 나온 글의 주소(있으면)"},
+                        "input_body": {"type": "string", "description": "사용자가 본 글의 본문 발췌(있으면)"},
+                        "claim_date": {"type": "string", "description": "글이 나온 시각, ISO 8601. 없으면 지금"},
+                        "evidence_cutoff": {"type": "string",
+                                            "description": "이 시점 이후 발행된 근거는 쓰지 않음. 보통 비워 둠"},
+                        "target_period": {"type": "string", "description": "주장이 가리키는 기간이나 일정"},
+                        "language": {"type": "string", "description": "기본 ko"},
+                    },
+                    "required": ["text"],
+                },
+            })
         for spec in self.registry.specs.values():
             tools.append({
                 "name": spec.name,
@@ -547,6 +637,8 @@ class MCPStdioServer:
                     )
                 elif tool_name == "start_episode":
                     payload = self.env.start_episode(str(args["claim_id"]))
+                elif tool_name == "submit_claim":
+                    payload = self.env.submit_claim(args)
                 else:
                     payload = self.env.call_tool(tool_name, args)
                 result = {

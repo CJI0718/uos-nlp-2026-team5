@@ -100,7 +100,7 @@ def test_gate_mode_is_recorded_in_the_log(tmp_path):
     _act(env, "AS01", _reprints("AS01")[:1])
     config = read_jsonl(tmp_path / "run.jsonl")[-1]["config"]
     assert config["extra"] == {"gate": "off", "show_provenance": False, "provenance_mode": "labeled",
-                              "web_only": False}
+                              "web_only": False, "allow_user_claims": False}
     assert config["data_version"] == "action-safety-v1"
 
 

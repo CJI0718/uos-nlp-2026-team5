@@ -17,6 +17,7 @@ description: Evidence-grounded fact verification, distortion localization, and v
 
 ### Step 1. 주장 분해와 출처 독립성 기반 근거 탐색
 1. `start_episode(claim_id)`로 주장, 대상 기간(`target_period`), 근거 허용 시점(`evidence_cutoff`), 원문 발췌(`input_body`)를 확인합니다.
+   - 사용자가 등록되지 않은 주장을 직접 보여 주면 `submit_claim(text, source_url, input_body)`로 시작합니다(서버가 허용할 때만 보입니다). 응답 형식은 `start_episode`와 같습니다.
 2. 주장을 **주체 · 관계 · 수치/조건 · 대상 시점**으로 분해합니다.
 3. `search_evidence`로 코퍼스를 찾고, 판단에 쓸 문서는 `read_evidence`로 본문을 읽습니다.
    - **긴 문서는 끝까지 확인**: 한 번에 4,000자까지만 보입니다. 응답 끝에 `(전체 N자 중 …자. 이어 읽기: …offset=…)`가 있고 찾는 내용이 아직 없으면, 그 `offset`으로 이어 읽거나 `section`에 찾는 문구를 넣습니다. 앞부분에 없다고 "근거 부족"으로 판단하지 않습니다.

@@ -32,7 +32,7 @@
 
 자체 제작 LLM 루프를 두지 않고, **기존 AI 에이전트에 MCP(Model Context Protocol) 서버와 `SKILL.md`를 연결**하여 구동합니다:
 
-- **MCP 서버 ([scripts/mcp_stdio.py](scripts/mcp_stdio.py), [src/task_a/mcp_server.py](src/task_a/mcp_server.py))**: JSON-RPC 2.0 `stdio`로 `start_episode`, `search_evidence`, `read_evidence`, `calculate_comparison`, `search_web`, `fetch_url`, `finish_verification` 도구를 노출하고 모든 궤적을 `RunLog` JSONL로 기록합니다. 후속 미션은 `finish_verification` 안에서 최종 판정으로 검증 게이트를 적용한 뒤 실행합니다.
+- **MCP 서버 ([scripts/mcp_stdio.py](scripts/mcp_stdio.py), [src/task_a/mcp_server.py](src/task_a/mcp_server.py))**: JSON-RPC 2.0 `stdio`로 `start_episode`, `submit_claim`(`--allow-user-claims`일 때, 등록되지 않은 주장을 바로 검증), `search_evidence`, `read_evidence`, `calculate_comparison`, `search_web`, `fetch_url`, `finish_verification` 도구를 노출하고 모든 궤적을 `RunLog` JSONL로 기록합니다. 후속 미션은 `finish_verification` 안에서 최종 판정으로 검증 게이트를 적용한 뒤 실행합니다.
 - **격리 작업공간 ([scripts/make_agent_workspace.py](scripts/make_agent_workspace.py))**: 저장소 밖에 gold가 없는 실행 디렉터리를 만들고, Claude Code의 내장 파일·셸·웹 도구를 막은 채 MCP 도구만 허용합니다. 실험은 이 작업공간에서만 실행합니다.
 - **Agent Skill ([skills/factcheck-mission-agent/SKILL.md](skills/factcheck-mission-agent/SKILL.md))**: 4단계 워크플로우(근거 탐색 → 결정론적 검산·왜곡 특정 → 검증 게이팅 미션 선택 → 구조화 판정 제출) 지침서입니다. 평가 사례는 들어 있지 않습니다(테스트로 확인).
 - **CLI 어댑터 ([scripts/agent_cli.py](scripts/agent_cli.py))**: 셸로 같은 도구를 호출하는 어댑터입니다. 셸을 쓰는 에이전트는 저장소를 읽을 수 있으므로 격리 경계가 아닙니다.
