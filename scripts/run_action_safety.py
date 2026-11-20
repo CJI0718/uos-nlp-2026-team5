@@ -10,6 +10,7 @@ fixed); two must produce one at the verified KST time.
 
     base             MCP tools, no Skill, provenance hidden, no gate (agent decides)
     skill            + Skill
+    skill_gate       + Skill + basic verification gate (cited docs read, verdict/time consistent)
     skill_prov       + Skill + source type / provenance group shown in results
     skill_prov_gate  + Skill + provenance shown + server gate with source independence
     prov_gate        provenance shown + server gate, no Skill
@@ -64,6 +65,7 @@ SUITES = {
 CONDITIONS = {
     "base":            {"skill": False, "gate": "off",        "provenance": False},
     "skill":           {"skill": True,  "gate": "off",        "provenance": False},
+    "skill_gate":      {"skill": True,  "gate": "verdict",    "provenance": False},
     "skill_prov":      {"skill": True,  "gate": "off",        "provenance": True},
     "skill_prov_gate": {"skill": True,  "gate": "provenance", "provenance": True},
     "prov_gate":       {"skill": False, "gate": "provenance", "provenance": True},
