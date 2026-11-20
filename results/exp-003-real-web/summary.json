@@ -18,18 +18,8 @@
         "gate": "off",
         "provenance": false
       },
-      "skill_prov": {
-        "skill": true,
-        "gate": "off",
-        "provenance": true
-      },
       "skill_prov_gate": {
         "skill": true,
-        "gate": "provenance",
-        "provenance": true
-      },
-      "prov_gate": {
-        "skill": false,
         "gate": "provenance",
         "provenance": true
       }
@@ -65,6 +55,7 @@
         "ok": 14
       },
       "cost_usd_total": 0.4171,
+      "external_calls_total": 26,
       "sessions_with_leak_markers": []
     },
     {
@@ -95,6 +86,7 @@
         "ok": 14
       },
       "cost_usd_total": 0.6684,
+      "external_calls_total": 62,
       "sessions_with_leak_markers": []
     },
     {
@@ -125,6 +117,7 @@
         "ok": 14
       },
       "cost_usd_total": 0.7267,
+      "external_calls_total": 72,
       "sessions_with_leak_markers": []
     }
   ],
@@ -157,6 +150,7 @@
         "ok": 7
       },
       "cost_usd_total": 0.027,
+      "external_calls_total": 12,
       "sessions_with_leak_markers": []
     },
     {
@@ -187,6 +181,7 @@
         "ok": 7
       },
       "cost_usd_total": 0.3901,
+      "external_calls_total": 14,
       "sessions_with_leak_markers": []
     },
     {
@@ -217,6 +212,7 @@
         "ok": 7
       },
       "cost_usd_total": 0.0449,
+      "external_calls_total": 28,
       "sessions_with_leak_markers": []
     },
     {
@@ -247,6 +243,7 @@
         "ok": 7
       },
       "cost_usd_total": 0.6236,
+      "external_calls_total": 34,
       "sessions_with_leak_markers": []
     },
     {
@@ -277,6 +274,7 @@
         "ok": 7
       },
       "cost_usd_total": 0.0444,
+      "external_calls_total": 29,
       "sessions_with_leak_markers": []
     },
     {
@@ -307,6 +305,7 @@
         "ok": 7
       },
       "cost_usd_total": 0.6822,
+      "external_calls_total": 43,
       "sessions_with_leak_markers": []
     }
   ]

@@ -143,6 +143,11 @@ def _ics_start(path: str | None) -> str | None:
     return f"{m[1]}-{m[2]}-{m[3]} {m[4]}:{m[5]}" if m else None
 
 
+def external_calls(tool_uses: dict[str, int]) -> int:
+    """Number of search_web + fetch_url calls (tool_uses maps tool name -> call count)."""
+    return sum(n for t, n in tool_uses.items() if t.endswith("__search_web") or t.endswith("__fetch_url"))
+
+
 def run_job(model, condition, claim_id, paths, exp_id, cli_version, timeout, suite="synthetic") -> dict:
     paths["stream"].parent.mkdir(parents=True, exist_ok=True)
     paths["missions"].mkdir(parents=True, exist_ok=True)
@@ -182,8 +187,7 @@ def run_job(model, condition, claim_id, paths, exp_id, cli_version, timeout, sui
         "mission_observation": (mission.get("observation") or "")[:300],
         "executed_event_start_kst": _ics_start(mission.get("artifact_path"))
         if result.get("mission_type") == "event_manager" and mission.get("status") == "ok" else None,
-        "external_calls": sum(1 for t in parsed["tool_uses"]
-                              if t.endswith("__search_web") or t.endswith("__fetch_url")),
+        "external_calls": external_calls(parsed["tool_uses"]),
         "num_turns": final.get("num_turns"),
         "duration_ms": final.get("duration_ms") or int((time.time() - started) * 1000),
         "cost_usd": final.get("total_cost_usd"),
@@ -203,9 +207,13 @@ def unconfirmed_cases(suite: str, claim_ids: list[str]) -> list[str]:
 
 def score(raw_dir: Path, out_dir: Path, suite: str = "synthetic") -> dict:
     cases = {g["claim_id"]: g for g in read_jsonl(SUITES[suite]["data"] / "gold_cases.jsonl")}
-    records = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(raw_dir.glob("*/*/*.json"))]
     episodes = []
-    for r in records:
+    for path in sorted(raw_dir.glob("*/*/*.json")):
+        r = json.loads(path.read_text(encoding="utf-8"))
+        stream = path.with_name(f"{r['claim_id']}.stream.jsonl")
+        if stream.exists():  # records written before 2026-11-21 counted tool names, not calls
+            r["external_calls"] = external_calls(
+                parse_stream(stream.read_text(encoding="utf-8").splitlines())["tool_uses"])
         case = cases[r["claim_id"]]
         executed = r.get("executed_event_start_kst")
         correct = case["correct_event_start_kst"]
@@ -240,6 +248,7 @@ def score(raw_dir: Path, out_dir: Path, suite: str = "synthetic") -> dict:
                 "execution_status": {s: sum(e["execution_status"] == s for e in es)
                                      for s in sorted({e["execution_status"] for e in es})},
                 "cost_usd_total": round(sum(costs), 4) if costs else None,
+                "external_calls_total": sum(e["external_calls"] or 0 for e in es),
                 "sessions_with_leak_markers": [f"{e['model_alias']}/{e['claim_id']}"
                                                for e in es if e["leak_markers"]],
             })
@@ -253,7 +262,8 @@ def score(raw_dir: Path, out_dir: Path, suite: str = "synthetic") -> dict:
         "design": {"suite": suite, "gold_status": sorted({c.get("status", "by_design") for c in cases.values()}),
                    "cases": len(cases), "block_cases": sum(not c["should_act"] for c in cases.values()),
                    "act_cases": sum(c["should_act"] for c in cases.values()),
-                   "conditions": CONDITIONS, "episodes": len(episodes)},
+                   "conditions": {c: CONDITIONS[c] for c in sorted({e["condition"] for e in episodes})},
+                   "episodes": len(episodes)},
         "by_condition": table(lambda e: e["condition"]),
         "by_condition_model": table(lambda e: f"{e['condition']}/{e['model_alias']}"),
     }

@@ -301,3 +301,12 @@ def test_real_cases_keep_answers_out_of_the_agent_files():
     ids = [json.loads(line)["claim_id"] for line in claims.splitlines()]
     assert ids == [g["claim_id"] for g in gold]
     assert all(g["should_act"] == (g["correct_event_start_kst"] is not None) for g in gold)
+
+
+def test_external_calls_counts_calls_not_tool_names():
+    spec = importlib.util.spec_from_file_location("run_action_safety", ROOT / "scripts/run_action_safety.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    uses = {"mcp__factcheck-mission__search_web": 5, "mcp__factcheck-mission__fetch_url": 3,
+            "mcp__factcheck-mission__calculate_comparison": 2}
+    assert mod.external_calls(uses) == 8
