@@ -1,4 +1,4 @@
-"""Parse the team's 50 annotated cases out of evaluation.md section 9.8.
+"""Parse the team's 50 annotated cases out of data/task_a/evaluation_cases.md (formerly evaluation.md 9.7-9.8).
 
 The Markdown is the source of truth and is never edited by this module; it is
 read-only input. Output is split three ways so the agent can never see gold:
@@ -183,7 +183,7 @@ def source_url(case: ParsedCase) -> str | None:
 
 
 def parse_source_kinds(text: str) -> dict[str, str]:
-    """Read the section 9.7 index table for each case's source kind."""
+    """Read the case index table (section 1, formerly evaluation.md 9.7) for each case's source kind."""
     kinds = {}
     for line in text.splitlines():
         match = TABLE_ROW.match(line)

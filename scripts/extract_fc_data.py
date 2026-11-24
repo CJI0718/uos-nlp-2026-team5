@@ -1,6 +1,6 @@
-"""Extract the 50 annotated cases from evaluation.md into data/task_a/.
+"""Extract the 50 annotated cases from data/task_a/evaluation_cases.md into data/task_a/.
 
-Reads docs/research/fact_checking/evaluation.md (never writes to it) and emits
+Reads data/task_a/evaluation_cases.md (never writes to it) and emits
 three JSONL files. Gold stays out of claims.jsonl.
 
     uv run python scripts/extract_fc_data.py
@@ -18,7 +18,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from task_a.dataset import extract  # noqa: E402
 from task_a.schema import write_jsonl  # noqa: E402
 
-SOURCE = ROOT / "docs/research/fact_checking/evaluation.md"
+SOURCE = ROOT / "data/task_a/evaluation_cases.md"
 OUT_DIR = ROOT / "data/task_a"
 
 

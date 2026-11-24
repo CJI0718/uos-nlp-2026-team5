@@ -4,7 +4,7 @@
 
 ## task_a/ — Task A 평가 사례 50개
 
-`docs/research/fact_checking/evaluation.md` §9.8에서 `scripts/extract_fc_data.py`로 추출합니다.
+원본은 [`task_a/evaluation_cases.md`](task_a/evaluation_cases.md)(팀이 직접 작성한 사례 50개)이고, `scripts/extract_fc_data.py`로 추출합니다. 데이터의 목적과 구성 설명은 `docs/research/fact_checking/evaluation.md` §9.1~9.6에 있습니다.
 원본 Markdown이 기준이며 스크립트는 원본을 읽기만 하고 수정하지 않습니다.
 
 ```bash

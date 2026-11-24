@@ -13,7 +13,7 @@ import pytest
 
 from task_a.dataset import DOCUMENTED_GROUPS, extract
 
-SOURCE = Path(__file__).resolve().parents[2] / "docs/research/fact_checking/evaluation.md"
+SOURCE = Path(__file__).resolve().parents[2] / "data/task_a/evaluation_cases.md"
 
 
 @pytest.fixture(scope="module")

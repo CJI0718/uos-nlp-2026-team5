@@ -6,7 +6,7 @@ Task A(불완전한 근거 아래서의 팩트체크 및 검증 게이팅 기반
 ```
 task_a/
   schema.py       Claim / Gold / EvidenceUnit / ToolEvent / AgentResult / EpisodeState
-  dataset.py      evaluation.md §9.8 파서 (원본은 읽기만 함)
+  dataset.py      data/task_a/evaluation_cases.md 파서 (원본은 읽기만 함)
   retrieve.py     BM25 + Kiwi/bigram 토크나이저, CorpusBackend
   web.py          C2 외부 웹 검색(Tavily API + DuckDuckGo 폴백) 및 본문 추출기
   tools.py        도구 5개 + whitelisted 계산기(diff/pct_change/tz_convert/multiply/ratio 등) + fetch URL 차단
