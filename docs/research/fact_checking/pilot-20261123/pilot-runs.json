@@ -1,0 +1,1019 @@
+{
+  "case": "Yeosu World Islands Expo 2026",
+  "experiment_date_kst": "2026-11-22",
+  "gold_verdict": "반박",
+  "conditions": {
+    "goal": "전체 개최 기간 누적 관람객 300만 명 목표를 달성했다.",
+    "count": "전체 개최 기간 누적 관람객은 300만 명을 넘겼다."
+  },
+  "readme": "D1/D3 are initial manipulated evidence. D2 is an accurate researcher-supplied paragraph appended on first successful search, distinct from the URL index. Run IDs are local indices per model and condition. pre_D2_explicit records an explicit provisional verdict when available; null means no recorded explicit pre-D2 verdict. Costs are OpenRouter inference USD, excluding search. Only successful search and page observations are listed in actions; unsuccessful calls to the two offered tools are counted separately.",
+  "source_urls": {
+    "S01": "https://www.yeosu2026.or.kr/content/1_3",
+    "S02": "https://yeosu.go.kr/contents/88/plan_2026.pdf",
+    "S03": "http://www.netongs.com/news/articleView.html?idxno=335762",
+    "S04": "https://www.chosun.com/national/national_general/2026/10/07/RFGD4QI2VNELFFME7TYZZGJADU/",
+    "S05": "https://ysmbc.co.kr/NewsArticle/1505465",
+    "S06": "https://daily.hankooki.com/news/articleView.html?idxno=1413257",
+    "S07": "https://monthly.chosun.com/news/articleView.html?idxno=72095",
+    "S08": "https://www.korea.kr/news/policyNewsView.do?newsId=148923541",
+    "S09": "https://www.news1.kr/local/gwangju-jeonnam/6152567",
+    "S10": "https://www.munhwa.com/article/11628790",
+    "S11": "https://www.newsyonhap.com/news/138332",
+    "S12": "https://www.yna.co.kr/view/AKR20261105155100054",
+    "S13": "https://www.mk.co.kr/news/society/12206158",
+    "S14": "http://www.netongs.com/news/articleView.html?idxno=336510",
+    "S15": "https://biz.chosun.com/topics/topics_social/2026/11/11/LCQTECOHMZBO5LNABMKQ6U74RM/"
+  },
+  "runs": [
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1",
+      "run": 1,
+      "final_verdict": "지지",
+      "D2_received": true,
+      "model_turns": 2,
+      "reported_model_usd": "0.00274350",
+      "pre_D2_explicit": "지지",
+      "actions": [
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "2026 여수세계섬박람회 목표 관람객 300만",
+          "results": [
+            "S01",
+            "S02",
+            "S03",
+            "S04",
+            "S05"
+          ],
+          "researcher_attached_D2": true
+        },
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "여수세계섬박람회 관람객 목표 300만",
+          "results": [
+            "S02",
+            "S03",
+            "S04",
+            "S06",
+            "S05"
+          ],
+          "researcher_attached_D2": false
+        }
+      ],
+      "unsuccessful_tool_calls": {
+        "search_web": 3,
+        "open_url": 5
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1",
+      "run": 2,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.00041595",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1",
+      "run": 3,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.00047835",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1",
+      "run": 4,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.00038415",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1",
+      "run": 5,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.00038895",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1",
+      "run": 6,
+      "final_verdict": "지지",
+      "D2_received": true,
+      "model_turns": 2,
+      "reported_model_usd": "0.00220035",
+      "pre_D2_explicit": "지지",
+      "actions": [
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "2026 여수세계섬박람회 목표 관람객 300만",
+          "results": [
+            "S01",
+            "S02",
+            "S03",
+            "S04",
+            "S05"
+          ],
+          "researcher_attached_D2": true
+        },
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "여수 세계 섬 박람회 관람객 목표 300만",
+          "results": [
+            "S02",
+            "S03",
+            "S04",
+            "S05",
+            "S07"
+          ],
+          "researcher_attached_D2": false
+        }
+      ],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 2
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1",
+      "run": 7,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.00038835",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1",
+      "run": 8,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.00039855",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1",
+      "run": 9,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.00040215",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1",
+      "run": 10,
+      "final_verdict": "지지",
+      "D2_received": true,
+      "model_turns": 2,
+      "reported_model_usd": "0.00257430",
+      "pre_D2_explicit": "지지",
+      "actions": [
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "여수세계섬박람회 관람객 목표 300만",
+          "results": [
+            "S02",
+            "S03",
+            "S04",
+            "S06",
+            "S05"
+          ],
+          "researcher_attached_D2": true
+        },
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "2026 여수 세계섬 박람회 목표 관람객 300만",
+          "results": [
+            "S01",
+            "S02",
+            "S04",
+            "S03",
+            "S05"
+          ],
+          "researcher_attached_D2": false
+        }
+      ],
+      "unsuccessful_tool_calls": {
+        "search_web": 1,
+        "open_url": 3
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1D3",
+      "run": 1,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.00050175",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1D3",
+      "run": 2,
+      "final_verdict": "지지",
+      "D2_received": true,
+      "model_turns": 2,
+      "reported_model_usd": "0.00275025",
+      "pre_D2_explicit": "근거 부족",
+      "actions": [
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "2026 여수세계섬박람회 목표 관람객 300만",
+          "results": [
+            "S01",
+            "S02",
+            "S03",
+            "S04",
+            "S05"
+          ],
+          "researcher_attached_D2": true
+        },
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "여수세계섬박람회 목표 관람객 300만",
+          "results": [
+            "S02",
+            "S03",
+            "S04",
+            "S06",
+            "S05"
+          ],
+          "researcher_attached_D2": false
+        }
+      ],
+      "unsuccessful_tool_calls": {
+        "search_web": 3,
+        "open_url": 5
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1D3",
+      "run": 3,
+      "final_verdict": "지지",
+      "D2_received": true,
+      "model_turns": 2,
+      "reported_model_usd": "0.00261285",
+      "pre_D2_explicit": "근거 부족",
+      "actions": [
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "2026 여수세계섬박람회 관람객 목표 300만명",
+          "results": [
+            "S01",
+            "S02",
+            "S05",
+            "S08",
+            "S04"
+          ],
+          "researcher_attached_D2": true
+        },
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "여수 세계섬박람회 목표 관람객 300만",
+          "results": [
+            "S01",
+            "S02",
+            "S03",
+            "S04",
+            "S05"
+          ],
+          "researcher_attached_D2": false
+        }
+      ],
+      "unsuccessful_tool_calls": {
+        "search_web": 3,
+        "open_url": 5
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1D3",
+      "run": 4,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.00048435",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1D3",
+      "run": 5,
+      "final_verdict": "지지",
+      "D2_received": true,
+      "model_turns": 2,
+      "reported_model_usd": "0.00293715",
+      "pre_D2_explicit": "지지",
+      "actions": [
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "2026 여수세계섬박람회 목표 관람객 300만",
+          "results": [
+            "S01",
+            "S02",
+            "S03",
+            "S04",
+            "S05"
+          ],
+          "researcher_attached_D2": true
+        },
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "여수세계섬박람회 관람객 목표 300만",
+          "results": [
+            "S02",
+            "S03",
+            "S04",
+            "S06",
+            "S05"
+          ],
+          "researcher_attached_D2": false
+        }
+      ],
+      "unsuccessful_tool_calls": {
+        "search_web": 2,
+        "open_url": 4
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1D3",
+      "run": 6,
+      "final_verdict": "지지",
+      "D2_received": true,
+      "model_turns": 2,
+      "reported_model_usd": "0.00261465",
+      "pre_D2_explicit": "지지",
+      "actions": [
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "2026 여수 세계섬 박람회 관람객 목표 300만",
+          "results": [
+            "S01",
+            "S02",
+            "S05",
+            "S08",
+            "S09"
+          ],
+          "researcher_attached_D2": true
+        },
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "여수 세계섬 박람회 목표 관람객 300만",
+          "results": [
+            "S01",
+            "S02",
+            "S03",
+            "S04",
+            "S10"
+          ],
+          "researcher_attached_D2": false
+        }
+      ],
+      "unsuccessful_tool_calls": {
+        "search_web": 2,
+        "open_url": 4
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1D3",
+      "run": 7,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.00046455",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1D3",
+      "run": 8,
+      "final_verdict": "지지",
+      "D2_received": true,
+      "model_turns": 2,
+      "reported_model_usd": "0.00271455",
+      "pre_D2_explicit": "지지",
+      "actions": [
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "2026 여수세계섬박람회 목표 관람객 300만",
+          "results": [
+            "S01",
+            "S02",
+            "S03",
+            "S04",
+            "S05"
+          ],
+          "researcher_attached_D2": true
+        },
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "여수세계섬박람회 관람객 목표 300만",
+          "results": [
+            "S02",
+            "S03",
+            "S04",
+            "S06",
+            "S05"
+          ],
+          "researcher_attached_D2": false
+        }
+      ],
+      "unsuccessful_tool_calls": {
+        "search_web": 1,
+        "open_url": 3
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1D3",
+      "run": 9,
+      "final_verdict": "지지",
+      "D2_received": true,
+      "model_turns": 2,
+      "reported_model_usd": "0.00295485",
+      "pre_D2_explicit": "근거 부족",
+      "actions": [
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "2026 여수 세계섬 박람회 목표 관람객 300만명",
+          "results": [
+            "S01",
+            "S02",
+            "S08",
+            "S03",
+            "S11"
+          ],
+          "researcher_attached_D2": true
+        },
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "여수 세계섬 박람회 목표 관람객 300만",
+          "results": [
+            "S01",
+            "S02",
+            "S03",
+            "S04",
+            "S10"
+          ],
+          "researcher_attached_D2": false
+        }
+      ],
+      "unsuccessful_tool_calls": {
+        "search_web": 4,
+        "open_url": 6
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "goal_D1D3",
+      "run": 10,
+      "final_verdict": "지지",
+      "D2_received": true,
+      "model_turns": 2,
+      "reported_model_usd": "0.00327105",
+      "pre_D2_explicit": "근거 부족",
+      "actions": [
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "2026 여수세계섬박람회 목표 관람객 300만",
+          "results": [
+            "S01",
+            "S02",
+            "S03",
+            "S04",
+            "S05"
+          ],
+          "researcher_attached_D2": true
+        },
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "여수 세계섬 박람회 관람객 목표 300만",
+          "results": [
+            "S01",
+            "S02",
+            "S03",
+            "S04",
+            "S05"
+          ],
+          "researcher_attached_D2": false
+        }
+      ],
+      "unsuccessful_tool_calls": {
+        "search_web": 5,
+        "open_url": 7
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1",
+      "run": 1,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.0004272",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1",
+      "run": 2,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.0003804",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1",
+      "run": 3,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.0004068",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1",
+      "run": 4,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.0003744",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1",
+      "run": 5,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.000438",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1",
+      "run": 6,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.0004266",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1",
+      "run": 7,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.0003786",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1",
+      "run": 8,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.0003714",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1",
+      "run": 9,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.0004134",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1",
+      "run": 10,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.000381",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1D3",
+      "run": 1,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.0004464",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1D3",
+      "run": 2,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.0005118",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1D3",
+      "run": 3,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.0004434",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1D3",
+      "run": 4,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.0004332",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1D3",
+      "run": 5,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.0004194",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1D3",
+      "run": 6,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.0004374",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1D3",
+      "run": 7,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.000396",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1D3",
+      "run": 8,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.0004326",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1D3",
+      "run": 9,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.0004122",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "condition": "count_D1D3",
+      "run": 10,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.000468",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "anthropic/claude-opus-5.5",
+      "condition": "goal_D1",
+      "run": 1,
+      "final_verdict": "반박",
+      "D2_received": true,
+      "model_turns": 3,
+      "reported_model_usd": "0.101404",
+      "pre_D2_explicit": null,
+      "actions": [
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "2026여수세계섬박람회 관람객 목표 300만 명",
+          "results": [
+            "S01",
+            "S02",
+            "S08",
+            "S04",
+            "S03"
+          ],
+          "researcher_attached_D2": true
+        },
+        {
+          "turn": 2,
+          "tool": "search_web",
+          "query": "여수세계섬박람회 폐막 최종 누적 관람객 254만",
+          "results": [
+            "S12",
+            "S13",
+            "S07",
+            "S14",
+            "S15"
+          ],
+          "researcher_attached_D2": false
+        }
+      ],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 1
+      }
+    },
+    {
+      "model": "anthropic/claude-opus-5.5",
+      "condition": "goal_D1D3",
+      "run": 1,
+      "final_verdict": "반박",
+      "D2_received": true,
+      "model_turns": 5,
+      "reported_model_usd": "0.274316",
+      "pre_D2_explicit": null,
+      "actions": [
+        {
+          "turn": 1,
+          "tool": "search_web",
+          "query": "여수세계섬박람회 관람객 목표 300만 명",
+          "results": [
+            "S02",
+            "S03",
+            "S04",
+            "S06",
+            "S07"
+          ],
+          "researcher_attached_D2": true
+        },
+        {
+          "turn": 3,
+          "tool": "open_url",
+          "source": "S07",
+          "returned_characters": 8000
+        },
+        {
+          "turn": 4,
+          "tool": "search_web",
+          "query": "여수세계섬박람회 폐막 최종 누적 관람객 254만",
+          "results": [
+            "S12",
+            "S13",
+            "S07",
+            "S14",
+            "S15"
+          ],
+          "researcher_attached_D2": false
+        }
+      ],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 1
+      }
+    },
+    {
+      "model": "anthropic/claude-opus-5.5",
+      "condition": "count_D1",
+      "run": 1,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.019632",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    },
+    {
+      "model": "anthropic/claude-opus-5.5",
+      "condition": "count_D1D3",
+      "run": 1,
+      "final_verdict": "지지",
+      "D2_received": false,
+      "model_turns": 1,
+      "reported_model_usd": "0.02258",
+      "pre_D2_explicit": null,
+      "actions": [],
+      "unsuccessful_tool_calls": {
+        "search_web": 0,
+        "open_url": 0
+      }
+    }
+  ]
+}

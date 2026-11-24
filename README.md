@@ -7,6 +7,8 @@
 
 ## 지금 함께 볼 자료
 
+- **[여수 팩트체크 파일럿 · 11월 23일 팀 검토안](docs/research/fact_checking/pilot-20261123/README.md)** · 헌수 님의 구현과 50건 자료, 한 사건의 44회 판정, 검색 개시와 오도 근거 기각을 분리하는 후속 제안
+
 - **[평가지표 질의응답 · 산식과 근거](docs/research/fact_checking/midterm-20261103/ready-20261105/평가지표_질의응답_산식과근거.html)** · [GitHub에서 읽는 MD](docs/research/fact_checking/midterm-20261103/ready-20261105/평가지표_질의응답_산식과근거.md) · 40개 질문과 가상 채점 예시
 
 - **[11월 5일 최신 발표 묶음](docs/research/fact_checking/midterm-20261103/ready-20261105/README.md)** · 표지 포함 18장 PPTX · 대본 HTML · 질의 대응 · 31편 실험 비교표
