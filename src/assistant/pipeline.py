@@ -188,7 +188,8 @@ def _handle(conn, ctx, env, client, budget, cand: Candidate, settings, today, ru
     emit("candidate", f"검증: {cand.title_ko}", f"주장: {cand.claim_text}", key)
     outcome = verify_candidate(env, client, cand, budget,
                                lambda k, label, detail=None: emit(k, label, detail, key),
-                               max_turns=settings["budget"]["max_llm_turns"])
+                               max_turns=settings["budget"]["max_llm_turns"],
+                               official_domains=interest["official_domains"])
     base = {"event_key": key, "interest": cand.interest, "title": cand.title_ko or cand.name,
             "claim_text": cand.claim_text, "source_url": cand.source_url, "local_tz": cand.tz}
     if outcome.verified is None:

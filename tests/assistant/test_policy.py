@@ -39,9 +39,12 @@ def test_official_source_with_the_time_is_added():
 
 def test_time_only_in_a_snippet_goes_to_approval():
     """exp-004 RW10: the cited page was read but did not contain the time."""
-    v = _v(texts={OFFICIAL: "Acme Orbit keynote is coming on December 9, 2026."})
-    d = _decide(v)
+    body = "Acme Orbit keynote is coming on December 9, 2026. " + "More details about sessions. " * 60
+    d = _decide(_v(texts={OFFICIAL: body}))
     assert d.status == "pending_approval" and "TIME_NOT_IN_CITED_TEXT" in d.reasons
+    # The same official page read back almost empty (JS-rendered) is reported as unreadable.
+    thin = _decide(_v(texts={OFFICIAL: "Acme Orbit. Buy now."}))
+    assert "OFFICIAL_UNREADABLE" in thin.reasons
 
 
 def test_unread_citation_is_blocked_by_the_gate():
@@ -168,3 +171,10 @@ def test_invented_time_becomes_an_all_day_entry():
     r = _v(verdict="refuted", correction="2026-12-21 05:00", distortion_type="timezone_or_date_error",
            event_start="2026-12-21 05:00", cited=[url], observed=[url], texts=v.texts, docs=v.docs, meta={url: {}})
     assert "TIME_NOT_IN_CITED_TEXT" in _decide(r, name=["HONOR Magic9"], claimed_start="2026-12-21").reasons
+
+
+def test_a_timezone_conversion_is_not_a_refutation():
+    """Live run 4: "8 p.m. EST" was called refuted although the KST time matched."""
+    v = _v(verdict="refuted", correction="한국시간 2026-12-10 03:00", distortion_type="timezone_or_date_error")
+    d = _decide(v, claimed_start="2026-12-10 03:00")
+    assert d.status == "auto_added" and "CLAIM_WAS_RIGHT" in d.reasons

@@ -15,6 +15,7 @@ from typing import Callable
 from zoneinfo import ZoneInfo
 
 from assistant.budget import Budget
+from assistant.dedupe import tokens
 from assistant.llm import ChatClient
 from assistant.verify import Candidate
 
@@ -27,6 +28,8 @@ EXTRACT_SYSTEM = """너는 웹 검색 결과에서 앞으로 열릴 행사·발�
 "start": "YYYY-MM-DD" 또는 "YYYY-MM-DD HH:MM" (결과에 적힌 현지 시각 그대로),
 "tz": "IANA 시간대(예: America/Los_Angeles)" 또는 null, "source_url": "그 결과의 url"}}]}}
 규칙: 결과에 날짜가 적힌 일정만 뽑는다. 오늘({today}) 이전 일정은 뺀다. 추측하거나 계산해서 바꾸지 않는다.
+후보 하나는 행사 하나다. 한 문장에 여러 행사(예: 박람회 기간과 그 안의 기조연설)를 섞지 말고 따로 뽑는다.
+claim_text는 행사 이름을 주어로 넣은 완전한 문장으로 쓴다(예: "The Game Awards 2026은 12월 10일 오후 8시 EST에 방송된다").
 같은 행사는 한 번만. 최대 {limit}개. 관심 분야: {interest}."""
 
 
@@ -102,6 +105,11 @@ def extract_candidates(client: ChatClient, budget: Budget, interest: dict, resul
     return out[:limit]
 
 
+def _names_event(claim: str, name: str, title_ko: str) -> bool:
+    low = claim.lower()
+    return any(w in low for w in tokens(name) + tokens(title_ko))
+
+
 DROP_KO = {"format": "형식 오류", "date": "날짜 형식 오류", "url": "검색 결과에 없는 주소",
            "past": "지난 일정"}
 
@@ -121,6 +129,10 @@ def _candidate(item, interest_id: str, urls: dict, today: str) -> tuple[Candidat
     if start[:10] < today:
         return None, "past"
     hit = urls[url]
+    title_ko = str(item.get("title_ko") or name).strip()[:120]
+    claim = str(item.get("claim_text") or "").strip()[:500] or f"{name}은 {start}에 열린다."
+    if not _names_event(claim, name, title_ko):
+        claim = f"{title_ko}: {claim}"   # a claim must say which event it is about
     tz = str(item.get("tz") or "").strip() or None
     if tz:
         try:
@@ -129,7 +141,6 @@ def _candidate(item, interest_id: str, urls: dict, today: str) -> tuple[Candidat
             tz = None   # an unknown zone name is dropped, not guessed
     return Candidate(
         interest=interest_id, name=name[:120],
-        title_ko=str(item.get("title_ko") or name).strip()[:120],
-        claim_text=str(item.get("claim_text") or f"{name}은 {start}에 열린다.").strip()[:500],
+        title_ko=title_ko, claim_text=claim,
         start=start, tz=tz, source_url=url,
         excerpt=(hit.get("snippet") or "")[:MAX_SNIPPET_CHARS]), "ok"

@@ -164,3 +164,16 @@ def test_dropped_candidates_are_counted_with_reasons(tmp_path):
                              lambda kind, label, detail=None: steps.append(detail))
     assert [c.name for c in out] == ["Good"] and out[0].start == "2026-12-01 10:00" and out[0].tz is None
     assert "지난 일정 1" in steps[0] and "검색 결과에 없는 주소 1" in steps[0]
+
+
+def test_extracted_claims_name_their_event(tmp_path):
+    from assistant.discover import extract_candidates
+    conn = db.connect(tmp_path / "a.sqlite")
+    budget = Budget(conn, json.loads(json.dumps(DEFAULTS)), day="2026-11-24")
+    results = [{"url": "https://a.example/x", "title": "x", "snippet": "s"}]
+    events = [{"name": "Piece by Piece", "title_ko": "피스 바이 피스", "start": "2026-11-25",
+               "claim_text": "2026년 11월 25일에 출시될 예정이다.", "source_url": "https://a.example/x"}]
+    client = demo.ScriptedClient(lambda m, t, j: ChatReply(content=json.dumps({"events": events})))
+    out = extract_candidates(client, budget, {"id": "game", "name": "게임"}, results, "2026-11-24", 5,
+                             lambda *a, **k: None)
+    assert out[0].claim_text.startswith("피스 바이 피스:")

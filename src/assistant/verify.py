@@ -37,7 +37,11 @@ APP_GUIDE = """
 - finish_verification을 정확히 한 번 호출한다. mission_type은 넣지 않는다(등록 여부는 앱이 정한다).
   event_start_kst에 검증된 한국시간을 넣는다: 'YYYY-MM-DD HH:MM'. 시각 없이 날짜만 공식 발표됐으면 'YYYY-MM-DD'.
   여러 날 열리는 행사(컨퍼런스 등)는 첫날 날짜를 'YYYY-MM-DD'로 넣는다.
+- 판정 기준: 주장이 적은 날짜·시각·시간대가 공식 정보와 같으면 supported다. 주장이 EST·PST처럼 시간대를
+  밝혔고 그 시각이 맞으면, 한국시간으로 바꾸는 일은 오류가 아니므로 supported로 판정하고 event_start_kst에 한국시간을 넣는다.
+  refuted는 날짜나 시각이 다르거나, 시간대를 빼먹거나 잘못 적었을 때만 쓴다.
 - 반박이면 correction에 정정된 한국 일시를 event_start_kst와 같은 표기로 적는다.
+- 공식 출처 후보 도메인이 주어지면, 검색 결과에 없어도 그 사이트의 행사 페이지를 fetch_url로 직접 열어 본다.
 - 주장과 다른 행사를 찾았다면 그 행사로 바꾸지 않는다. 주장한 행사의 공식 일정이 아직 없으면 not_enough_evidence로 판정한다.
 """.strip()
 
@@ -96,10 +100,11 @@ def _system_prompt() -> str:
     return skill_body() + "\n\n" + APP_GUIDE
 
 
-def _user_prompt(start_payload: dict, c: Candidate) -> str:
+def _user_prompt(start_payload: dict, c: Candidate, official_domains: list[str] | None = None) -> str:
     return ("검증할 일정 주장입니다. 공식 출처로 확인하고 finish_verification으로 끝내세요.\n"
             + json.dumps({"claim": start_payload["claim"], "budget": start_payload["budget"],
-                          "claimed_start_local": c.start, "claimed_timezone": c.tz},
+                          "event_name": c.name, "claimed_start_local": c.start, "claimed_timezone": c.tz,
+                          "official_domain_hints": official_domains or []},
                          ensure_ascii=False, indent=2))
 
 
@@ -107,7 +112,7 @@ Emit = Callable[..., None]
 
 
 def verify_candidate(env, client: ChatClient, c: Candidate, budget: Budget, emit: Emit,
-                     max_turns: int = 10) -> VerifyOutcome:
+                     max_turns: int = 10, official_domains: list[str] | None = None) -> VerifyOutcome:
     """Run the tool loop until finish_verification.
 
     When the verdict is 'supported' but the model left event_start_kst empty
@@ -119,7 +124,7 @@ def verify_candidate(env, client: ChatClient, c: Candidate, budget: Budget, emit
         "target_period": f"{c.name} 시작 일시",
     })
     messages = [{"role": "system", "content": _system_prompt()},
-                {"role": "user", "content": _user_prompt(started, c)}]
+                {"role": "user", "content": _user_prompt(started, c, official_domains)}]
     tools = llm_tools(env.mcp_tools())
     allowed = {t["function"]["name"] for t in tools}
     outcome = VerifyOutcome()

@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import math
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import date, datetime
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
@@ -41,6 +41,8 @@ REASON_TEXT = {
     "CONFLICT": "같은 행사에 다른 시각이 이미 있음",
     "NO_OFFICIAL_SOURCE": "공식 출처 없이 독립 출처 2개로 확인",
     "TIME_UNCONFIRMED": "날짜만 발표됨(시각 미발표, 종일로 등록)",
+    "OFFICIAL_UNREADABLE": "공식 페이지 본문에서 날짜를 찾지 못함(스크립트로 그려지는 페이지일 수 있음)",
+    "CLAIM_WAS_RIGHT": "모델은 '틀림'이라 했지만 주장한 한국시간과 같음(시간대 표기만 다름)",
     "NOT_ENOUGH_EVIDENCE": "아직 확인되지 않음(추적 중)",
     "REFUTED": "주장이 틀렸고 정정할 일정이 없음",
     "PAST": "이미 지난 일정",
@@ -214,6 +216,13 @@ def decide(v: Verified, *, name: str | list[str], claimed_start: str | None, loc
         return Decision("rejected", ["REFUTED"], evidence=evidence)
 
     reasons: list[str] = []
+    info: list[str] = []
+    if (v.verdict == "refuted" and v.event_start and claimed_start
+            and v.event_start.strip() == claimed_start.strip()):
+        # Live run 4: "8 p.m. EST" converted to KST was called a refutation. The
+        # verified start equals the claimed one, so the claim was right.
+        v = replace(v, verdict="supported", correction=None, distortion_type="none")
+        info.append("CLAIM_WAS_RIGHT")
     if not v.event_start or not (is_date_only(v.event_start) or re.fullmatch(
             r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}", v.event_start.strip())):
         return Decision("pending_approval", ["NO_TIME"], evidence=evidence)
@@ -233,7 +242,7 @@ def decide(v: Verified, *, name: str | list[str], claimed_start: str | None, loc
         reasons.append("GATE_BLOCKED")
 
     # The date/time must be written in a cited document that was read.
-    start, info = v.event_start, []
+    start = v.event_start
     supporting = _supporting(v, start, local_tz)
     if supporting is None and v.verdict == "supported" and not is_date_only(start):
         # Only the date is published (live run 3: the model invented 05:00 for a
@@ -241,10 +250,17 @@ def decide(v: Verified, *, name: str | list[str], claimed_start: str | None, loc
         for day in dict.fromkeys(d for d in ((claimed_start or "")[:10], start[:10]) if d):
             supporting = _supporting(v, day, None)
             if supporting:
-                start, info = day, ["TIME_UNCONFIRMED"]
+                start = day
+                info.append("TIME_UNCONFIRMED")
                 break
     if supporting is None:
-        reasons.append("TIME_NOT_IN_CITED_TEXT")
+        official_cited = [u for u in v.cited if u in official_urls]
+        days = {d for d in ((claimed_start or "")[:10], (start or "")[:10]) if d}
+        # Unreadable: a short official page that does not even carry the date.
+        thin = any(len(v.texts.get(u, "")) < 1500
+                   and not any(literal_match(v.texts.get(u, ""), d, None) for d in days)
+                   for u in official_cited)
+        reasons.append("OFFICIAL_UNREADABLE" if official_cited and thin else "TIME_NOT_IN_CITED_TEXT")
     elif not identity_ok(name, v.texts[supporting], (v.docs.get(supporting) or {}).get("title", "")):
         reasons.append("IDENTITY_MISMATCH")
 
