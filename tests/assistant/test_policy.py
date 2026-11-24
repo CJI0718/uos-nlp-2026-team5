@@ -178,3 +178,11 @@ def test_a_timezone_conversion_is_not_a_refutation():
     v = _v(verdict="refuted", correction="한국시간 2026-12-10 03:00", distortion_type="timezone_or_date_error")
     d = _decide(v, claimed_start="2026-12-10 03:00")
     assert d.status == "auto_added" and "CLAIM_WAS_RIGHT" in d.reasons
+
+
+def test_refuted_without_an_official_date_is_tracked():
+    """Live run 5: 'December 2' was wrong, but the maker only says 'targeting 2026'."""
+    v = _v(verdict="refuted", correction="공식 발표는 '2026년 출시 목표'뿐", event_start=None,
+           distortion_type="forecast_as_fact")
+    d = _decide(v, claimed_start="2026-12-02")
+    assert d.status == "tracking" and d.reasons == ["OFFICIAL_DATE_UNKNOWN"]

@@ -44,6 +44,7 @@ REASON_TEXT = {
     "OFFICIAL_UNREADABLE": "공식 페이지 본문에서 날짜를 찾지 못함(스크립트로 그려지는 페이지일 수 있음)",
     "CLAIM_WAS_RIGHT": "모델은 '틀림'이라 했지만 주장한 한국시간과 같음(시간대 표기만 다름)",
     "NOT_ENOUGH_EVIDENCE": "아직 확인되지 않음(추적 중)",
+    "OFFICIAL_DATE_UNKNOWN": "주장한 날짜는 틀렸고 공식 날짜는 아직 없음(추적 중)",
     "REFUTED": "주장이 틀렸고 정정할 일정이 없음",
     "PAST": "이미 지난 일정",
     "ERROR": "검증 중 오류",
@@ -225,6 +226,13 @@ def decide(v: Verified, *, name: str | list[str], claimed_start: str | None, loc
         info.append("CLAIM_WAS_RIGHT")
     if not v.event_start or not (is_date_only(v.event_start) or re.fullmatch(
             r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}", v.event_start.strip())):
+        if v.verdict == "refuted":
+            # Live run 5: the claimed date is wrong but no official date exists yet
+            # ("targeting 2026"). Nothing to put on the calendar; wait for it.
+            claimed = _day(claimed_start)
+            if claimed and claimed.isoformat() < today:
+                return Decision("rejected", ["PAST"], evidence=evidence)
+            return Decision("tracking", ["OFFICIAL_DATE_UNKNOWN"], evidence=evidence)
         return Decision("pending_approval", ["NO_TIME"], evidence=evidence)
     if v.verdict == "refuted" and v.distortion_type != "timezone_or_date_error":
         reasons.append("CORRECTION_REVIEW")
