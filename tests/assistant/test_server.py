@@ -113,3 +113,24 @@ def test_scheduler_runs_once_and_daily(served):
     assert sched.tick(morning) == "daily"
     wait_idle()
     assert sched.tick(morning) is None   # once per day
+
+
+def test_interests_can_be_edited_and_are_validated(served):
+    _, port = served
+    status, s = call(port, "GET", "/api/settings")
+    interests = s["interests"]
+    interests[1]["keywords"] = ["닌텐도 다이렉트", "GTA", "GTA"]
+    interests.append({"name": "콘서트 예매", "keywords": ["아이유 콘서트"], "official_domains": ["https://www.melon.com/"]})
+    status, out = call(port, "PUT", "/api/settings", {"interests": interests, "onboarded": True})
+    assert status == 200 and out["onboarded"] is True
+    assert out["interests"][1]["keywords"] == ["닌텐도 다이렉트", "GTA"]
+    assert out["interests"][2]["official_domains"] == ["melon.com"] and out["interests"][2]["id"]
+    bad = interests[:1] + [{"name": "x", "keywords": ["k"], "official_domains": ["not a domain"]}]
+    assert call(port, "PUT", "/api/settings", {"interests": bad})[0] == 400
+    assert call(port, "PUT", "/api/settings", {"interests": [{"name": "빈 분야"}]})[0] == 400
+
+
+def test_keyword_queries():
+    from assistant.discover import keyword_query
+    assert keyword_query("GTA", "2026-11-24") == "GTA November 2026 date announced"
+    assert keyword_query("갤럭시", "2026-11-24") == "갤럭시 2026년 11월 일정 발표"

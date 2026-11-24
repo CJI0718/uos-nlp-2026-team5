@@ -30,7 +30,8 @@ const VIEWS = {
   settings: { title: "설정", sub: "자동 실행, 예산, 관심사, 모델입니다." },
 };
 
-const app = { view: "home", homeMode: "calendar", month: null, state: null, events: [], threadRun: null };
+const app = { view: "home", homeMode: "calendar", month: null, state: null, events: [], threadRun: null,
+  interests: null, onboarding: false };
 
 async function api(path, opts = {}) {
   const res = await fetch(path, {
@@ -257,10 +258,8 @@ async function renderSettings() {
   const sc = s.schedule, b = s.budget;
   const keys = Object.entries(s.secrets).map(([k, v]) =>
     `<span class="chip ${v ? "ok" : "bad"}">${esc(k)} ${v ? "있음" : "없음"}</span>`).join("");
-  const interests = s.interests.map((i) => `<div class="box" style="padding:12px">
-      <b>${esc(i.name)}</b> ${i.enabled ? '<span class="chip ok">켜짐</span>' : '<span class="chip">꺼짐</span>'}
-      <p style="margin:6px 0 4px">공식 출처로 인정하는 도메인</p>
-      <div class="tags">${i.official_domains.map((d) => `<span class="chip">${esc(d)}</span>`).join("")}</div></div>`).join("");
+  app.interests = JSON.parse(JSON.stringify(s.interests));
+  const interests = interestEditor();
   return `<div class="settings">
     <div class="box"><h3>자동 실행</h3>
       <p>앱 서버가 켜져 있는 동안 정해진 시각에 혼자 실행합니다. 서버를 끄면 멈춥니다.</p>
@@ -275,9 +274,85 @@ async function renderSettings() {
       <div class="field"><label>하루 모델 비용($)</label><input id="b-cost" type="number" step="0.1" value="${b.daily_cost_usd}"></div>
       <div class="field"><label>하루 웹 검색(회)</label><input id="b-search" type="number" value="${b.daily_searches}"></div>
       <div class="field"><label></label><button class="btn primary small" id="b-save">저장</button></div></div>
-    <div class="box"><h3>관심사</h3><p>키워드 편집은 다음 단계에서 추가합니다.</p>${interests}</div>
+    <div class="box"><h3>관심사</h3><p>비서가 찾을 분야와 키워드입니다. 키워드마다 이번 달 일정을 한 번씩 검색합니다.
+      공식 도메인에 있는 사이트의 공지는 공식 출처로 인정합니다.</p><div id="interest-editor">${interests}</div></div>
     <div class="box"><h3>모델</h3><p>${esc(s.llm.model)} · ${esc(s.llm.base_url)}</p><div class="tags">${keys}</div></div>
   </div>`;
+}
+
+// ---- interest editor (settings + first-run) ---------------------------------------
+const KW_HINT = { tech: "예: 갤럭시, 애플 (Enter)", game: "예: 닌텐도 다이렉트, GTA (Enter)" };
+function chipList(items, kind, i) {
+  return items.map((v, j) => `<span class="chip edit">${esc(v)}<button data-del="${kind}:${i}:${j}"
+    aria-label="${esc(v)} 삭제">×</button></span>`).join("");
+}
+function interestEditor({ compact = false } = {}) {
+  const rows = app.interests.map((it, i) => `<div class="interest ${it.enabled ? "" : "off"}">
+      <div class="ihead"><label class="switch"><input type="checkbox" data-toggle="${i}" ${it.enabled ? "checked" : ""}><span></span></label>
+        <b>${esc(it.name)}</b>${it.queries?.length ? `<small>기본 검색 ${it.queries.length}개</small>` : ""}</div>
+      <div class="irow"><span class="ilabel">키워드</span><div class="tags">${chipList(it.keywords || [], "kw", i)}
+        <input class="chip-input" data-add="kw:${i}" placeholder="${esc(KW_HINT[it.id] || "키워드 입력 후 Enter")}" maxlength="40"></div></div>
+      ${compact ? "" : `<div class="irow"><span class="ilabel">공식 도메인</span><div class="tags">${chipList(it.official_domains || [], "dom", i)}
+        <input class="chip-input" data-add="dom:${i}" placeholder="예: nintendo.com (Enter)" maxlength="100"></div></div>`}
+    </div>`).join("");
+  const add = compact ? "" : `<div class="irow add-interest"><input id="new-interest" placeholder="새 관심 분야 이름 (예: 콘서트 예매)" maxlength="40">
+      <input id="new-interest-kw" placeholder="첫 키워드" maxlength="40"><button class="btn small" id="add-interest">분야 추가</button></div>`;
+  return rows + add;
+}
+async function saveInterests(extra = {}) {
+  try {
+    const s = await api("/api/settings", { method: "PUT", body: JSON.stringify({ interests: app.interests, ...extra }) });
+    app.interests = JSON.parse(JSON.stringify(s.interests));
+    return true;
+  } catch (err) {
+    toast(err.message);
+    return false;
+  }
+}
+function redrawEditor() {
+  const box = app.onboarding ? $("#onboard-editor") : $("#interest-editor");
+  if (box) box.innerHTML = interestEditor({ compact: app.onboarding });
+}
+function interestFromInput(kind, i, value) {
+  const v = value.trim();
+  if (!v) return false;
+  const key = kind === "kw" ? "keywords" : "official_domains";
+  app.interests[i][key] = [...(app.interests[i][key] || []), v];
+  return true;
+}
+document.addEventListener("keydown", async (e) => {
+  const t = e.target;
+  if (e.key !== "Enter" || !t.matches?.("[data-add]")) return;
+  e.preventDefault();
+  const [kind, i] = t.dataset.add.split(":");
+  if (!interestFromInput(kind, Number(i), t.value)) return;
+  if (app.onboarding || await saveInterests()) redrawEditor();
+  else app.interests[Number(i)][kind === "kw" ? "keywords" : "official_domains"].pop();
+  const again = document.querySelector(`[data-add="${kind}:${i}"]`);
+  if (again) again.focus();
+});
+document.addEventListener("change", async (e) => {
+  const t = e.target;
+  if (!t.matches?.("[data-toggle]")) return;
+  app.interests[Number(t.dataset.toggle)].enabled = t.checked;
+  if (app.onboarding || await saveInterests()) redrawEditor();
+});
+
+// ---- first run --------------------------------------------------------------------
+async function maybeOnboard() {
+  if (app.state?.mode !== "live") return;
+  const s = await api("/api/settings");
+  if (s.onboarded) return;
+  app.interests = JSON.parse(JSON.stringify(s.interests));
+  app.onboarding = true;
+  $("#drawer-panel").innerHTML = `<div class="onboard">
+    <h2>어떤 일정을 챙겨 드릴까요?</h2>
+    <p class="sub">고른 분야에서 앞으로 열릴 행사와 출시일을 찾아, 공식 출처로 확인한 것만 달력에 넣습니다.
+      키워드는 선택입니다. 나중에 설정에서 바꿀 수 있어요.</p>
+    <div id="onboard-editor">${interestEditor({ compact: true })}</div>
+    <div class="drawer-actions"><button class="btn" id="onboard-skip">건너뛰기</button>
+      <button class="btn primary" id="onboard-done">시작하기</button></div></div>`;
+  $("#drawer").classList.remove("hidden");
 }
 
 async function render() {
@@ -362,6 +437,8 @@ async function openEvent(id) {
   $("#drawer").setAttribute("aria-hidden", "false");
 }
 function closeDrawer() {
+  app.onboarding = false;
+  $("#drawer-panel").innerHTML = "";
   $("#drawer").classList.add("hidden");
   $("#drawer").setAttribute("aria-hidden", "true");
 }
@@ -427,8 +504,30 @@ function connectStream() {
 }
 
 document.addEventListener("click", async (e) => {
-  const t = e.target.closest("[data-view],[data-open],[data-act],[data-close],[data-run],[data-mode],[data-month],#run-btn");
+  const t = e.target.closest("[data-view],[data-open],[data-act],[data-close],[data-run],[data-mode],[data-month],[data-del],#run-btn,#add-interest,#onboard-skip,#onboard-done");
   if (!t) return;
+  if (t.matches("[data-del]")) {
+    const [kind, i, j] = t.dataset.del.split(":").map((x, n) => (n ? Number(x) : x));
+    const key = kind === "kw" ? "keywords" : "official_domains";
+    const removed = app.interests[i][key].splice(j, 1);
+    if (app.onboarding || await saveInterests()) redrawEditor();
+    else app.interests[i][key].splice(j, 0, ...removed);
+    return;
+  }
+  if (t.id === "add-interest") {
+    const name = $("#new-interest").value.trim(), kw = $("#new-interest-kw").value.trim();
+    if (!name || !kw) return toast("분야 이름과 첫 키워드를 넣어 주세요.");
+    app.interests.push({ name, enabled: true, keywords: [kw], official_domains: [], queries: [] });
+    if (await saveInterests()) { redrawEditor(); toast(`'${name}' 분야를 추가했어요.`); }
+    else app.interests.pop();
+    return;
+  }
+  if (t.id === "onboard-skip" || t.id === "onboard-done") {
+    const ok = t.id === "onboard-done" ? await saveInterests({ onboarded: true })
+      : await api("/api/settings", { method: "PUT", body: JSON.stringify({ onboarded: true }) }).then(() => true);
+    if (ok) { closeDrawer(); toast("설정을 저장했어요. [지금 실행]을 누르면 비서가 시작합니다."); }
+    return;
+  }
   if (t.matches("[data-mode]")) {
     app.homeMode = t.dataset.mode;
     return render();
@@ -485,6 +584,7 @@ window.addEventListener("error", (e) => toast(`오류: ${e.message}`));
   }
   if (app.state?.last_run) await showRun(app.state.last_run.id);
   connectStream();
+  await maybeOnboard().catch(() => {});
   // A link like /#event=3 opens that event (handy for presentation bookmarks).
   const m = location.hash.match(/event=(\d+)/);
   if (m) await openEvent(m[1]).catch(() => {});

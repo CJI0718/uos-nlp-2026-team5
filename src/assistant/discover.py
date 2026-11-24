@@ -44,13 +44,25 @@ def fill_query(template: str, today: str) -> str:
                            year=d.year, next_year=d.year + 1)
 
 
+MAX_KEYWORDS = 8
+
+
+def keyword_query(keyword: str, today: str) -> str:
+    """One search per user keyword, aimed at this month's announcements."""
+    d = date.fromisoformat(today)
+    if keyword.isascii():
+        return f"{keyword} {d:%B} {d.year} date announced"
+    return f"{keyword} {d.year}년 {d.month}월 일정 발표"
+
+
 def search_interest(web, interest: dict, budget: Budget, emit: Emit, per_interest: int,
                     today: str, recent_days: int = 21) -> list[dict]:
     results, seen = [], set()
     since = (date.fromisoformat(today) - timedelta(days=recent_days)).isoformat()
     takes_start = "start_date" in inspect.signature(web.search).parameters
-    for template in interest["queries"][:per_interest]:
-        query = fill_query(template, today)
+    queries = [fill_query(t, today) for t in interest.get("queries", [])[:per_interest]]
+    queries += [keyword_query(k, today) for k in interest.get("keywords", [])[:MAX_KEYWORDS]]
+    for query in queries:
         budget.check_search()
         try:
             hits = web.search(query, top_k=6, **({"start_date": since} if takes_start else {}))
@@ -74,8 +86,10 @@ def extract_candidates(client: ChatClient, budget: Budget, interest: dict, resul
     view = [{"title": r.get("title", ""), "url": r["url"], "published": r.get("published_date"),
              "snippet": (r.get("snippet") or "")[:MAX_SNIPPET_CHARS]} for r in results]
     messages = [
-        {"role": "system", "content": EXTRACT_SYSTEM.format(today=today, limit=limit,
-                                                             interest=interest["name"])},
+        {"role": "system", "content": EXTRACT_SYSTEM.format(
+            today=today, limit=limit,
+            interest=interest["name"] + (f" (관심 키워드: {', '.join(interest['keywords'])})"
+                                         if interest.get("keywords") else ""))},
         {"role": "user", "content": json.dumps({"results": view}, ensure_ascii=False)},
     ]
     budget.check_llm()

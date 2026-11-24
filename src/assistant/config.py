@@ -9,6 +9,7 @@ from __future__ import annotations
 import copy
 import json
 import os
+import re
 from pathlib import Path
 
 from task_a.web import load_env_file
@@ -29,6 +30,7 @@ DEFAULT_INTERESTS = [
             "CES {next_year} keynote schedule date time",
             "Galaxy Unpacked {next_year} date announced",
         ],
+        "keywords": [],
         "official_domains": ["apple.com", "samsung.com", "google.com", "blog.google",
                              "microsoft.com", "ces.tech"],
     },
@@ -42,12 +44,14 @@ DEFAULT_INTERESTS = [
             "The Game Awards {year} date time",
             "game release date {next_month} {year} officially announced",
         ],
+        "keywords": [],
         "official_domains": ["nintendo.com", "nintendo.co.kr", "playstation.com", "xbox.com",
                              "rockstargames.com", "ea.com", "ubisoft.com", "thegameawards.com"],
     },
 ]
 
 DEFAULTS: dict = {
+    "onboarded": False,     # the first-run interest picker has been shown
     "interests": DEFAULT_INTERESTS,
     "llm": {
         "provider": "mistral",
@@ -110,6 +114,46 @@ def load_secrets(env_path: str | Path) -> list[str]:
 
 def secret_status() -> dict[str, bool]:
     return {name: bool(os.environ.get(name)) for name in SECRET_KEYS}
+
+
+_DOMAIN = re.compile(r"^(?=.{3,100}$)([a-z0-9-]+\.)+[a-z]{2,}$")
+
+
+def clean_interests(raw) -> list[dict]:
+    """Validate interests sent by the UI. Raises ValueError with a message for the user."""
+    if not isinstance(raw, list) or not 1 <= len(raw) <= 8:
+        raise ValueError("관심 분야는 1~8개여야 합니다.")
+    out, ids = [], set()
+    for item in raw:
+        if not isinstance(item, dict):
+            raise ValueError("관심 분야 형식이 올바르지 않습니다.")
+        name = str(item.get("name") or "").strip()[:40]
+        if not name:
+            raise ValueError("관심 분야 이름이 비었습니다.")
+        iid = re.sub(r"[^a-z0-9_-]", "", str(item.get("id") or "").lower())[:30] or f"custom{len(out) + 1}"
+        while iid in ids:
+            iid += "x"
+        ids.add(iid)
+        keywords = []
+        for k in item.get("keywords") or []:
+            k = re.sub(r"\s+", " ", str(k)).strip()[:40]
+            if k and k not in keywords:
+                keywords.append(k)
+        if len(keywords) > 8:
+            raise ValueError(f"'{name}'의 키워드는 8개까지입니다.")
+        domains = []
+        for d in item.get("official_domains") or []:
+            d = str(d).strip().lower().removeprefix("https://").removeprefix("http://").removeprefix("www.").strip("/")
+            if not _DOMAIN.match(d):
+                raise ValueError(f"도메인 형식이 아닙니다: {d!r} (예: nintendo.com)")
+            if d not in domains:
+                domains.append(d)
+        queries = [str(q)[:120] for q in (item.get("queries") or [])][:6]
+        if not queries and not keywords:
+            raise ValueError(f"'{name}'에 키워드를 하나 이상 넣어 주세요.")
+        out.append({"id": iid, "name": name, "enabled": bool(item.get("enabled", True)),
+                    "queries": queries, "keywords": keywords, "official_domains": domains})
+    return out
 
 
 def public_settings(settings: dict) -> dict:

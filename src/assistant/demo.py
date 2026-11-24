@@ -295,4 +295,5 @@ def demo_settings(settings: dict) -> dict:
         interest["queries"] = (["game showcase release date announced"] if interest["id"] == "game"
                                else ["tech event date announced"])
     out["budget"]["recheck_hours"] = 0   # the demo rechecks scheduled events on every run
+    out["onboarded"] = True
     return out

@@ -18,7 +18,7 @@ from urllib.parse import parse_qs, urlsplit
 
 from assistant import db
 from assistant.budget import Budget
-from assistant.config import public_settings, save_settings
+from assistant.config import clean_interests, public_settings, save_settings
 from assistant.ics import to_ics
 from assistant.pipeline import AppContext, RunBusy, is_running, start_background
 from assistant.policy import explain
@@ -86,6 +86,10 @@ class Api:
     def update_settings(self, body: dict) -> dict:
         settings = self.ctx.settings()
         sched, caps = body.get("schedule") or {}, body.get("budget") or {}
+        if "interests" in body:
+            settings["interests"] = clean_interests(body["interests"])
+        if "onboarded" in body:
+            settings["onboarded"] = bool(body["onboarded"])
         if "enabled" in sched:
             settings["schedule"]["enabled"] = bool(sched["enabled"])
         if "daily_at" in sched:
