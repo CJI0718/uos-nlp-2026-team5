@@ -135,3 +135,21 @@ def test_event_key_keeps_years_apart_and_matches_similar_names():
                  "title": "Nintendo Direct", "start_kst": "2026-09-09 23:00"}]
     assert find_match(existing, "game", "Nintendo Direct Showcase", "2026-09-10") is not None
     assert find_match(existing, "game", "Nintendo Direct", "2026-12-01") is None
+
+
+def test_event_name_domain_and_press_wires_count_as_official():
+    from assistant.policy import is_official
+    assert is_official("https://aws.amazon.com/events/reinvent", [], ["AWS re:Invent 2026"])
+    assert not is_official("https://www.nintendolife.com/news", [], ["Nintendo Direct"])
+    assert is_official("https://www.prnewswire.com/news-releases/x.html", [], ["HONOR Magic9"])
+    assert not is_official("https://www.beri.net/events/aws-reinvent-2026", [], ["AWS re:Invent"])
+
+
+def test_press_release_date_only_event_is_added():
+    """Live run 2: a launch date in the company's own wire release."""
+    url = "https://www.prnewswire.com/news-releases/honor-magic9.html"
+    v = _v(event_start="2026-12-21", cited=[url], observed=[url],
+           texts={url: "HONOR has announced December 21 as the date for the HONOR Magic9 Pro Max launch."},
+           docs={url: {"title": "HONOR Magic9 Pro Max launch event"}}, meta={url: {}})
+    d = _decide(v, name=["HONOR Magic9 Pro Max launch event"], claimed_start="2026-12-21")
+    assert d.status == "auto_added" and d.official_url == url

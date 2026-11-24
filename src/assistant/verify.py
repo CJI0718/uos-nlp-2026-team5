@@ -36,6 +36,7 @@ APP_GUIDE = """
 - 원문 시각에 시간대가 있으면 calculate_comparison(op="tz_convert", time="YYYY-MM-DD HH:MM", from_tz=..., to_tz="KST")로 한국시간을 계산한다.
 - finish_verification을 정확히 한 번 호출한다. mission_type은 넣지 않는다(등록 여부는 앱이 정한다).
   event_start_kst에 검증된 한국시간을 넣는다: 'YYYY-MM-DD HH:MM'. 시각 없이 날짜만 공식 발표됐으면 'YYYY-MM-DD'.
+  여러 날 열리는 행사(컨퍼런스 등)는 첫날 날짜를 'YYYY-MM-DD'로 넣는다.
 - 반박이면 correction에 정정된 한국 일시를 event_start_kst와 같은 표기로 적는다.
 - 주장과 다른 행사를 찾았다면 그 행사로 바꾸지 않는다. 주장한 행사의 공식 일정이 아직 없으면 not_enough_evidence로 판정한다.
 """.strip()
@@ -107,6 +108,12 @@ Emit = Callable[..., None]
 
 def verify_candidate(env, client: ChatClient, c: Candidate, budget: Budget, emit: Emit,
                      max_turns: int = 10) -> VerifyOutcome:
+    """Run the tool loop until finish_verification.
+
+    When the verdict is 'supported' but the model left event_start_kst empty
+    (seen with multi-day conferences), the claimed start is used: a supported
+    claim asserts that start. The policy still requires it in a cited document.
+    """
     started = env.submit_claim({
         "text": c.claim_text, "source_url": c.source_url, "input_body": c.excerpt,
         "target_period": f"{c.name} 시작 일시",
@@ -130,7 +137,7 @@ def verify_candidate(env, client: ChatClient, c: Candidate, budget: Budget, emit
                              "도구를 호출해 검증을 계속하거나 finish_verification으로 끝내세요."})
             continue
         for call in reply.tool_calls:
-            result = _run_tool(env, call, allowed, budget, emit, outcome)
+            result = _run_tool(env, call, allowed, budget, emit, outcome, c)
             messages.append({"role": "tool", "tool_call_id": call.id, "name": call.name,
                              "content": json.dumps(result, ensure_ascii=False)[:MAX_TOOL_RESULT_CHARS]})
             if outcome.verified is not None:
@@ -139,7 +146,8 @@ def verify_candidate(env, client: ChatClient, c: Candidate, budget: Budget, emit
     return outcome
 
 
-def _run_tool(env, call, allowed: set[str], budget: Budget, emit: Emit, outcome: VerifyOutcome) -> dict:
+def _run_tool(env, call, allowed: set[str], budget: Budget, emit: Emit, outcome: VerifyOutcome,
+              cand: Candidate | None = None) -> dict:
     args = call.arguments
     if "__invalid_json__" in args:
         return {"status": "invalid_input", "observation": "인자가 올바른 JSON이 아닙니다."}
@@ -158,14 +166,18 @@ def _run_tool(env, call, allowed: set[str], budget: Budget, emit: Emit, outcome:
             return {"status": "invalid_input", "observation": str(exc)}
         r = res["result"]
         outcome.finish_args = clean
+        start = (clean.get("event_start_kst") or "").strip() or None
+        if start is None and r["verdict"] == "supported" and cand is not None:
+            start = claimed_kst(cand)
+            if start:
+                emit("info", f"일시 보충: 주장한 일시 {start} 사용", "판정이 '맞음'인데 모델이 일시를 비움")
         outcome.verified = Verified(
             verdict=r["verdict"], abstain=bool(r.get("abstain")),
-            event_start=(clean.get("event_start_kst") or None), correction=r.get("correction"),
+            event_start=start, correction=r.get("correction"),
             distortion_type=r.get("distortion_type"), cited=cited, observed=snap["observed"],
             texts=snap["texts"], docs=snap["docs"], meta=snap["meta"],
             justification=r.get("justification") or "")
-        emit("verdict", f"판정: {VERDICT_KO.get(r['verdict'], r['verdict'])}" + (f" · {clean.get('event_start_kst')}"
-                                                   if clean.get("event_start_kst") else ""),
+        emit("verdict", f"판정: {VERDICT_KO.get(r['verdict'], r['verdict'])}" + (f" · {start}" if start else ""),
              (r.get("justification") or "")[:300])
         return {"status": "finished"}
 

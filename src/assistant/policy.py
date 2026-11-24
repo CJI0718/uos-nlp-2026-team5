@@ -76,9 +76,20 @@ class Decision:
     evidence: list[dict] = field(default_factory=list)
 
 
-def is_official(url: str, official_domains: list[str]) -> bool:
+#: Wire services that publish a company's own press release verbatim: a primary source.
+NEWSWIRES = ("prnewswire.com", "businesswire.com", "globenewswire.com", "newswire.ca")
+
+
+def is_official(url: str, official_domains: list[str], names: list[str] | None = None) -> bool:
+    """Official when the host is on the interest's list, is a press-release wire, or
+    has a whole label equal to a distinctive word of the event name
+    (aws.amazon.com for "AWS re:Invent"; not nintendolife.com for "Nintendo Direct")."""
     host = (urlsplit(url).hostname or "").lower()
-    return any(host == d or host.endswith("." + d) for d in official_domains)
+    if any(host == d or host.endswith("." + d) for d in (*official_domains, *NEWSWIRES)):
+        return True
+    labels = set(host.split(".")[:-1])
+    words = {w for n in (names or []) for w in tokens(n) if len(w) >= 3 and w.isascii()}
+    return bool(labels & words)
 
 
 # --- literal date / time in text ------------------------------------------------
@@ -186,8 +197,9 @@ def _day(value: str | None) -> date | None:
 
 def decide(v: Verified, *, name: str | list[str], claimed_start: str | None, local_tz: str | None,
            official_domains: list[str], today: str, conflict: bool = False) -> Decision:
-    official_urls = [u for u in v.observed if is_official(u, official_domains)]
-    evidence = _evidence_rows(v, official_domains)
+    names = [name] if isinstance(name, str) else list(name)
+    official_urls = [u for u in v.observed if is_official(u, official_domains, names)]
+    evidence = _evidence_rows(v, official_domains, names)
 
     if v.abstain or v.verdict == "not_enough_evidence":
         claimed = _day(claimed_start)
@@ -206,7 +218,7 @@ def decide(v: Verified, *, name: str | list[str], claimed_start: str | None, loc
 
     # Task A gate, with official domains marked as primary sources.
     meta = {c: {**(v.meta.get(c) or {}),
-                **({"source_type": "official"} if is_official(c, official_domains) else {})}
+                **({"source_type": "official"} if is_official(c, official_domains, names) else {})}
             for c in v.cited}
     gate_error = validate_mission_gate(
         "event_manager", v.verdict, abstain=v.abstain, correction=v.correction,
@@ -243,7 +255,7 @@ def decide(v: Verified, *, name: str | list[str], claimed_start: str | None, loc
                     official_url=cited_official[0] if cited_official else None, evidence=evidence)
 
 
-def _evidence_rows(v: Verified, official_domains: list[str]) -> list[dict]:
+def _evidence_rows(v: Verified, official_domains: list[str], names: list[str]) -> list[dict]:
     rows = []
     for url in v.observed:
         text = v.texts.get(url, "")
@@ -252,7 +264,7 @@ def _evidence_rows(v: Verified, official_domains: list[str]) -> list[dict]:
         rows.append({"url": url, "title": doc.get("title"), "published_at": doc.get("published_at"),
                      "provenance_group": meta.get("provenance_group"),
                      "derivative": meta.get("derivative", False),
-                     "official": is_official(url, official_domains), "cited": url in v.cited,
+                     "official": is_official(url, official_domains, names), "cited": url in v.cited,
                      "quote": _quote(text, match)})
     return rows
 
