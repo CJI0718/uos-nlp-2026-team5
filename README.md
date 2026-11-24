@@ -43,6 +43,7 @@
 | --- | --- |
 | [.mcp.json](.mcp.json) | 개발용 MCP 서버 설정(`dev-interactive`). 실험에는 격리 작업공간을 씁니다 |
 | [src/](src/README.md) | MCP 서버, 도구, BM25/웹 검색, 수치·시간대 계산기, 후속 미션 게이팅, 채점기 |
+| [src/assistant/](src/assistant/README.md) | **일정 비서 앱**: 행사를 찾아 공식 출처로 검증하고 앱 안 달력에 넣는 로컬 웹 앱(`scripts/assistant_app.py serve --demo`) |
 | [skills/](skills/factcheck-mission-agent/SKILL.md) | 외부 AI 에이전트 장착용 4단계 팩트체크·왜곡특정·미션수행 Skill |
 | [missions/](missions/README.md) | 검증 게이팅 통과 후 생성되는 후속 미션 결과물(`.ics`, `.md`) 및 장기 추적 레지스트리 |
 | [tests/](tests/) | 오프라인 단위·통합 테스트 |
