@@ -24,7 +24,7 @@ const STEP_ICON = {
 };
 const VIEWS = {
   home: { title: "다가오는 일정", sub: "비서가 확인한 일정과 확인 중인 일정입니다." },
-  approvals: { title: "승인 대기", sub: "비서가 자동으로 넣지 않은 일정입니다. 이유를 보고 승인하거나 제외하세요." },
+  approvals: { title: "승인 대기", sub: "비서가 자동으로 넣지 않은 일정과, 다시 확인해 보니 바뀐 일정입니다." },
   tracking: { title: "추적 중", sub: "아직 공식 발표가 없어 기다리는 일정입니다. 다음 실행 때 다시 확인합니다." },
   runs: { title: "실행 기록", sub: "비서가 언제 무엇을 했는지, 비용과 검색 횟수입니다." },
   settings: { title: "설정", sub: "자동 실행, 예산, 관심사, 모델입니다." },
@@ -126,13 +126,19 @@ function card(ev, { actions = false } = {}) {
   const loc = localTime(ev);
   const reasons = (ev.status === "pending_approval" || ev.status === "changed") && ev.reasons_text?.length
     ? `<div class="reason-list">${ev.reasons_text.map((r) => `<span class="chip warn">${esc(r)}</span>`).join("")}</div>` : "";
-  const acts = actions ? `<div class="row-actions">
+  const change = ev.status === "changed"
+    ? `<div class="change">변경 제안: <s>${esc(ev.start_kst || "")}</s> → <b>${esc(ev.proposed_start || "공식 일정 확인 안 됨")}</b></div>` : "";
+  const acts = !actions ? "" : ev.status === "changed"
+    ? `<div class="row-actions">${ev.proposed_start ? `<button class="btn small ok" data-act="approve" data-id="${ev.id}">새 일정으로</button>` : ""}
+      <button class="btn small" data-act="keep" data-id="${ev.id}">기존 유지</button>
+      <button class="btn small bad" data-act="reject" data-id="${ev.id}">빼기</button></div>`
+    : `<div class="row-actions">
       <button class="btn small ok" data-act="approve" data-id="${ev.id}">승인</button>
-      <button class="btn small bad" data-act="reject" data-id="${ev.id}">제외</button></div>` : "";
+      <button class="btn small bad" data-act="reject" data-id="${ev.id}">제외</button></div>`;
   return `<div class="card ${ev.status === "tracking" ? "dim" : ""}" data-open="${ev.id}">
     <div class="time">${esc(clock(ev))}<small>${esc(ev.status === "tracking" ? "미확정" : "한국시간")}</small></div>
     <div><div class="title">${esc(ev.title)}</div>
-      <div class="meta">${loc ? `<span>${esc(loc)}</span>` : ""}<span>${esc((ev.claim_text || "").slice(0, 80))}</span></div>${reasons}</div>
+      <div class="meta">${loc ? `<span>${esc(loc)}</span>` : ""}<span>${esc((ev.claim_text || "").slice(0, 80))}</span></div>${change}${reasons}</div>
     <div class="side">${chipsFor(ev)}${acts}</div></div>`;
 }
 
@@ -205,7 +211,8 @@ function renderCalendar() {
       const st = STATUS[e.status] || { cls: "muted" };
       return `<button class="pill ${st.cls} ${e.status === "tracking" ? "tentative" : ""}" data-open="${e.id}"
         title="${esc(e.title)} · ${esc(STATUS[e.status]?.label || e.status)}">
-        <span class="ph"><span class="pt">${esc(clock(e))}</span>${e.corrected && e.status !== "tracking"
+        <span class="ph"><span class="pt">${esc(clock(e))}</span>${e.status === "changed"
+          ? '<span class="pc">변경?</span>' : e.corrected && e.status !== "tracking"
           ? '<span class="pc">정정됨</span>' : e.status === "tracking" ? '<span class="pc">미확정</span>' : ""}</span>
         <span class="pn">${esc(e.title)}</span></button>`;
     }).join("");
@@ -312,8 +319,11 @@ async function openEvent(id) {
   const ev = await api(`/api/events/${id}`);
   const loc = localTime(ev);
   const ACT = { auto_added: ["undo"], added: ["undo"], pending_approval: ["approve", "reject"],
-    changed: ["approve", "reject"], undone: ["approve", "reject"], tracking: ["reject"], error: ["reject"] };
-  const LABEL = { approve: ["승인해서 일정에 넣기", "ok"], reject: ["제외", "bad"], undo: ["일정에서 빼기(되돌리기)", ""] };
+    changed: ev.proposed_start ? ["approve", "keep", "reject"] : ["keep", "reject"],
+    undone: ["approve", "reject"], tracking: ["reject"], error: ["reject"] };
+  const LABEL = ev.status === "changed"
+    ? { approve: [`새 일시(${ev.proposed_start})로 바꾸기`, "ok"], keep: ["기존 일시 유지", ""], reject: ["일정에서 빼기", "bad"] }
+    : { approve: ["승인해서 일정에 넣기", "ok"], reject: ["제외", "bad"], undo: ["일정에서 빼기(되돌리기)", ""] };
   const actions = (ACT[ev.status] || []).map((a) =>
     `<button class="btn ${LABEL[a][1]}" data-act="${a}" data-id="${ev.id}">${LABEL[a][0]}</button>`).join("");
   const evidence = (ev.evidence || []).map((e) => `<div class="ev">
@@ -333,7 +343,11 @@ async function openEvent(id) {
       <small>${esc(ev.status === "tracking" ? "주장된 일시(아직 확인 안 됨)" : "한국시간")}${loc ? " · " + esc(loc) : ""}</small></div>
     ${ev.reasons_text?.length ? `<div class="reason-list" style="margin-top:12px">${ev.reasons_text.map((r) =>
       `<span class="chip warn">${esc(r)}</span>`).join("")}</div>` : ""}
+    ${ev.status === "changed" ? `<div class="change big">변경 제안: <s>${esc(ev.start_kst || "")}</s> →
+      <b>${esc(ev.proposed_start || "공식 일정이 다시 확인되지 않음")}</b></div>` : ""}
     <dl class="kv">
+      ${ev.last_checked_at ? `<dt>마지막 재확인</dt><dd>${esc(ev.last_checked_at.slice(0, 16).replace("T", " "))}</dd>` : ""}
+      ${ev.next_check_at ? `<dt>다음 재확인</dt><dd>${esc(ev.next_check_at.slice(0, 16).replace("T", " "))}</dd>` : ""}
       <dt>사용자가 본 주장</dt><dd>${esc(ev.claim_text)}</dd>
       <dt>판정</dt><dd>${esc({ supported: "지지", refuted: "반박(정정)", not_enough_evidence: "근거 부족" }[ev.verdict] || ev.verdict || "-")}</dd>
       ${ev.correction ? `<dt>정정</dt><dd>${esc(ev.correction)}</dd>` : ""}
@@ -434,7 +448,8 @@ document.addEventListener("click", async (e) => {
     e.stopPropagation();
     try {
       await api(`/api/events/${t.dataset.id}/${t.dataset.act}`, { method: "POST" });
-      toast({ approve: "일정에 넣었어요.", reject: "제외했어요.", undo: "일정에서 뺐어요." }[t.dataset.act]);
+      toast({ approve: "일정에 반영했어요.", keep: "기존 일시를 유지해요.", reject: "제외했어요.",
+        undo: "일정에서 뺐어요." }[t.dataset.act]);
       closeDrawer();
       await refresh();
     } catch (err) { toast(err.message); }

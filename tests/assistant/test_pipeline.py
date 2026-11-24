@@ -60,7 +60,7 @@ def test_second_run_does_not_duplicate(ctx):
     run_id = run_now(ctx)
     conn = ctx.connect()
     assert len(db.list_events(conn)) == 5
-    assert db.get_run(conn, run_id)["summary"].startswith("이미 있음")
+    assert "이미 있음 4" in db.get_run(conn, run_id)["summary"]   # rechecks run, nothing duplicated
 
 
 def test_user_actions_follow_the_state_rules(ctx):
@@ -177,3 +177,33 @@ def test_extracted_claims_name_their_event(tmp_path):
     out = extract_candidates(client, budget, {"id": "game", "name": "게임"}, results, "2026-11-24", 5,
                              lambda *a, **k: None)
     assert out[0].claim_text.startswith("피스 바이 피스:")
+
+
+def test_a_moved_event_is_flagged_and_the_user_decides(ctx):
+    run_now(ctx)
+    run_id = run_now(ctx)                       # Nova Labs moved its keynote one hour later
+    conn = ctx.connect()
+    ev = _by_title(conn)
+    nova = db.get_event(conn, ev["노바랩스 호라이즌 키노트"]["id"])
+    assert nova["status"] == "changed" and nova["proposed_start"] and nova["proposed_start"] != nova["start_kst"]
+    assert "SCHEDULE_CHANGED" in nova["reasons"]
+    # The unchanged Pixel Forge entry was confirmed again, not touched.
+    assert ev["픽셀포지 쇼케이스"]["status"] == "auto_added" and ev["픽셀포지 쇼케이스"]["last_checked_at"]
+    assert ev["오르빗모바일 언팩"]["status"] == "tracking"
+    assert "변경 감지 1" in db.get_run(conn, run_id)["summary"]
+    new = nova["proposed_start"]
+    after = db.user_action(conn, nova["id"], "approve")
+    assert after["status"] == "added" and after["start_kst"] == new and after["proposed_start"] is None
+
+
+def test_keep_the_old_time_and_housekeeping(ctx):
+    run_now(ctx)
+    run_now(ctx)
+    conn = ctx.connect()
+    nova = _by_title(conn)["노바랩스 호라이즌 키노트"]
+    old = nova["start_kst"]
+    kept = db.user_action(conn, nova["id"], "keep")
+    assert kept["status"] == "added" and kept["start_kst"] == old
+    assert db.housekeep(conn, "2030-01-01T00:00:00+09:00") >= 3
+    statuses = {e["status"] for e in db.list_events(conn)}
+    assert "occurred" in statuses and "expired" in statuses

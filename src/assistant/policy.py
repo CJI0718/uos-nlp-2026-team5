@@ -45,6 +45,8 @@ REASON_TEXT = {
     "CLAIM_WAS_RIGHT": "모델은 '틀림'이라 했지만 주장한 한국시간과 같음(시간대 표기만 다름)",
     "NOT_ENOUGH_EVIDENCE": "아직 확인되지 않음(추적 중)",
     "OFFICIAL_DATE_UNKNOWN": "주장한 날짜는 틀렸고 공식 날짜는 아직 없음(추적 중)",
+    "SCHEDULE_CHANGED": "공식 일시가 바뀜",
+    "MAY_BE_CANCELLED": "공식 일정이 다시 확인되지 않음(취소·연기 가능성)",
     "REFUTED": "주장이 틀렸고 정정할 일정이 없음",
     "PAST": "이미 지난 일정",
     "ERROR": "검증 중 오류",

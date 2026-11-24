@@ -11,6 +11,9 @@ Five cases, one per policy outcome:
            the official page is empty (JS-rendered)           -> pending_approval (one source group)
   ORBIT    rumour only                                         -> tracking
   QUASAR   time only in an undated search snippet; one blog   -> pending_approval, time dropped (RW10)
+
+From the second run on, Nova Labs moves its keynote one hour later: the
+recheck of the scheduled event finds it and marks it 'changed'.
 """
 
 from __future__ import annotations
@@ -129,6 +132,13 @@ def build(today: date | None = None) -> dict:
                     "snippet": f"Quasar DevDay {_en(quasar_day)} 7 p.m. KST livestream", "published_date": None}],
     }
 
+    nova_late = _at(nova_day, 11, "America/Los_Angeles")
+    nova_late_kst_s = nova_late.astimezone(KST).strftime("%Y-%m-%d %H:%M")
+    pages["https://novalabs.example/newsroom/horizon-keynote#v2"] = {
+        "title": "Nova Labs announces Horizon keynote (updated)",
+        "published_at": pub(0),
+        "text": (f"Update: the Horizon keynote now starts one hour later, on {_en(nova_day)} at "
+                 f"{nova_late:%-I} a.m. {nova_late.tzname()}, to allow more time for the live demos. " * 2)}
     nova_kst_s = nova_kst.strftime("%Y-%m-%d %H:%M")
     pixel_kst_s = pixel_kst.strftime("%Y-%m-%d %H:%M")
     candidates = {
@@ -169,6 +179,16 @@ def build(today: date | None = None) -> dict:
                    justification=f"공식 뉴스룸: {_en(nova_day)} {nova:%-I} a.m. {nova.tzname()} = {nova_kst_s} KST",
                    distortion_type="none", event_start_kst=nova_kst_s),
         ],
+        "노바랩스@2": [
+            ("search_web", {"query": "Nova Labs Horizon keynote official"}),
+            ("fetch_url", {"url": "https://novalabs.example/newsroom/horizon-keynote"}),
+            ("calculate_comparison", {"op": "tz_convert", "time": nova_late.strftime("%Y-%m-%d %H:%M"),
+                                      "from_tz": "America/Los_Angeles", "to_tz": "KST"}),
+            finish(verdict="refuted", cited_evidence_ids=["https://novalabs.example/newsroom/horizon-keynote"],
+                   justification=f"공식 뉴스룸 공지가 바뀌었다: {nova_late:%-I} a.m. {nova_late.tzname()}로 1시간 늦춰짐.",
+                   correction=f"한국시간 {nova_late_kst_s}", distortion_type="timezone_or_date_error",
+                   event_start_kst=nova_late_kst_s),
+        ],
         "픽셀포지": [
             ("search_web", {"query": "Pixel Forge Showcase official time"}),
             ("fetch_url", {"url": "https://pixelforge.example/news/showcase"}),
@@ -205,14 +225,17 @@ def build(today: date | None = None) -> dict:
                    distortion_type="none", event_start_kst=f"{quasar_day.isoformat()} 19:00"),
         ],
     }
-    return {"pages": pages, "results": results, "candidates": candidates, "scripts": scripts}
+    return {"pages": pages, "results": results, "candidates": candidates, "scripts": scripts,
+            "state": {"runs": 0}}
 
 
 class DemoWeb:
     """search/fetch over the fixtures, shaped like task_a.web.LiveWebProvider."""
 
     def __init__(self, data: dict) -> None:
+        """One DemoWeb is made per run; from the second run the Nova page is updated."""
         self.data = data
+        data["state"]["runs"] += 1
 
     def search(self, query: str, top_k: int = 5, end_date: str | None = None,
                start_date: str | None = None) -> list[dict]:
@@ -224,11 +247,13 @@ class DemoWeb:
         return self.data["results"][topic][:top_k]
 
     def fetch(self, url: str) -> dict:
+        if self.data["state"]["runs"] >= 2 and f"{url}#v2" in self.data["pages"]:
+            url = f"{url}#v2"
         page = self.data["pages"].get(url)
         if page is None:
             raise OSError("demo: 없는 페이지")
         return {"text": page["text"], "title": page["title"], "published_at": page["published_at"],
-                "date_source": "meta", "extractor": "demo", "fetched_url": url}
+                "date_source": "meta", "extractor": "demo", "fetched_url": url.split("#")[0]}
 
 
 def demo_client(data: dict, delay_s: float = 0.0) -> ScriptedClient:
@@ -241,7 +266,11 @@ def demo_client(data: dict, delay_s: float = 0.0) -> ScriptedClient:
             topic = "game" if "게임" in messages[0]["content"] else "tech"
             return ChatReply(content=json.dumps({"events": data["candidates"][topic]}, ensure_ascii=False))
         claim = messages[1]["content"]
-        script = next((s for k, s in data["scripts"].items() if k in claim), None)
+        later = data["state"]["runs"] >= 2
+        script = next((s for k, s in data["scripts"].items()
+                       if "@" not in k and k in claim), None)
+        if later and f"{_key(claim, data)}@2" in data["scripts"]:
+            script = data["scripts"][f"{_key(claim, data)}@2"]
         if script is None:
             return ChatReply(content="", tool_calls=[ToolCall("x", "finish_verification", {
                 "verdict": "not_enough_evidence", "abstain": True, "cited_evidence_ids": [],
@@ -254,6 +283,10 @@ def demo_client(data: dict, delay_s: float = 0.0) -> ScriptedClient:
     return ScriptedClient(responder, model="demo-scripted")
 
 
+def _key(claim: str, data: dict) -> str | None:
+    return next((k for k in data["scripts"] if "@" not in k and k in claim), None)
+
+
 def demo_settings(settings: dict) -> dict:
     """Default settings with the demo's fictional official domains and topic queries."""
     out = json.loads(json.dumps(settings))
@@ -261,4 +294,5 @@ def demo_settings(settings: dict) -> dict:
         interest["official_domains"] = DEMO_DOMAINS.get(interest["id"], []) + interest["official_domains"]
         interest["queries"] = (["game showcase release date announced"] if interest["id"] == "game"
                                else ["tech event date announced"])
+    out["budget"]["recheck_hours"] = 0   # the demo rechecks scheduled events on every run
     return out

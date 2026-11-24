@@ -69,6 +69,7 @@ DEFAULTS: dict = {
         "max_tool_calls": 12,
         "max_external_calls": 6,
         "max_llm_turns": 10,
+        "recheck_hours": 72,           # scheduled events are verified again this often
     },
     "schedule": {
         "enabled": False,      # demo use; turn on in Settings

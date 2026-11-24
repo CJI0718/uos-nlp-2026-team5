@@ -263,7 +263,7 @@ def make_handler(ctx: AppContext):
                     except RunBusy as exc:
                         return self._error(409, str(exc))
                     return self._json({"started": True}, 202)
-                m = re.fullmatch(r"/api/events/(\d+)/(approve|reject|undo)", path)
+                m = re.fullmatch(r"/api/events/(\d+)/(approve|keep|reject|undo)", path)
                 if m:
                     return self._json(api.act(int(m.group(1)), m.group(2)))
                 return self._error(404, "not found")

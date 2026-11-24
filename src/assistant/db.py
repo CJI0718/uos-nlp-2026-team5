@@ -12,7 +12,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 KST = timezone(timedelta(hours=9))
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 MAX_QUOTE_CHARS = 300
 
 #: Schedule states. 'auto_added' and 'added' are on the schedule.
@@ -22,11 +22,12 @@ ON_SCHEDULE = ("auto_added", "added")
 
 #: (from, to) pairs a user action may perform.
 USER_TRANSITIONS = {
-    "approve": {"pending_approval", "undone", "changed"},
+    "approve": {"pending_approval", "undone", "changed"},   # on 'changed': take the new start
+    "keep": {"changed"},                                     # keep the old start
     "reject": {"pending_approval", "undone", "tracking", "changed", "error"},
     "undo": {"auto_added", "added"},
 }
-USER_TARGET = {"approve": "added", "reject": "rejected", "undo": "undone"}
+USER_TARGET = {"approve": "added", "keep": "added", "reject": "rejected", "undo": "undone"}
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS events (
@@ -51,7 +52,9 @@ CREATE TABLE IF NOT EXISTS events (
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL,
   next_check_at TEXT,
-  last_run_id INTEGER
+  last_run_id INTEGER,
+  proposed_start TEXT,
+  last_checked_at TEXT
 );
 CREATE INDEX IF NOT EXISTS events_status ON events(status, start_kst);
 CREATE TABLE IF NOT EXISTS evidence (
@@ -139,6 +142,10 @@ def connect(path: str | Path) -> sqlite3.Connection:
     conn.execute("PRAGMA foreign_keys=ON")
     conn.execute("PRAGMA busy_timeout=10000")
     conn.executescript(SCHEMA)
+    have = {r[1] for r in conn.execute("PRAGMA table_info(events)")}
+    for column in ("proposed_start", "last_checked_at"):   # v1 databases
+        if column not in have:
+            conn.execute(f"ALTER TABLE events ADD COLUMN {column} TEXT")
     conn.execute(f"PRAGMA user_version={SCHEMA_VERSION}")
     conn.commit()
     return conn
@@ -219,6 +226,46 @@ def save_event(conn, fields: dict, *, actor: str, reason: str, run_id: int | Non
     return event_id
 
 
+def record_check(conn, event_id: int, next_check_at: str | None, run_id: int | None,
+                 reason: str | None = None) -> None:
+    """A recheck that changed nothing: remember when it ran and when to look again."""
+    conn.execute("UPDATE events SET last_checked_at=?, next_check_at=?, last_run_id=? WHERE id=?",
+                 (now_iso(), next_check_at, run_id, event_id))
+    if reason:
+        ev = conn.execute("SELECT status FROM events WHERE id=?", (event_id,)).fetchone()
+        add_decision(conn, event_id, ev[0], ev[0], "policy", reason, run_id)
+    conn.commit()
+
+
+def propose_change(conn, event_id: int, proposed_start: str | None, reasons: list[str],
+                   justification: str, run_id: int | None) -> None:
+    """A scheduled event looks different now: keep it, mark it 'changed', ask the user."""
+    ev = conn.execute("SELECT status FROM events WHERE id=?", (event_id,)).fetchone()
+    conn.execute("UPDATE events SET status='changed', proposed_start=?, reasons_json=?, justification=?, "
+                 "last_checked_at=?, next_check_at=NULL, updated_at=?, last_run_id=? WHERE id=?",
+                 (proposed_start, json.dumps(reasons, ensure_ascii=False), justification, now_iso(),
+                  now_iso(), run_id, event_id))
+    add_decision(conn, event_id, ev[0], "changed", "policy",
+                 f"새 일시 제안: {proposed_start}" if proposed_start else "취소·연기 가능성", run_id)
+    conn.commit()
+
+
+def housekeep(conn, now: str) -> int:
+    """Past scheduled events become 'occurred'; tracked ones whose date passed 'expired'."""
+    changed = 0
+    today = now[:10]
+    for ev in list_events(conn, ("auto_added", "added", "tracking")):
+        start = ev.get("start_kst") or ""
+        if start and start[:10] < today:
+            target = "expired" if ev["status"] == "tracking" else "occurred"
+            conn.execute("UPDATE events SET status=?, next_check_at=NULL, updated_at=? WHERE id=?",
+                         (target, now, ev["id"]))
+            add_decision(conn, ev["id"], ev["status"], target, "policy", "날짜가 지남", None)
+            changed += 1
+    conn.commit()
+    return changed
+
+
 def add_decision(conn, event_id, from_status, to_status, actor, reason, run_id) -> None:
     conn.execute("INSERT INTO decisions (event_id, from_status, to_status, actor, reason, run_id, "
                  "created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -245,11 +292,21 @@ def user_action(conn, event_id: int, action: str) -> dict:
         raise KeyError(event_id)
     if event["status"] not in USER_TRANSITIONS[action]:
         raise IllegalTransition(f"'{event['status']}' 상태에서는 {action}할 수 없습니다.")
-    if action == "approve" and not event.get("start_kst"):
-        raise IllegalTransition("검증된 일시가 없는 일정은 승인할 수 없습니다.")
     target = USER_TARGET[action]
-    conn.execute("UPDATE events SET status=?, updated_at=? WHERE id=?", (target, now_iso(), event_id))
-    add_decision(conn, event_id, event["status"], target, "user", action, None)
+    start = event.get("start_kst")
+    reason = action
+    if event["status"] == "changed" and action == "approve":
+        if not event.get("proposed_start"):
+            raise IllegalTransition("새 일시가 없는 변경입니다. 기존 유지 또는 일정에서 빼기를 고르세요.")
+        reason = f"새 일시로 변경: {start} → {event['proposed_start']}"
+        start = event["proposed_start"]
+    if action == "approve" and not start:
+        raise IllegalTransition("검증된 일시가 없는 일정은 승인할 수 없습니다.")
+    precision = "date" if start and len(start.strip()) == 10 else event.get("precision", "datetime")
+    conn.execute("UPDATE events SET status=?, start_kst=?, precision=?, proposed_start=NULL, updated_at=?, "
+                 "version=version+? WHERE id=?",
+                 (target, start, precision, now_iso(), int(start != event.get("start_kst")), event_id))
+    add_decision(conn, event_id, event["status"], target, "user", reason, None)
     conn.commit()
     return get_event(conn, event_id)
 

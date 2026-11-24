@@ -104,7 +104,14 @@ def _run(ctx: AppContext, trigger: str) -> int:
         web = ctx.web_factory(settings)
         env = _environment(ctx, settings, web, run_id, client)
         today = db.today_kst()
-        queue = _rechecks(conn) + _discover(settings, web, client, budget, today, emit)
+        aged = db.housekeep(conn, db.now_iso())
+        if aged:
+            emit("info", f"지난 일정 {aged}개 정리", "날짜가 지난 일정은 '지남', 기다리던 일정은 '만료'")
+        rechecks = _rechecks(conn)
+        if rechecks:
+            emit("info", f"다시 확인할 일정 {len(rechecks)}개",
+                 ", ".join(c.title_ko for c in rechecks)[:200])
+        queue = rechecks + _discover(settings, web, client, budget, today, emit)
         stats["candidates"] = len(queue)
         for cand in queue[: caps["max_candidates_per_run"]]:
             result = _handle(conn, ctx, env, client, budget, cand, settings, today, run_id, emit)
@@ -128,7 +135,8 @@ def _run(ctx: AppContext, trigger: str) -> int:
 
 
 _STATUS_KO = {"auto_added": "자동 등록", "pending_approval": "승인 대기", "tracking": "추적",
-              "rejected": "제외", "error": "오류", "skipped": "이미 있음"}
+              "rejected": "제외", "error": "오류", "skipped": "이미 있음", "changed": "변경 감지",
+              "unchanged": "재확인"}
 
 
 def _environment(ctx: AppContext, settings: dict, web, run_id: int, client) -> AgentEnvironment:
@@ -156,17 +164,45 @@ def _discover(settings, web, client, budget, today, emit) -> list[Candidate]:
 
 
 def _rechecks(conn) -> list[Candidate]:
-    """Tracked events whose next check is due, re-verified before new discoveries."""
+    """Events whose next check is due, re-verified before new discoveries.
+
+    Scheduled events are checked again as "X starts at <stored KST time>", so
+    an unchanged event is simply confirmed and a moved one is refuted with the
+    new time. Tracked events are checked with their original claim.
+    """
     now = db.now_iso()
     out = []
-    for ev in db.list_events(conn, ("tracking",)):
+    for ev in db.list_events(conn, db.ON_SCHEDULE + ("tracking",)):
         if ev.get("next_check_at") and ev["next_check_at"] > now:
             continue
+        start = ev.get("start_kst") or ""
+        scheduled = ev["status"] in db.ON_SCHEDULE
+        claim = ev["claim_text"]
+        if scheduled and start:
+            when = f"{start[:10]}" if len(start) == 10 else f"한국시간 {start}"
+            claim = f"{ev['title']}은(는) {when}에 열린다."
         out.append(Candidate(interest=ev["interest"], name=_name_from_key(ev["event_key"], ev["title"]),
-                             title_ko=ev["title"], claim_text=ev["claim_text"],
-                             start=ev.get("start_kst") or "", tz="Asia/Seoul",
-                             source_url=ev.get("source_url"), recheck_of=ev["id"]))
+                             title_ko=ev["title"], claim_text=claim, start=start, tz="Asia/Seoul",
+                             source_url=ev.get("official_url") or ev.get("source_url"),
+                             recheck_of=ev["id"]))
+    out.sort(key=lambda c: c.start or "9999")
     return out
+
+
+def _next_check(start: str | None, settings: dict) -> str | None:
+    """Every `recheck_hours`, and once more the day before the event."""
+    if not start:
+        return None
+    now = datetime.fromisoformat(db.now_iso())
+    when = now + timedelta(hours=settings["budget"].get("recheck_hours", 72))
+    try:
+        begin = datetime.fromisoformat(f"{start[:10]}T{start[11:16] or '00:00'}:00+09:00")
+    except ValueError:
+        return when.isoformat()
+    day_before = begin - timedelta(days=1)
+    if now < day_before < when:
+        when = day_before
+    return when.isoformat() if when < begin else None
 
 
 def _name_from_key(key: str, fallback: str) -> str:
@@ -179,7 +215,8 @@ def _handle(conn, ctx, env, client, budget, cand: Candidate, settings, today, ru
         return None
     claimed = claimed_kst(cand)
     existing_all = db.events_in_interest(conn, cand.interest)
-    match = find_match(existing_all, cand.interest, cand.name, claimed or cand.start)
+    match = (db.get_event(conn, cand.recheck_of) if cand.recheck_of is not None
+             else find_match(existing_all, cand.interest, cand.name, claimed or cand.start))
     key = match["event_key"] if match else event_key(cand.interest, cand.name, claimed or cand.start)
     if cand.recheck_of is None and match and match["status"] in SETTLED:
         emit("skip", f"이미 있음: {match['title']}", None, key)
@@ -201,6 +238,9 @@ def _handle(conn, ctx, env, client, budget, cand: Candidate, settings, today, ru
         return "error"
 
     v = outcome.verified
+    if cand.recheck_of is not None and match and match["status"] in db.ON_SCHEDULE:
+        return _recheck_scheduled(conn, ctx, match, v, cand, claimed, interest, settings, today,
+                                  run_id, emit, key)
     on_schedule = [e for e in existing_all if e["status"] in db.ON_SCHEDULE and e["event_key"] != key]
     conflict = any(e["title"] == base["title"] and e.get("start_kst") != v.event_start for e in on_schedule)
     decision = decide(v, name=[cand.name, cand.title_ko], claimed_start=claimed, local_tz=cand.tz,
@@ -211,7 +251,9 @@ def _handle(conn, ctx, env, client, budget, cand: Candidate, settings, today, ru
               "verdict": v.verdict, "distortion_type": v.distortion_type, "correction": v.correction,
               "justification": v.justification, "reasons": decision.reasons,
               "gate_error": decision.gate_error, "official_url": decision.official_url,
-              "next_check_at": _tomorrow() if decision.status == "tracking" else None}
+              "next_check_at": (_tomorrow() if decision.status == "tracking"
+                                else _next_check(start, settings) if decision.status == "auto_added"
+                                else None)}
     event_id = db.save_event(conn, fields, actor="policy",
                              reason=", ".join(explain(decision.reasons)) or "모든 검사 통과", run_id=run_id)
     db.replace_evidence(conn, event_id, decision.evidence, run_id)
@@ -221,6 +263,39 @@ def _handle(conn, ctx, env, client, budget, cand: Candidate, settings, today, ru
          " / ".join(explain(decision.reasons)) or "공식 출처에서 일시를 확인함", key)
     _publish_event(ctx, conn, key)
     return decision.status
+
+
+def _recheck_scheduled(conn, ctx, ev: dict, v, cand: Candidate, claimed, interest, settings, today,
+                       run_id, emit, key) -> str:
+    """A scheduled event was verified again. Never rewritten silently: a new
+    start or a vanished schedule becomes 'changed' for the user to decide."""
+    decision = decide(v, name=[cand.name, cand.title_ko], claimed_start=claimed, local_tz=None,
+                      official_domains=interest["official_domains"], today=today)
+    new = decision.event_start or v.event_start
+    stored = ev.get("start_kst")
+    gone = decision.status == "rejected" or "OFFICIAL_DATE_UNKNOWN" in decision.reasons
+    if decision.status in ("auto_added", "pending_approval") and new and new != stored:
+        reasons = ["SCHEDULE_CHANGED"] + [r for r in decision.reasons if r != "CLAIM_WAS_RIGHT"]
+        db.propose_change(conn, ev["id"], new, reasons, v.justification, run_id)
+        db.replace_evidence(conn, ev["id"], decision.evidence, run_id)
+        emit("decision", f"🔄 변경 감지: {ev['title']} · {stored} → {new}",
+             "새 일시로 바꿀지 승인 대기에서 고르세요", key)
+        result = "changed"
+    elif gone:
+        db.propose_change(conn, ev["id"], None, ["MAY_BE_CANCELLED"], v.justification, run_id)
+        emit("decision", f"🔄 확인 필요: {ev['title']}", "공식 일정이 확인되지 않음(취소·연기 가능성)", key)
+        result = "changed"
+    elif decision.status == "auto_added" and new == stored:
+        db.record_check(conn, ev["id"], _next_check(stored, settings), run_id)
+        db.replace_evidence(conn, ev["id"], decision.evidence, run_id)
+        emit("decision", f"✓ 변경 없음: {ev['title']} · {stored}", "공식 출처에서 같은 일시를 다시 확인함", key)
+        result = "unchanged"
+    else:
+        db.record_check(conn, ev["id"], _tomorrow(), run_id, "재확인에서 확정하지 못함(일정은 유지)")
+        emit("decision", f"· 유지: {ev['title']}", "이번에는 확인하지 못해 일정은 그대로 두고 내일 다시 봅니다", key)
+        result = "unchanged"
+    _publish_event(ctx, conn, key)
+    return result
 
 
 def _precision(start: str | None) -> str:
