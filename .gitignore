@@ -52,3 +52,6 @@ heonsu/
 missions/events/
 missions/artifacts/
 missions/tracking/
+
+# Schedule assistant runtime data (DB, settings, run logs)
+.assistant/
