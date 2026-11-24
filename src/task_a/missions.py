@@ -65,6 +65,25 @@ class MissionRecord:
 
 
 _HHMM = re.compile(r"(\d{1,2}):(\d{2})")
+_DATE_ONLY = re.compile(r"^\s*(\d{4})-(\d{2})-(\d{2})\s*$")
+
+
+def is_date_only(event_start: str | None) -> bool:
+    """'2027-02-26' (an all-day event such as a release date) rather than a clock time."""
+    return bool(_DATE_ONLY.match(event_start or ""))
+
+
+def _date_in_correction(event_start: str, correction: str) -> bool:
+    """True when the all-day event's date is written in the correction.
+
+    Accepts the ISO date or the Korean '2월 26일' form; nothing looser.
+    """
+    match = _DATE_ONLY.match(event_start or "")
+    if not match:
+        return False
+    y, m, d = match.groups()
+    text = correction or ""
+    return f"{y}-{m}-{d}" in text or bool(re.search(rf"(?<!\d){int(m)}월\s*{int(d)}일", text))
 
 
 def _time_in_correction(event_start_kst: str, correction: str) -> bool:
@@ -92,6 +111,7 @@ def validate_mission_gate(
     event_start_kst: str | None = None,
     evidence_meta: dict[str, dict] | None = None,
     require_independent: bool = False,
+    allow_date_only: bool = False,
 ) -> str | None:
     """Return an error reason if the mission violates the verification gate.
 
@@ -102,6 +122,10 @@ def validate_mission_gate(
     include a primary source or to span at least two provenance groups:
     five reprints of one article are one source, not five (`evidence_meta`
     maps evidence_id to its `source_type` and `provenance_group`).
+
+    `allow_date_only` (off for experiments) lets an all-day event_start
+    ('YYYY-MM-DD') through; a refuted one then needs that date in the correction
+    instead of an HH:MM.
     """
     if mission_type not in ALL_MISSIONS:
         return f"알 수 없는 mission_type: {mission_type!r} (허용: {sorted(ALL_MISSIONS)})"
@@ -137,6 +161,11 @@ def validate_mission_gate(
                 f"수행하려면 반드시 정정된 사실(correction)을 함께 제공해야 합니다."
             )
         if (mission_type == "event_manager" and verdict_val == Verdict.REFUTED.value
+                and allow_date_only and is_date_only(event_start_kst)):
+            if not _date_in_correction(event_start_kst or "", correction or ""):
+                return ("검증 게이팅 차단: 반박된 종일 일정의 날짜(YYYY-MM-DD)가 correction에 없습니다. "
+                        "정정된 날짜로만 일정을 만들 수 있습니다.")
+        elif (mission_type == "event_manager" and verdict_val == Verdict.REFUTED.value
                 and not _time_in_correction(event_start_kst or "", correction or "")):
             return (
                 "검증 게이팅 차단: 반박된 일정의 event_start_kst 시각(HH:MM)이 correction에 "

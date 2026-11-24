@@ -87,7 +87,8 @@ def _parse_time(value: str) -> datetime:
     upper = text.upper()
     # The meridiem form must be tried first, or '오후 05:00' parses as 05:00.
     candidates = [f"{upper} {meridiem}", upper] if meridiem else [upper]
-    formats = ("%Y-%m-%d %I:%M %p", "%Y-%m-%d %H:%M", "%Y-%m-%dT%H:%M", "%I:%M %p", "%H:%M")
+    formats = ("%Y-%m-%d %I:%M %p", "%Y-%m-%d %H:%M", "%Y-%m-%dT%H:%M",
+               "%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%S", "%I:%M %p", "%H:%M")
     for candidate in candidates:
         for fmt in formats:
             try:

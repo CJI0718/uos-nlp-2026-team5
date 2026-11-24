@@ -518,6 +518,27 @@ class AgentEnvironment:
                 "\n\n[서버 출처 분석] 이번 에피소드에서 읽은 다른 문서와 본문이 겹치지 않음"
         return ""
 
+    def episode_snapshot(self, cited: list[str] | None = None) -> dict:
+        """What the active episode has read, taken before finish_verification ends it.
+
+        For callers that decide on actions themselves (the schedule assistant):
+        observed ids, full read texts, page title/date per URL, and the
+        provenance metadata of `cited`. Read-only; the episode is unchanged.
+        """
+        if self.active is None:
+            raise RuntimeError("활성 에피소드가 없습니다.")
+        ep = self.active
+        ids = [str(c) for c in (cited or [])]
+        docs = {url: {"title": d.get("title") or "", "published_at": d.get("published_at")}
+                for url, d in self.registry.fetched.items()}
+        return {
+            "claim": ep.claim.to_dict(),
+            "observed": sorted(ep.read_evidence_ids),
+            "texts": dict(ep.read_texts),
+            "docs": docs,
+            "meta": self._evidence_meta(ep, ids),
+        }
+
     def _evidence_meta(self, ep: ActiveEpisode, ids: list[str]) -> dict[str, dict]:
         """Source type, provenance group and derivative flag of each cited document."""
         auto = group_documents(ep.read_texts)

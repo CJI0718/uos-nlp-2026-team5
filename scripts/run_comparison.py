@@ -34,7 +34,6 @@ import argparse
 import json
 import os
 import random
-import re
 import subprocess
 import sys
 import time
@@ -48,6 +47,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from make_agent_workspace import PROMPT_TEMPLATE  # noqa: E402
 from task_a.schema import ExecutionStatus, Verdict, read_jsonl  # noqa: E402
 from task_a.scorer import Graded, abstain_rate, accuracy, coverage, macro_f1  # noqa: E402
+from task_a.skill import skill_body  # noqa: E402
 
 CONDITIONS = ("closed_book", "plain_web", "harness")
 MODELS = ("opus", "sonnet", "haiku")
@@ -105,8 +105,7 @@ def stratified_sample(gold_path: Path) -> list[str]:
 
 
 def _skill_body() -> str:
-    text = (ROOT / "skills/factcheck-mission-agent/SKILL.md").read_text(encoding="utf-8")
-    return re.sub(r"\A---\n.*?\n---\n", "", text, flags=re.S).strip()
+    return skill_body(ROOT / "skills/factcheck-mission-agent/SKILL.md")
 
 
 def _claim_view(claim: dict) -> str:
