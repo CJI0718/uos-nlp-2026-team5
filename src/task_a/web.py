@@ -116,8 +116,9 @@ class LiveWebProvider:
     timeout: float = 15.0
     allowed_hosts: frozenset[str] | None = None
 
-    def search(self, query: str, top_k: int = 5, end_date: str | None = None) -> list[dict]:
-        """`end_date` (YYYY-MM-DD) is passed to Tavily; DuckDuckGo has no date filter."""
+    def search(self, query: str, top_k: int = 5, end_date: str | None = None,
+               start_date: str | None = None) -> list[dict]:
+        """`end_date`/`start_date` (YYYY-MM-DD) are passed to Tavily; DuckDuckGo has no date filter."""
         key = self.api_key or os.environ.get("TAVILY_API_KEY")
         mode = self.provider
         if mode == "auto":
@@ -125,7 +126,7 @@ class LiveWebProvider:
         if mode == "tavily":
             if not key:
                 raise RuntimeError("TAVILY_API_KEY 환경변수가 설정되지 않았습니다.")
-            return self._search_tavily(query, top_k, key, end_date)
+            return self._search_tavily(query, top_k, key, end_date, start_date)
         if mode == "ddg":
             return self._search_ddg(query, top_k)
         raise ValueError(f"지원하지 않는 검색 provider: {self.provider!r}")
@@ -156,7 +157,7 @@ class LiveWebProvider:
                 "extractor": "plain", "fetched_url": target}
 
     def _search_tavily(self, query: str, top_k: int, api_key: str,
-                       end_date: str | None = None) -> list[dict]:
+                       end_date: str | None = None, start_date: str | None = None) -> list[dict]:
         body = {
             "api_key": api_key,
             "query": query,
@@ -169,6 +170,9 @@ class LiveWebProvider:
             # Undated results are kept (official pages often carry no date);
             # the tool layer drops results dated after the cutoff.
             body["end_date"] = end_date
+        if start_date:
+            # Recent coverage only, e.g. news of upcoming events (schedule assistant).
+            body["start_date"] = start_date
         payload = json.dumps(body).encode("utf-8")
         req = urllib.request.Request(
             "https://api.tavily.com/search",

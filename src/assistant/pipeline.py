@@ -148,7 +148,8 @@ def _discover(settings, web, client, budget, today, emit) -> list[Candidate]:
     for interest in settings["interests"]:
         if not interest.get("enabled", True):
             continue
-        results = search_interest(web, interest, budget, emit, caps["queries_per_interest"])
+        results = search_interest(web, interest, budget, emit, caps["queries_per_interest"], today,
+                                  caps.get("recent_days", 21))
         out += extract_candidates(client, budget, interest, results, today,
                                   caps["max_candidates_per_run"], emit)
     return out

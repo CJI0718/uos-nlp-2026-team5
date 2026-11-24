@@ -214,7 +214,8 @@ class DemoWeb:
     def __init__(self, data: dict) -> None:
         self.data = data
 
-    def search(self, query: str, top_k: int = 5, end_date: str | None = None) -> list[dict]:
+    def search(self, query: str, top_k: int = 5, end_date: str | None = None,
+               start_date: str | None = None) -> list[dict]:
         q = query.lower()
         for key in ("nova", "pixel", "starfall", "orbit", "quasar"):
             if key in q:

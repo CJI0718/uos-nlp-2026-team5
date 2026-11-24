@@ -138,3 +138,26 @@ def test_public_settings_never_contain_key_values(monkeypatch):
     monkeypatch.setenv("MISTRAL_API_KEY", "sk-should-not-appear")
     out = json.dumps(public_settings(DEFAULTS))
     assert "sk-should-not-appear" not in out and '"MISTRAL_API_KEY": true' in out
+
+
+def test_queries_look_ahead():
+    from assistant.discover import fill_query
+    assert fill_query("Nintendo Direct {month} {year}", "2026-11-24") == "Nintendo Direct November 2026"
+    assert fill_query("{next_month} {next_year}", "2026-12-24") == "January 2027"
+
+
+def test_dropped_candidates_are_counted_with_reasons(tmp_path):
+    from assistant.discover import extract_candidates
+    conn = db.connect(tmp_path / "a.sqlite")
+    budget = Budget(conn, json.loads(json.dumps(DEFAULTS)), day="2026-11-24")
+    results = [{"url": "https://a.example/x", "title": "x", "snippet": "s"}]
+    events = [{"name": "Past", "start": "2026-01-01", "source_url": "https://a.example/x"},
+              {"name": "Made up", "start": "2026-12-01", "source_url": "https://other.example"},
+              {"name": "Good", "start": "2026-12-01T10:00:00", "tz": "Mars/Base",
+               "source_url": "https://a.example/x"}]
+    client = demo.ScriptedClient(lambda m, t, j: ChatReply(content=json.dumps({"events": events})))
+    steps = []
+    out = extract_candidates(client, budget, {"id": "tech", "name": "테크"}, results, "2026-11-24", 5,
+                             lambda kind, label, detail=None: steps.append(detail))
+    assert [c.name for c in out] == ["Good"] and out[0].start == "2026-12-01 10:00" and out[0].tz is None
+    assert "지난 일정 1" in steps[0] and "검색 결과에 없는 주소 1" in steps[0]

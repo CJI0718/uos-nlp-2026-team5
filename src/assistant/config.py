@@ -21,25 +21,29 @@ DEFAULT_INTERESTS = [
         "id": "tech",
         "name": "테크 행사·신제품 발표",
         "enabled": True,
+        # {month} {next_month} {year} {next_year} are filled in at run time,
+        # so searches look for upcoming events rather than last season's.
         "queries": [
-            "Apple event date time announced",
-            "Samsung Galaxy Unpacked date time announced",
-            "Google keynote event date time announced",
+            "tech event keynote {month} {year} date time announced",
+            "product launch event {next_month} {year} date announced",
+            "CES {next_year} keynote schedule date time",
+            "Galaxy Unpacked {next_year} date announced",
         ],
         "official_domains": ["apple.com", "samsung.com", "google.com", "blog.google",
-                             "microsoft.com"],
+                             "microsoft.com", "ces.tech"],
     },
     {
         "id": "game",
         "name": "게임 쇼케이스·출시일",
         "enabled": True,
         "queries": [
-            "Nintendo Direct date time announced",
-            "PlayStation State of Play date time announced",
-            "game release date officially announced",
+            "game showcase {month} {year} date time announced",
+            "Nintendo Direct {month} {year}",
+            "The Game Awards {year} date time",
+            "game release date {next_month} {year} officially announced",
         ],
         "official_domains": ["nintendo.com", "nintendo.co.kr", "playstation.com", "xbox.com",
-                             "rockstargames.com", "ea.com", "ubisoft.com"],
+                             "rockstargames.com", "ea.com", "ubisoft.com", "thegameawards.com"],
     },
 ]
 
@@ -60,7 +64,8 @@ DEFAULTS: dict = {
         "daily_cost_usd": 1.00,
         "daily_searches": 100,
         "max_candidates_per_run": 10,
-        "queries_per_interest": 2,
+        "queries_per_interest": 3,
+        "recent_days": 21,             # discovery searches only recent coverage
         "max_tool_calls": 12,
         "max_external_calls": 6,
         "max_llm_turns": 10,
