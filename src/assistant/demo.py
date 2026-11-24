@@ -10,7 +10,7 @@ Five cases, one per policy outcome:
   STARFALL release date only in two copies of one article;
            the official page is empty (JS-rendered)           -> pending_approval (one source group)
   ORBIT    rumour only                                         -> tracking
-  QUASAR   time only in an undated search snippet              -> pending_approval (RW10 failure)
+  QUASAR   time only in an undated search snippet; one blog   -> pending_approval, time dropped (RW10)
 """
 
 from __future__ import annotations

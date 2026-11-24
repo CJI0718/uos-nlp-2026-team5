@@ -204,7 +204,8 @@ def _handle(conn, ctx, env, client, budget, cand: Candidate, settings, today, ru
     conflict = any(e["title"] == base["title"] and e.get("start_kst") != v.event_start for e in on_schedule)
     decision = decide(v, name=[cand.name, cand.title_ko], claimed_start=claimed, local_tz=cand.tz,
                       official_domains=interest["official_domains"], today=today, conflict=conflict)
-    start = v.event_start if decision.status in ("auto_added", "pending_approval") and v.event_start else claimed
+    verified_start = decision.event_start or v.event_start
+    start = verified_start if decision.status in ("auto_added", "pending_approval") and verified_start else claimed
     fields = {**base, "status": decision.status, "precision": _precision(start), "start_kst": start,
               "verdict": v.verdict, "distortion_type": v.distortion_type, "correction": v.correction,
               "justification": v.justification, "reasons": decision.reasons,

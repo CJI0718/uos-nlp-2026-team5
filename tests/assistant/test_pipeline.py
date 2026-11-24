@@ -45,7 +45,10 @@ def test_demo_run_reaches_every_policy_outcome(ctx):
     assert ev["스타폴 출시"]["status"] == "pending_approval" and ev["스타폴 출시"]["precision"] == "date"
     assert ev["오르빗모바일 언팩"]["status"] == "tracking"
     quasar = ev["퀘이사 데브데이"]
-    assert quasar["status"] == "pending_approval" and "TIME_NOT_IN_CITED_TEXT" in quasar["reasons"]
+    # The time came only from a search snippet: it is dropped (all-day), and the
+    # single non-official blog still needs approval.
+    assert quasar["status"] == "pending_approval" and quasar["precision"] == "date"
+    assert {"GATE_BLOCKED", "TIME_UNCONFIRMED"} <= set(quasar["reasons"])
     # Evidence keeps URLs and a short quote, never the page text.
     full = db.get_event(conn, ev["노바랩스 호라이즌 키노트"]["id"])
     assert full["evidence"] and all(len(e["quote"] or "") <= db.MAX_QUOTE_CHARS for e in full["evidence"])

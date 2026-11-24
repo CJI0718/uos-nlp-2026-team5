@@ -153,3 +153,18 @@ def test_press_release_date_only_event_is_added():
            docs={url: {"title": "HONOR Magic9 Pro Max launch event"}}, meta={url: {}})
     d = _decide(v, name=["HONOR Magic9 Pro Max launch event"], claimed_start="2026-12-21")
     assert d.status == "auto_added" and d.official_url == url
+
+
+def test_invented_time_becomes_an_all_day_entry():
+    """Live run 3: the release gave only the date; the model added 05:00 on its own."""
+    url = "https://www.prnewswire.com/news-releases/honor-magic9.html"
+    v = _v(event_start="2026-12-21 05:00", cited=[url], observed=[url],
+           texts={url: "HONOR has announced December 21 as the date for the HONOR Magic9 Pro Max launch."},
+           docs={url: {"title": "HONOR Magic9 Pro Max launch event"}}, meta={url: {}})
+    d = _decide(v, name=["HONOR Magic9 Pro Max launch event"], claimed_start="2026-12-21")
+    assert d.status == "auto_added" and d.event_start == "2026-12-21"
+    assert d.reasons == ["TIME_UNCONFIRMED"] and any(e["quote"] for e in d.evidence)
+    # A refuted claim keeps the strict rule: its corrected time must be written somewhere.
+    r = _v(verdict="refuted", correction="2026-12-21 05:00", distortion_type="timezone_or_date_error",
+           event_start="2026-12-21 05:00", cited=[url], observed=[url], texts=v.texts, docs=v.docs, meta={url: {}})
+    assert "TIME_NOT_IN_CITED_TEXT" in _decide(r, name=["HONOR Magic9"], claimed_start="2026-12-21").reasons

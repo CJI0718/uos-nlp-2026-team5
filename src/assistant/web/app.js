@@ -116,6 +116,9 @@ function chipsFor(ev) {
   const out = [`<span class="chip ${st.cls}">${esc(st.label)}</span>`];
   if (ev.corrected && ev.status !== "tracking") out.push(`<span class="chip accent">정정됨</span>`);
   if (ev.official_url) out.push(`<span class="chip info">공식 출처</span>`);
+  const r = ev.reasons || [];
+  if (r.includes("TIME_UNCONFIRMED")) out.push(`<span class="chip muted">시각 미발표</span>`);
+  if (r.includes("NO_OFFICIAL_SOURCE") && ev.status !== "tracking") out.push(`<span class="chip warn">공식 출처 없음</span>`);
   return out.join("");
 }
 

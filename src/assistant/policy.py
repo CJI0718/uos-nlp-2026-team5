@@ -40,6 +40,7 @@ REASON_TEXT = {
     "NO_TIME": "검증된 일시가 없음",
     "CONFLICT": "같은 행사에 다른 시각이 이미 있음",
     "NO_OFFICIAL_SOURCE": "공식 출처 없이 독립 출처 2개로 확인",
+    "TIME_UNCONFIRMED": "날짜만 발표됨(시각 미발표, 종일로 등록)",
     "NOT_ENOUGH_EVIDENCE": "아직 확인되지 않음(추적 중)",
     "REFUTED": "주장이 틀렸고 정정할 일정이 없음",
     "PAST": "이미 지난 일정",
@@ -74,6 +75,9 @@ class Decision:
     gate_error: str | None = None
     official_url: str | None = None
     evidence: list[dict] = field(default_factory=list)
+    #: Start to store when the policy changed it (a timed start whose time is
+    #: not in any cited document becomes an all-day date).
+    event_start: str | None = None
 
 
 #: Wire services that publish a company's own press release verbatim: a primary source.
@@ -229,11 +233,16 @@ def decide(v: Verified, *, name: str | list[str], claimed_start: str | None, loc
         reasons.append("GATE_BLOCKED")
 
     # The date/time must be written in a cited document that was read.
-    supporting = None
-    for url in v.cited:
-        if url in v.texts and literal_match(v.texts[url], v.event_start, local_tz):
-            supporting = url
-            break
+    start, info = v.event_start, []
+    supporting = _supporting(v, start, local_tz)
+    if supporting is None and v.verdict == "supported" and not is_date_only(start):
+        # Only the date is published (live run 3: the model invented 05:00 for a
+        # date-only press release). Keep the date, drop the invented time.
+        for day in dict.fromkeys(d for d in ((claimed_start or "")[:10], start[:10]) if d):
+            supporting = _supporting(v, day, None)
+            if supporting:
+                start, info = day, ["TIME_UNCONFIRMED"]
+                break
     if supporting is None:
         reasons.append("TIME_NOT_IN_CITED_TEXT")
     elif not identity_ok(name, v.texts[supporting], (v.docs.get(supporting) or {}).get("title", "")):
@@ -247,19 +256,29 @@ def decide(v: Verified, *, name: str | list[str], claimed_start: str | None, loc
         reasons.append("CONFLICT")
 
     cited_official = [u for u in v.cited if u in official_urls]
-    if not reasons and not cited_official:
-        # Passed the gate on two independent groups. Allowed (Task A rule), but shown.
-        return Decision("auto_added", ["NO_OFFICIAL_SOURCE"], official_url=None, evidence=evidence)
+    if not cited_official:
+        # Passed the gate on two independent groups (Task A rule): allowed, but shown.
+        info.append("NO_OFFICIAL_SOURCE")
     status = "pending_approval" if reasons else "auto_added"
-    return Decision(status, reasons, gate_error=gate_error,
-                    official_url=cited_official[0] if cited_official else None, evidence=evidence)
+    return Decision(status, reasons + info, gate_error=gate_error, event_start=start,
+                    official_url=cited_official[0] if cited_official else None,
+                    evidence=_evidence_rows(v, official_domains, names, start))
 
 
-def _evidence_rows(v: Verified, official_domains: list[str], names: list[str]) -> list[dict]:
-    rows = []
+def _supporting(v: Verified, start: str, local_tz: str | None) -> str | None:
+    """First cited, read document that states `start`."""
+    for url in v.cited:
+        if url in v.texts and literal_match(v.texts[url], start, local_tz):
+            return url
+    return None
+
+
+def _evidence_rows(v: Verified, official_domains: list[str], names: list[str],
+                   start: str | None = None) -> list[dict]:
+    rows, start = [], start or v.event_start
     for url in v.observed:
         text = v.texts.get(url, "")
-        match = literal_match(text, v.event_start, None) if v.event_start else None
+        match = literal_match(text, start, None) if start else None
         doc, meta = v.docs.get(url) or {}, v.meta.get(url) or {}
         rows.append({"url": url, "title": doc.get("title"), "published_at": doc.get("published_at"),
                      "provenance_group": meta.get("provenance_group"),
