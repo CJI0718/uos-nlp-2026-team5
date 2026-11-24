@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>일정 비서</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<div class="app">
+  <aside class="rail">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"></span>
+      <div class="brand-text"><b>일정 비서</b><small id="mode-tag">연결 중…</small></div>
+    </div>
+    <nav id="nav" class="nav">
+      <button data-view="home" class="active"><span class="ico">◎</span><span>다가오는 일정</span></button>
+      <button data-view="approvals"><span class="ico">◐</span><span>승인 대기</span><em id="badge-approvals"></em></button>
+      <button data-view="tracking"><span class="ico">◌</span><span>추적 중</span><em id="badge-tracking"></em></button>
+      <button data-view="runs"><span class="ico">≡</span><span>실행 기록</span></button>
+      <button data-view="settings"><span class="ico">⚙</span><span>설정</span></button>
+    </nav>
+    <div class="rail-foot">
+      <div class="sched" id="sched-line"></div>
+      <div class="meter">
+        <div class="meter-label"><span>오늘 모델 비용</span><span id="cost-text">–</span></div>
+        <div class="bar"><i id="cost-bar"></i></div>
+      </div>
+      <div class="meter">
+        <div class="meter-label"><span>오늘 웹 검색</span><span id="search-text">–</span></div>
+        <div class="bar"><i id="search-bar"></i></div>
+      </div>
+      <button id="run-btn" class="btn primary wide">지금 실행</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="main-head">
+      <div>
+        <h1 id="view-title">다가오는 일정</h1>
+        <p id="view-sub" class="sub"></p>
+      </div>
+      <div id="view-actions" class="head-actions"></div>
+    </header>
+    <section id="view" class="view"></section>
+  </main>
+
+  <aside class="activity">
+    <header class="act-head">
+      <div class="act-title"><span class="live-dot" id="live-dot"></span><b>비서 활동</b></div>
+      <small id="act-sub"></small>
+    </header>
+    <div id="act-feed" class="act-feed"></div>
+  </aside>
+</div>
+
+<div id="drawer" class="drawer hidden" aria-hidden="true">
+  <div class="drawer-scrim" data-close></div>
+  <div class="drawer-panel" id="drawer-panel" role="dialog" aria-modal="true"></div>
+</div>
+<div id="toast" class="toast hidden" role="status"></div>
+<script src="/static/app.js" type="module"></script>
+</body>
+</html>

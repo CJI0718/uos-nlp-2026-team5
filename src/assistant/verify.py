@@ -26,6 +26,7 @@ HIDDEN_TOOLS = {"list_claims", "start_episode", "submit_claim"}
 MISSION_FIELDS = ("mission_type", "mission_title", "mission_summary", "tracking_condition",
                   "tracking_queries")
 MAX_TOOL_RESULT_CHARS = 6_000
+VERDICT_KO = {"supported": "맞음", "refuted": "틀림(정정)", "not_enough_evidence": "근거 부족"}
 
 APP_GUIDE = """
 ## 일정 비서 모드
@@ -163,7 +164,7 @@ def _run_tool(env, call, allowed: set[str], budget: Budget, emit: Emit, outcome:
             distortion_type=r.get("distortion_type"), cited=cited, observed=snap["observed"],
             texts=snap["texts"], docs=snap["docs"], meta=snap["meta"],
             justification=r.get("justification") or "")
-        emit("verdict", f"판정: {r['verdict']}" + (f" · {clean.get('event_start_kst')}"
+        emit("verdict", f"판정: {VERDICT_KO.get(r['verdict'], r['verdict'])}" + (f" · {clean.get('event_start_kst')}"
                                                    if clean.get("event_start_kst") else ""),
              (r.get("justification") or "")[:300])
         return {"status": "finished"}
