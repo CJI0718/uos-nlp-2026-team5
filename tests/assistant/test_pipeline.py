@@ -207,3 +207,21 @@ def test_keep_the_old_time_and_housekeeping(ctx):
     assert db.housekeep(conn, "2030-01-01T00:00:00+09:00") >= 3
     statuses = {e["status"] for e in db.list_events(conn)}
     assert "occurred" in statuses and "expired" in statuses
+
+
+def test_a_failing_model_call_skips_only_that_candidate(tmp_path, monkeypatch):
+    from assistant.llm import LLMError
+    monkeypatch.setattr(db, "today_kst", lambda: TODAY.isoformat())
+    data = demo.build(TODAY)
+    inner = demo.demo_client(data)
+
+    def flaky(messages, tools, json_mode):
+        if not json_mode and "노바랩스" in messages[1]["content"]:
+            raise LLMError("HTTP 429: rate limited")
+        return inner.complete(messages, tools, json_mode)
+
+    save_settings(tmp_path / "settings.json", demo.demo_settings(DEFAULTS))
+    ctx = AppContext(tmp_path, EventBus(), lambda s: demo.ScriptedClient(flaky),
+                     lambda s: demo.DemoWeb(data), mode="demo")
+    run = db.get_run(ctx.connect(), run_now(ctx))
+    assert run["status"] == "ok" and "오류 1" in run["summary"] and "자동 등록 1" in run["summary"]

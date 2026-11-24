@@ -114,7 +114,15 @@ def _run(ctx: AppContext, trigger: str) -> int:
         queue = rechecks + _discover(settings, web, client, budget, today, emit)
         stats["candidates"] = len(queue)
         for cand in queue[: caps["max_candidates_per_run"]]:
-            result = _handle(conn, ctx, env, client, budget, cand, settings, today, run_id, emit)
+            try:
+                result = _handle(conn, ctx, env, client, budget, cand, settings, today, run_id, emit)
+            except BudgetExceeded:
+                raise
+            except Exception as exc:   # one failed candidate does not stop the run; no retry
+                msg = f"{type(exc).__name__}: {exc}"[:300]
+                emit("error", f"검증 중 오류: {cand.title_ko}", msg)
+                env.active = None       # drop the half-finished episode
+                result = "error"
             if result:
                 stats["verified"] += result != "skipped"
                 outcomes[result] = outcomes.get(result, 0) + 1
