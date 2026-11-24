@@ -30,7 +30,7 @@ const VIEWS = {
   settings: { title: "설정", sub: "자동 실행, 예산, 관심사, 모델입니다." },
 };
 
-const app = { view: "home", state: null, events: [], threadRun: null };
+const app = { view: "home", homeMode: "calendar", month: null, state: null, events: [], threadRun: null };
 
 async function api(path, opts = {}) {
   const res = await fetch(path, {
@@ -157,6 +157,71 @@ function renderHome() {
     ${list.map((e) => card(e)).join("")}`).join("");
 }
 
+// ---- month calendar (KST) -------------------------------------------------------------
+const SHOWN = ["auto_added", "added", "pending_approval", "changed", "tracking"];
+function kstToday() {
+  const k = new Date(Date.now() + 9 * 3600e3);
+  return { y: k.getUTCFullYear(), m: k.getUTCMonth(), d: k.getUTCDate() };
+}
+function ymd(y, m, d) {
+  return `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+}
+function initialMonth(evs) {
+  const t = kstToday();
+  const thisMonth = ymd(t.y, t.m, 1).slice(0, 7);
+  if (evs.some((e) => (e.start_kst || "").startsWith(thisMonth))) return { y: t.y, m: t.m };
+  const today = ymd(t.y, t.m, t.d);
+  const next = evs.map((e) => e.start_kst || "").filter((s) => s.slice(0, 10) >= today).sort()[0];
+  return next ? { y: Number(next.slice(0, 4)), m: Number(next.slice(5, 7)) - 1 } : { y: t.y, m: t.m };
+}
+function renderCalendar() {
+  const evs = app.events.filter((e) => SHOWN.includes(e.status) && e.start_kst);
+  if (!app.month) app.month = initialMonth(evs);
+  const { y, m } = app.month;
+  const first = new Date(Date.UTC(y, m, 1)).getUTCDay();
+  const days = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+  const t = kstToday();
+  const todayKey = ymd(t.y, t.m, t.d);
+  const byDay = new Map();
+  for (const e of evs) {
+    const k = e.start_kst.slice(0, 10);
+    if (!byDay.has(k)) byDay.set(k, []);
+    byDay.get(k).push(e);
+  }
+  for (const list of byDay.values()) list.sort((a, b) => clock(a).localeCompare(clock(b)));
+  const cells = [];
+  const weeks = Math.ceil((first + days) / 7);
+  for (let i = 0; i < weeks * 7; i++) {
+    const day = i - first + 1;
+    const date = new Date(Date.UTC(y, m, day));
+    const key = ymd(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+    const inMonth = day >= 1 && day <= days;
+    const list = byDay.get(key) || [];
+    const dow = date.getUTCDay();
+    const pills = list.slice(0, 3).map((e) => {
+      const st = STATUS[e.status] || { cls: "muted" };
+      return `<button class="pill ${st.cls} ${e.status === "tracking" ? "tentative" : ""}" data-open="${e.id}"
+        title="${esc(e.title)} · ${esc(STATUS[e.status]?.label || e.status)}">
+        <span class="ph"><span class="pt">${esc(clock(e))}</span>${e.corrected && e.status !== "tracking"
+          ? '<span class="pc">정정됨</span>' : e.status === "tracking" ? '<span class="pc">미확정</span>' : ""}</span>
+        <span class="pn">${esc(e.title)}</span></button>`;
+    }).join("");
+    const more = list.length > 3 ? `<div class="more">+${list.length - 3}개 더</div>` : "";
+    cells.push(`<div class="cell ${inMonth ? "" : "out"} ${key === todayKey ? "today" : ""} ${dow === 0 ? "sun" : dow === 6 ? "sat" : ""}">
+      <div class="dnum">${date.getUTCDate()}</div>${pills}${more}</div>`);
+  }
+  const monthCount = evs.filter((e) => e.start_kst.startsWith(ymd(y, m, 1).slice(0, 7))).length;
+  const legend = `<div class="legend"><span class="lg ok">확정</span><span class="lg warn">승인 대기</span>
+    <span class="lg muted tentative">추적 중(미확정)</span><span class="hint">이번 달 ${monthCount}개 · 일정을 누르면 근거가 열립니다</span></div>`;
+  return `<div class="cal-bar">
+      <div class="cal-nav"><button class="btn small" data-month="-1" aria-label="이전 달">‹</button>
+      <h2>${y}년 ${m + 1}월</h2><button class="btn small" data-month="1" aria-label="다음 달">›</button>
+      <button class="btn small" data-month="0">오늘</button></div>${legend}</div>
+    <div class="cal"><div class="dow">${["일", "월", "화", "수", "목", "금", "토"].map((d, i) =>
+      `<div class="${i === 0 ? "sun" : i === 6 ? "sat" : ""}">${d}</div>`).join("")}</div>
+    <div class="grid" style="grid-template-rows: repeat(${weeks}, minmax(104px, 1fr))">${cells.join("")}</div></div>`;
+}
+
 function renderList(statuses, actions, icon, text) {
   const evs = app.events.filter((e) => statuses.includes(e.status));
   return evs.length ? evs.map((e) => card(e, { actions })).join("") : empty(icon, text);
@@ -210,9 +275,11 @@ async function render() {
   $("#view-title").textContent = v.title;
   $("#view-sub").textContent = v.sub;
   $("#view-actions").innerHTML = app.view === "home"
-    ? `<a class="btn small" href="/api/export.ics">일정 .ics 내보내기</a>` : "";
+    ? `<div class="seg"><button class="${app.homeMode === "calendar" ? "on" : ""}" data-mode="calendar">달력</button>
+       <button class="${app.homeMode === "list" ? "on" : ""}" data-mode="list">목록</button></div>
+       <a class="btn small" href="/api/export.ics">.ics 내보내기</a>` : "";
   let html = "";
-  if (app.view === "home") html = renderHome();
+  if (app.view === "home") html = app.homeMode === "calendar" ? renderCalendar() : renderHome();
   if (app.view === "approvals") html = renderList(["pending_approval", "changed"], true, "◐", "승인할 일정이 없어요.");
   if (app.view === "tracking") html = renderList(["tracking"], false, "◌", "추적 중인 일정이 없어요.");
   if (app.view === "runs") html = await renderRuns();
@@ -343,8 +410,23 @@ function connectStream() {
 }
 
 document.addEventListener("click", async (e) => {
-  const t = e.target.closest("[data-view],[data-open],[data-act],[data-close],[data-run],#run-btn");
+  const t = e.target.closest("[data-view],[data-open],[data-act],[data-close],[data-run],[data-mode],[data-month],#run-btn");
   if (!t) return;
+  if (t.matches("[data-mode]")) {
+    app.homeMode = t.dataset.mode;
+    return render();
+  }
+  if (t.matches("[data-month]")) {
+    const step = Number(t.dataset.month);
+    if (step === 0) {
+      const k = kstToday();
+      app.month = { y: k.y, m: k.m };
+    } else {
+      const d = new Date(Date.UTC(app.month.y, app.month.m + step, 1));
+      app.month = { y: d.getUTCFullYear(), m: d.getUTCMonth() };
+    }
+    return render();
+  }
   if (t.matches("[data-act]")) {
     e.stopPropagation();
     try {
@@ -373,8 +455,16 @@ document.addEventListener("click", async (e) => {
 });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
 
+window.addEventListener("unhandledrejection", (e) => toast(`오류: ${e.reason?.message || e.reason}`));
+window.addEventListener("error", (e) => toast(`오류: ${e.message}`));
+
 (async function init() {
-  await refresh();
+  try {
+    await refresh();
+  } catch (err) {
+    $("#view").innerHTML = empty("✕", `화면을 불러오지 못했어요: ${esc(err.message)}`);
+    return;
+  }
   if (app.state?.last_run) await showRun(app.state.last_run.id);
   connectStream();
   // A link like /#event=3 opens that event (handy for presentation bookmarks).
