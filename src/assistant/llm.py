@@ -107,12 +107,13 @@ class OpenAICompatClient:
 
     def __init__(self, base_url: str, model: str, api_key_env: str = "MISTRAL_API_KEY",
                  timeout_s: float = 60, transport: Transport | None = None,
-                 max_tokens: int = 2048) -> None:
+                 max_tokens: int = 2048, temperature: float | None = None) -> None:
         self.base_url = base_url.rstrip("/")
         self.model = model
         self.api_key_env = api_key_env
         self.timeout_s = timeout_s
         self.max_tokens = max_tokens
+        self.temperature = temperature   # None: the provider default, not sent
         self._transport = transport or _http_post
 
     def complete(self, messages, tools=None, json_mode=False) -> ChatReply:
@@ -120,6 +121,8 @@ class OpenAICompatClient:
         if not key:
             raise LLMError(f"{self.api_key_env}가 설정되지 않았습니다(.env 또는 환경변수).")
         body: dict = {"model": self.model, "messages": messages, "max_tokens": self.max_tokens}
+        if self.temperature is not None:
+            body["temperature"] = self.temperature
         if tools:
             body["tools"] = tools
             body["tool_choice"] = "auto"
