@@ -23,7 +23,7 @@
 | [FC026](#fc026) | 소행성 2024 YR4의 2032년 달 충돌 여부 | 영어 기사 | 2025-06-17T06:09:37+09:00 | 근거 부족 | 당시 궤도 확률과 실제 충돌의 구분 | 아니오 | [관련 발표 확인](https://science.nasa.gov/blogs/planetary-defense/2025/06/05/nasas-webb-observations-update-asteroid-2024-yr4s-lunar-impact-odds/) | 상 |
 | [FC027](#fc027) | Crew-9 우주정거장 분리 요일의 실제 기사 오류 | 영어 기사 | 2025-03-19T07:30:28+09:00 | 반박 | 실제 기사 본문의 요일 오류 | 아니오 | [확인](https://www.nasa.gov/blogs/spacestation/2025/03/18/dragon-undocks-with-spacex-crew-9-members-for-return-to-earth/) | 상 |
 | [FC028](#fc028) | IceCube 구상과 프랜시스 핼즌의 노벨상 사이의 연도 차 | 영어 기사 | 2026-10-06T20:25:25+09:00 | 지지 | 수상자·공로 대응 및 연도 차 | 아니오 | [확인](https://www.kva.se/en/news/the-nobel-prize-in-physics-2026/) | 상 |
-| [FC029](#fc029) | IEA의 데이터센터 전력 수요 전망에서 ‘네 배’의 범위 | 영어 기사 · 재가공 게시물 | 2025-04-10T13:00:18+09:00 | 반박 | 전체 데이터센터와 AI 전용 시설 혼동 | 예 | [확인](https://www.iea.org/reports/energy-and-ai/executive-summary%C2%A0) | 상 |
+| [FC029](#fc029) | IEA의 데이터센터 전력 수요 전망에서 ‘네 배’의 범위 | 영어 기사 · 재가공 게시물 | 2025-04-10T13:00:18+09:00 | 반박 | 전체 데이터센터와 AI 전용 시설 혼동 | 예 | [확인](https://www.iea.org/reports/energy-and-ai/executive-summary) | 상 |
 | [FC030](#fc030) | 3I/ATLAS의 공식 발견 보고와 과거 관측일 | 영어 기사 · 재가공 게시물 | 2025-07-07T19:15:28+09:00 | 반박 | 기록영상 촬영일과 최초 보고일 | 예 | [확인](https://science.nasa.gov/blogs/planetary-defense/2025/07/02/nasa-discovers-interstellar-comet-moving-through-solar-system/) | 상 |
 | [FC035](#fc035) | Raspberry Pi 500+ 기본 장착 SSD 용량 | SNS · Bluesky · 재가공 게시물 | 2025-09-25T16:04:20.252+09:00 | 반박 | 기본 저장장치 용량 바꾸기 | 예 | [확인](https://www.raspberrypi.com/news/the-ultimate-all-in-one-pc-raspberry-pi-500-plus-on-sale-now-at-200/) | 상 |
 | [FC036](#fc036) | Fedora 44 Workstation에 포함된 GNOME 50의 출시 간격 | SNS · Bluesky | 2026-04-29T02:00:27.066+09:00 | 지지 | 배포판·데스크톱 버전 대응 및 날짜 차 | 아니오 | [확인](https://fedoramagazine.org/announcing-fedora-linux-44/) | 상 |
@@ -54,7 +54,7 @@
 | FC014 | `근거 기준 시점` 2026-11-25 추가 | 게시일(11-19)이 데이터 전체 기본값보다 늦음 |
 | FC022 | 근거를 삼성 뉴스룸 ‘갤럭시 버즈4 시리즈 공개’로 교체 | 이전 근거(S26 사전 판매)에는 버즈4 가격이 없었음 |
 | FC010 | Cardiff(HTTP 403) 대신 케임브리지대 발표로 교체. ESA 자료는 2023년 선행 발표로 표시 | 자동 수집 불가, 시점 불일치 |
-| FC029 | IEA 뉴스 대신 IEA 발표를 옮긴 NS Energy와 Scientific American 추가. IEA 요약은 유지 | IEA 페이지가 자동 수집기에 HTTP 403 |
+| FC029 | IEA 뉴스 대신 IEA 발표를 옮긴 NS Energy와 Scientific American 추가. IEA 요약은 유지하고 URL 끝의 잘못된 공백 문자(%C2%A0) 제거. 2026-11-25 팀원이 요약 원문에서 415TWh·945TWh 확인 | IEA 페이지가 자동 수집기에 HTTP 403 |
 | FC049 | GeekWire 추가, 루빈 페이지의 2,104 위치 표시 | 자동 추출 본문에 2,104가 빠짐 |
 | FC003·038 | 내용이 비어 있는 페이지(뉴스룸 목록, Steam 커뮤니티) 근거에서 제외 | 본문 269자·215자 |
 | FC019 | 모델 카드의 확인 위치 보강 | 자동 추출 본문에 매개변수 줄이 빠짐 |
@@ -953,10 +953,10 @@ NASA 행성방위 담당 부서의 4월·6월 발표에서 관측 대상과 날�
 
 **근거 자료**
 
-- [국제에너지기구(IEA) / Energy and AI 요약](https://www.iea.org/reports/energy-and-ai/executive-summary%C2%A0)
+- [국제에너지기구(IEA) / Energy and AI 요약](https://www.iea.org/reports/energy-and-ai/executive-summary)
   - 내용: 전체 데이터센터의 2024년 소비량 약 415TWh 및 2030년 전망치 약 945TWh를 제시한다.
-  - 확인 위치: ‘Data centres accounted for around 1.5%’와 ‘around 945 TWh’ 문단
-  - 자료 확인 상태: 본문 확인 (사람이 브라우저로 확인. 자동 수집기는 HTTP 403으로 받지 못함)
+  - 확인 위치: ‘Data centres accounted for around 1.5% of the world’s electricity consumption in 2024, or 415 terawatt-hours (TWh)’와 ‘set to more than double to around 945 TWh by 2030’ 문단. 이 요약에는 ‘네 배’ 표현이 없다
+  - 자료 확인 상태: 본문 확인 (2026-11-25 팀원이 브라우저로 원문 확인. 자동 수집기는 HTTP 403으로 받지 못함)
 - [NS Energy / IEA 보고서 발표 요약](https://www.nsenergybusiness.com/?p=367591)
   - 내용: IEA 발표를 옮겨 2024년 약 415TWh, 2030년 약 945TWh(두 배 초과)와 ‘AI 최적화 데이터센터 수요는 네 배 초과’를 구분해 싣는다.
   - 확인 위치: ‘more than double by 2030 to around 945 TWh’와 ‘AI-optimised data centres projected to more than quadruple’
