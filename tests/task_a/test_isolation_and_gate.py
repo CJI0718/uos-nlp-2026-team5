@@ -169,8 +169,9 @@ def test_constant_baselines_on_the_real_gold_distribution():
     from task_a.score_run import load_gold
 
     base = constant_baselines(load_gold(ROOT / "data/task_a/gold.jsonl"))
-    assert base["always_supported"]["accuracy"]["numerator"] == 37
-    assert base["always_supported"]["accuracy"]["denominator"] == 49
+    # 2026-11-25 dataset: 지지 30 of 50, no pending case left.
+    assert base["always_supported"]["accuracy"]["numerator"] == 30
+    assert base["always_supported"]["accuracy"]["denominator"] == 50
 
 
 # --- the Skill shown to the agent carries no evaluation content -------------

@@ -24,6 +24,9 @@ MD_LINK = re.compile(r"\[([^\]]*)\]\(([^)]*)\)")
 
 DEFAULT_EVIDENCE_CUTOFF = "2026-10-30T01:37:43+09:00"
 
+ALTERED_KIND_PREFIX = "재가공 게시물"
+AGENT_ALTERED_KIND = "게시물 전사"
+
 LABEL_MAP = {
     "지지": "supported",
     "반박": "refuted",
@@ -32,12 +35,12 @@ LABEL_MAP = {
 }
 
 # Split groups documented in evaluation.md section 9.6. Cases outside these are
-# their own group; the 47-group total is a team figure, not derivable from text.
+# their own group, giving 48 groups. FC019 left the size-unit group when it was
+# replaced on 2026-11-25 (Qwen active-parameter share, not a unit slip).
 DOCUMENTED_GROUPS = {
     "FC032": "grp_mistral_announcement",
     "FC034": "grp_mistral_announcement",
     "FC015": "grp_model_size_units",
-    "FC019": "grp_model_size_units",
     "FC020": "grp_model_size_units",
 }
 
@@ -209,9 +212,18 @@ def to_records(case: ParsedCase, source_kind: str | None = None) -> dict:
     label = LABEL_MAP[label_text]
     pending = label is None
 
-    language = "en" if source_kind and "영어" in source_kind else "ko"
-    if source_kind in ("Threads", "X"):
+    # Kinds: '한국어 기사·정보글', '영어 기사', 'Threads', 'X', 'Bluesky', and
+    # '재가공 게시물 · <base> 기반' for re-written posts. The four Bluesky posts
+    # are English; Threads and X mix Korean, English and Spanish.
+    kind = source_kind or ""
+    language = "en" if ("영어" in kind or "Bluesky" in kind) else "ko"
+    if kind in ("Threads", "X"):
         language = "mixed"
+
+    # '재가공 게시물' marks a researcher-altered post, and every altered case is
+    # refuted, so the word itself would hand the agent the answer. The agent
+    # sees a neutral kind; the full kind stays with the scorer.
+    altered = kind.startswith(ALTERED_KIND_PREFIX)
 
     claim = {
         "claim_id": case.case_id,
@@ -219,7 +231,7 @@ def to_records(case: ParsedCase, source_kind: str | None = None) -> dict:
         "family_id": DOCUMENTED_GROUPS.get(case.case_id, f"solo_{case.case_id}"),
         "language": language,
         "source_url": source_url(case),
-        "source_type": source_kind,
+        "source_type": AGENT_ALTERED_KIND if altered else source_kind,
         "claim_date": case.fields.get("게시 시점"),
         "target_period": case.fields.get("검증 대상 기간·버전"),
         # Per-case '근거 기준 시점' wins (e.g. not-enough-evidence cases judged
@@ -234,6 +246,8 @@ def to_records(case: ParsedCase, source_kind: str | None = None) -> dict:
         "label_text": label_text,
         "rationale": case.fields.get("판정 이유", "").strip(),
         "review_status": "pending" if pending else "draft",
+        "source_kind": source_kind,
+        "altered_input": altered,
         # 주장 위치 is annotator metadata, not solver input: for FC044 it reads
         # '기사 제목의 10월 24일; 본문의 10월 14일과 비교', which states the answer.
         "claim_location": case.fields.get("주장 위치"),

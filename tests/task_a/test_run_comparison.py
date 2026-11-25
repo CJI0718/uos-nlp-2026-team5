@@ -21,10 +21,12 @@ def test_sample_is_stratified_and_fixed():
     sample = mod.stratified_sample(ROOT / "data/task_a/gold.jsonl")
     gold = {r["claim_id"]: r["label"] for r in map(json.loads, open(ROOT / "data/task_a/gold.jsonl"))}
     labels = [gold[c] for c in sample]
-    assert len(sample) == 20
-    assert labels.count("refuted") == 11 and labels.count("not_enough_evidence") == 1
+    # Every refuted and NEE claim plus N_SUPPORTED seeded supported ones.
+    # 2026-11-25 dataset: 14 refuted + 6 NEE + 8 supported = 28.
+    assert len(sample) == 14 + 6 + mod.N_SUPPORTED
+    assert labels.count("refuted") == 14 and labels.count("not_enough_evidence") == 6
+    assert labels.count("supported") == mod.N_SUPPORTED
     assert sample == mod.stratified_sample(ROOT / "data/task_a/gold.jsonl")
-    assert "FC038" not in sample  # 판정 보류
 
 
 def _cmd(mod, condition, tmp_path):

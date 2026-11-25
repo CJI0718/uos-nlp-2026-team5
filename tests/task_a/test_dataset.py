@@ -1,4 +1,4 @@
-"""The parser is checked against counts evaluation.md itself documents.
+"""The parser is checked against counts evaluation_cases.md §0 itself documents.
 
 If a number here changes, either the parser broke or the team edited the
 source document - both need a human look, not a silent re-baseline.
@@ -38,44 +38,60 @@ def test_extracts_exactly_fifty_cases(parsed):
     assert [c["claim_id"] for c in parsed["claims"]] == [f"FC{i:03d}" for i in range(1, 51)]
 
 
-def test_label_distribution_matches_section_9_2_2(parsed):
-    """evaluation.md 9.2.2: 지지 37, 반박 11, 근거 부족 1, 판정 보류 1."""
+def test_label_distribution_matches_section_0(parsed):
+    """evaluation_cases.md §0 (2026-11-25): 지지 30, 반박 14, 근거 부족 6."""
     labels = Counter(g["label_text"] for g in parsed["gold"])
 
-    assert labels == {"지지": 37, "반박": 11, "근거 부족": 1, "판정 보류": 1}
+    assert labels == {"지지": 30, "반박": 14, "근거 부족": 6}
 
 
-def test_source_kind_distribution_matches_section_9_2_1(parsed):
-    """evaluation.md 9.2.1: 기사·정보글 37 (한국어 29 + 영어 8), Threads 9, X 4."""
-    kinds = Counter(c["source_type"] for c in parsed["claims"])
+def test_source_kind_distribution_matches_section_0(parsed):
+    """§0: Korean articles 28 (4 re-written), English 9 (2 re-written),
+    Threads 5, X 4, Bluesky 4 (2 re-written)."""
+    kinds = Counter(g["source_kind"] for g in parsed["gold"])
 
-    assert kinds["한국어 기사·정보글"] == 29
-    assert kinds["영어 기사"] == 8
-    assert kinds["Threads"] == 9
-    assert kinds["X"] == 4
+    assert kinds == {
+        "한국어 기사·정보글": 24,
+        "재가공 게시물 · 한국어 기사 기반": 4,
+        "영어 기사": 7,
+        "재가공 게시물 · 영어 기사 기반": 2,
+        "Threads": 5,
+        "X": 4,
+        "Bluesky": 2,
+        "재가공 게시물 · Bluesky 기반": 2,
+    }
 
 
-def test_pending_case_is_not_relabelled_as_nei(gold_by_id):
-    """판정 보류 (FC038) is a review state. It must not become a label."""
-    pending = [cid for cid, g in gold_by_id.items() if g["review_status"] == "pending"]
-
-    assert pending == ["FC038"]
-    assert gold_by_id["FC038"]["label"] is None
+def test_no_case_is_left_pending(gold_by_id):
+    """The old 판정 보류 case (Starlink, FC038) was replaced; every case has a label."""
+    assert [cid for cid, g in gold_by_id.items() if g["review_status"] == "pending"] == []
+    assert all(g["label"] for g in gold_by_id.values())
 
 
-def test_the_single_nei_case(gold_by_id):
-    assert gold_by_id["FC041"]["label"] == "not_enough_evidence"
-    assert gold_by_id["FC041"]["nei_investigation"]
+def test_nei_cases_record_their_investigation_and_cutoff(by_id, gold_by_id):
+    """Prediction-style NEE cases are judged as of their posting time.
+
+    FC041 predates the per-case cutoff field and keeps the dataset default.
+    """
+    from task_a.dataset import DEFAULT_EVIDENCE_CUTOFF
+    nei = sorted(cid for cid, g in gold_by_id.items() if g["label"] == "not_enough_evidence")
+
+    assert nei == ["FC003", "FC010", "FC017", "FC026", "FC038", "FC041"]
+    assert all(gold_by_id[cid]["nei_investigation"] for cid in nei)
+    for cid in ("FC003", "FC010", "FC017", "FC026", "FC038"):
+        assert by_id[cid]["evidence_cutoff"] == by_id[cid]["claim_date"], cid
+    assert by_id["FC041"]["evidence_cutoff"] == DEFAULT_EVIDENCE_CUTOFF
 
 
 def test_fc002_fields(by_id):
+    """FC002 is a re-written post: the altered time is in the input, no URL."""
     claim = by_id["FC002"]
 
-    assert claim["text"].startswith("미국 비전 프로 사전예약은 2024년 1월 19일")
-    assert claim["source_url"] == "https://v.daum.net/v/2vbOybyj9G"
-    assert claim["claim_date"] == "2024-01-09T00:38:00+09:00"
-    assert claim["target_period"] == "2024-01-19 사전예약 개시"
-    assert "오전 5시(한국시간)" in claim["input_body"]
+    assert claim["text"] == "WWDC26 키노트는 한국시간 6월 9일 오전 3시에 시작하도록 공지됐다."
+    assert claim["source_url"] is None
+    assert claim["source_type"] == "게시물 전사"
+    assert claim["claim_date"] == "2026-05-19T09:13:12+09:00"
+    assert "한국시간 9일 오전 3시" in claim["input_body"]
     assert claim["language"] == "ko"
 
 
@@ -83,15 +99,46 @@ def test_fc002_gold_and_reference_evidence(gold_by_id, parsed):
     gold = gold_by_id["FC002"]
 
     assert gold["label"] == "refuted"
-    assert "17시간" in gold["rationale"]
+    assert "02:00 KST" in gold["rationale"]
     assert gold["evaluation_points"]
     assert gold["scope_notes"]
 
     rows = [e for e in parsed["evidence"] if e["claim_id"] == "FC002"]
-    assert len(rows) == 1
+    assert len(rows) == 2
     assert rows[0]["source_url"].startswith("https://www.apple.com/newsroom/")
     assert rows[0]["check_status"] == "본문 확인"
-    assert gold["sufficient_evidence_ids"] == ["EV_FC002_1"]
+    assert rows[1]["title"].startswith("원 보도")
+    assert gold["sufficient_evidence_ids"] == ["EV_FC002_1", "EV_FC002_2"]
+
+
+ALTERED = ("FC002", "FC005", "FC018", "FC029", "FC030", "FC035", "FC039", "FC046")
+
+
+def test_altered_cases_hide_the_original_report(by_id, gold_by_id, parsed):
+    """The original report holds the correct value, so it may only be evidence.
+
+    Each re-written post has no URL, carries its transcript as input, and
+    lists the original report ('원 보도 · ...') among the scorer's evidence.
+    """
+    altered = sorted(cid for cid, g in gold_by_id.items() if g["altered_input"])
+    assert tuple(altered) == ALTERED
+
+    for cid in ALTERED:
+        claim = by_id[cid]
+        assert claim["source_url"] is None, cid
+        assert claim["input_body"].startswith("[입력 본문 — 게시물 전사]"), cid
+        originals = [e for e in parsed["evidence"]
+                     if e["claim_id"] == cid and e["title"].startswith("원 보도")]
+        assert len(originals) == 1, cid
+        assert originals[0]["source_url"] not in claim["input_body"], cid
+
+
+def test_agent_never_sees_the_word_for_an_altered_post(parsed):
+    """Every altered case is refuted, so '재가공' in the input would leak the label."""
+    blob = json.dumps(parsed["claims"], ensure_ascii=False)
+
+    assert "재가공" not in blob
+    assert "연구자" not in blob
 
 
 def test_sns_case_uses_transcript_as_input(by_id):
@@ -107,19 +154,32 @@ def test_sns_case_uses_transcript_as_input(by_id):
 def test_english_case_language(by_id):
     assert by_id["FC026"]["language"] == "en"
     assert by_id["FC026"]["source_type"] == "영어 기사"
+    # Re-written posts keep the language of the report they copy.
+    assert by_id["FC029"]["language"] == "en"
+    assert by_id["FC018"]["language"] == "ko"
+
+
+def test_bluesky_posts_are_english(by_id, gold_by_id):
+    bluesky = [by_id[g["claim_id"]] for g in gold_by_id.values() if "Bluesky" in g["source_kind"]]
+
+    assert sorted(c["claim_id"] for c in bluesky) == ["FC035", "FC036", "FC038", "FC039"]
+    assert all(c["language"] == "en" for c in bluesky)
 
 
 def test_documented_split_groups_are_shared(by_id):
-    """evaluation.md 9.6: FC032/FC034 and FC015/FC019/FC020 are one group each."""
+    """evaluation.md 9.6: FC032/FC034 and FC015/FC020 are one group each.
+
+    FC019 was replaced on 2026-11-25 and is its own group now.
+    """
     assert by_id["FC032"]["family_id"] == by_id["FC034"]["family_id"]
     assert by_id["FC032"]["family_id"] == DOCUMENTED_GROUPS["FC032"]
 
-    size_group = {by_id[c]["family_id"] for c in ("FC015", "FC019", "FC020")}
-    assert len(size_group) == 1
+    assert by_id["FC015"]["family_id"] == by_id["FC020"]["family_id"]
+    assert by_id["FC019"]["family_id"] == "solo_FC019"
 
     # Grouping must not collapse unrelated cases.
     assert by_id["FC001"]["family_id"] != by_id["FC002"]["family_id"]
-    assert len({c["family_id"] for c in by_id.values()}) == 47
+    assert len({c["family_id"] for c in by_id.values()}) == 48
 
 
 def test_gold_sections_never_leak_into_claims(parsed):
@@ -163,16 +223,17 @@ def test_agent_visible_fields_are_a_closed_set(by_id):
 
 
 def test_every_case_has_a_claim_and_a_source_url(parsed):
+    """Only re-written posts lack a URL; every other input links its source."""
     assert all(c["text"] for c in parsed["claims"])
-    assert all(c["source_url"] for c in parsed["claims"])
+    assert all(c["source_url"] for c in parsed["claims"] if c["claim_id"] not in ALTERED)
     assert all(c["evidence_cutoff"] for c in parsed["claims"])
 
 
 def test_multi_evidence_cases_get_distinct_ids(parsed):
-    rows = [e for e in parsed["evidence"] if e["claim_id"] == "FC001"]
+    rows = [e for e in parsed["evidence"] if e["claim_id"] == "FC029"]
 
-    assert len(rows) == 2
-    assert [r["evidence_id"] for r in rows] == ["EV_FC001_1", "EV_FC001_2"]
+    assert len(rows) == 4
+    assert [r["evidence_id"] for r in rows] == [f"EV_FC029_{i}" for i in range(1, 5)]
     assert all(r["content"] and r["locator"] for r in rows)
 
 
@@ -197,11 +258,17 @@ def test_title_containing_a_colon_is_not_read_as_a_section(by_id, gold_by_id):
 
 
 def test_every_sns_case_has_a_transcript(by_id):
-    """13 SNS inputs (Threads 9 + X 4) are transcribed from the screen."""
-    sns = [c for c in by_id.values() if c["source_type"] in ("Threads", "X")]
+    """11 SNS inputs (Threads 5 + X 4 + Bluesky 2) carry the author's text."""
+    sns = [c for c in by_id.values() if c["source_type"] in ("Threads", "X", "Bluesky")]
 
-    assert len(sns) == 13
+    assert len(sns) == 11
     assert all(c["input_body"] for c in sns), [c["claim_id"] for c in sns if not c["input_body"]]
+
+
+def test_x_posting_times_are_absolute(by_id):
+    """X status IDs encode the posting time; the screen showed only a clock time."""
+    assert by_id["FC040"]["claim_date"].startswith("2026-10-29T04:47:54+09:00")
+    assert by_id["FC043"]["claim_date"].startswith("2026-10-29T13:23:20+09:00")
 
 
 def test_translated_posts_record_the_translation_heading(by_id):
@@ -213,13 +280,13 @@ def test_translated_posts_record_the_translation_heading(by_id):
 
 
 def test_cases_without_an_excerpt_are_left_empty_not_invented(by_id):
-    """37 article inputs are URLs only; full text is a separate collection step.
+    """Some article inputs are URLs only; full text is a separate collection step.
 
     The parser must not fabricate a body for them.
     """
     missing = [cid for cid, c in by_id.items() if not c["input_body"]]
 
-    assert len(missing) == 21
+    assert missing == ["FC007", "FC011", "FC021", "FC025", "FC044", "FC048"]
     assert all(by_id[cid]["source_type"] in ("한국어 기사·정보글", "영어 기사")
                for cid in missing)
     assert all(by_id[cid]["source_url"] for cid in missing)
