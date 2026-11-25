@@ -6,6 +6,12 @@
 | [exp-002-action-safety](exp-002-action-safety/summary.md) | 2026-11-19~20 | NP01/Pilot 4 재구성: 합성 6건 × 조건 5개(Skill·출처 정보·서버 게이트) × 모델 3개, 90세션 |
 | [exp-003-real-web](exp-003-real-web/summary.md) | 2026-11-20 | 같은 설계를 실제 웹 사례 7건으로: 조건 3개(base, Skill, Skill+게이트) × Haiku·Sonnet, 42세션 |
 | [exp-004-real-web-fixed](exp-004-real-web-fixed/summary.md) | 2026-11-20~21 | exp-003의 하네스 문제 3개를 고친 뒤 다시 실행, Skill+기본 검증 게이트 조건 추가: 조건 4개 × Haiku·Sonnet, 56세션 |
+| [exp-005-pilot](exp-005-pilot/summary.md) | 2026-11-25 | 개정 평가데이터·새 실행기 시험: 3건 × C0/C1/C2, DeepSeek V4.1 Flash, 9세션 |
+| [exp-005-baseline](exp-005-baseline/summary.md) | 2026-11-25 | 기말 baseline: 평가데이터 50건 × C0/C1/C2, DeepSeek V4.1 Flash(Mistral API), 150세션 |
+| [exp-006-improved](exp-006-improved/summary.md) | 2026-11-25 | 오류 분석에서 나온 Action Item 3개(예측 주장 규칙, 본문 추출, 조건별 도구) 적용 후 재실행, 150세션 |
+| [exp-006-repeat](exp-006-repeat/summary.md) | 2026-11-25 | 개선 대상 8건 × C1/C2 반복 확인, 16세션 |
+
+exp-005~006의 분석과 해석은 [docs/research/fact_checking/final-20261125/](../docs/research/fact_checking/final-20261125/README.md)에 있습니다.
 
 실험 ID별로 공개 가능한 metrics.json 또는 summary.md 등을 기록합니다.
 전체 사례 수·성공·실패·미실행 분모, 지표, 비용·token·시간, 오류 유형, 한계와 개선 제안을 남깁니다.
