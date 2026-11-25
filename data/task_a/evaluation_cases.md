@@ -27,8 +27,8 @@ uv run python scripts/extract_fc_data.py
 
 **작성과 검수.**
 - 교체 사례는 GPT로 후보 초안을 만든 뒤 Claude Code로 근거 접근성, 수치, 정답 누출을 점검하고, 팀원이 근거를 열어 대조해 고쳤다. 후보 검수 전후 기록은 커밋 `123e652`의 `data/task_a/evaluation_replacement_candidates.md`에 남아 있다.
-- 2026-11-25 정헌수가 50개 전체를 검수했다. 각 사례의 ‘검수’ 줄에 결과를 적었다: 통과 34 · 수정 반영 15 · 교체 1. 판정을 바꾼 사례는 없다.
-- 교체된 FC041(40바이트 추론 코어 비교)은 대상 시스템을 특정할 수 없어 검증 범위 밖이었다. 같은 날 근거 부족 예측 사례(PlayStation 6 출시 연도)로 바꿨고, 이 새 사례는 **팀 검수 전**이다.
+- 2026-11-25 정헌수가 50개 전체를 검수했다. 각 사례의 ‘검수’ 줄에 결과를 적었다: 통과 33 · 수정 반영 16 · 교체 1. 판정을 바꾼 사례는 없다.
+- 교체된 FC041(40바이트 추론 코어 비교)은 대상 시스템을 특정할 수 없어 검증 범위 밖이었다. 같은 날 근거 부족 예측 사례(PlayStation 6 출시 연도)로 바꿨고, 이 새 사례는 2026-11-25 검수했고 수정을 반영했다.
 
 ## 1. 전체 사례 찾아보기
 
@@ -263,7 +263,7 @@ Apple의 당시 뉴스룸 발표 목록에서 제품 발표·가격 공지를 �
 
 - [노벨재단 / 연도별 노벨상 상금표 (1901~2025)](https://www.nobelprize.org/uploads/2026/04/prize-amounts-2025.pdf)
   - 내용: 연도별 상금 명목값을 싣는다. 2023·2024·2025년은 모두 11 000 000크로나다.
-  - 확인 위치: 표의 2025년 행 ‘Prize amount nominal value SEK’ 열
+  - 확인 위치: 표의 2025년 행 ‘2025 2 384 11 000 000’. 11 000 000은 첫 금액 열(열 머리 ‘Prize amount’·‘nominal value’·‘SEK’가 세 줄로 나뉨)의 값
   - 자료 확인 상태: 본문 확인 (PDF, 2026년 4월 게시)
 - [스웨덴 한림원 / 2025년 노벨문학상 보도자료](https://www.nobelprize.org/prizes/literature/2025/press-release/)
   - 내용: 2025년 노벨문학상을 헝가리 작가 크러스너호르커이 라슬로에게 수여한다고 발표한다.
@@ -387,7 +387,7 @@ YTN은 발사 후 위성과 통신했는지를 집계한 우주항공청 발표�
 - **입력 글**: [ZDNet Korea](https://zdnet.co.kr/view/?no=20250102083130)
 - **게시 시점**: 2025-01-02T10:24:54+09:00
 - **검증 대상 기간·버전**: 2024년 말 발표된 2026년 시장 전망
-- **선정 주장**: DSCC는 2026년 폴더블 스마트폰 디스플레이(패널 출하 기준) 시장이 30% 이상 성장할 것으로 전망했다.
+- **선정 주장**: DSCC는 2026년 폴더블 스마트폰 디스플레이(패널 조달 기준) 시장이 30% 이상 성장할 것으로 전망했다.
 - **참조 판정**: 지지
 - **판정 이유**: DSCC 자료는 폴더블 스마트폰 디스플레이 시장을 패널 조달 기준으로 다루며 ‘2026 is expected to be a record year for foldables with over 30% growth’라고 적는다. 전망을 했다는 귀속 사실을 지지한다. 실제 2026년 성장률을 판정하는 것이 아니다.
 - **주장 위치**: 기사 후반 DSCC의 성장률 전망 문단
@@ -451,7 +451,7 @@ YTN은 발사 후 위성과 통신했는지를 집계한 우주항공청 발표�
 
 - [NASA Space Place / What Is Gravity?](https://spaceplace.nasa.gov/what-is-gravity/en/)
   - 내용: 질량이 있는 물체 사이에 인력이 작용하며 지표의 중력이 지구 질량과 관련된다는 물리적 설명을 제공한다.
-  - 확인 위치: ‘What is gravity?’의 질량·거리 설명
+  - 확인 위치: ‘What Is Gravity?’ 아래 ‘Anything that has mass also has gravity’와 거리 설명
   - 자료 확인 상태: 본문 확인
 - [Mothership / NASA 대변인의 중력 상실설 답변 보도](https://mothership.sg/2026/01/nasa-debunks-gravity-loss-2026/index.html)
   - 내용: 스놉스가 받은 NASA 대변인의 이메일 답변을 재인용한다. 대변인은 8월 12일 지구가 중력을 잃는다는 주장을 부인했다.
@@ -550,7 +550,7 @@ ZDNet Korea는 맥루머스 보도를 인용해 차기 AirPods Pro가 이어버�
 
 **근거 부족 판단의 조사 범위**
 
-기사 게시 전 마지막 AirPods Pro 발표(2025년 9월 AirPods Pro 3)의 센서 설명을 확인했다. 웹 검색으로는 2025년 9월부터 기사 게시 시점(2026-02-10)까지 AirPods 신제품 발표를 찾지 못했다. 팀 검수(2026-11-25)에서 Apple Newsroom 목록(2025-09-09~2026-02-16)을 열어 확인했다. AirPods 관련 글은 AirPods Pro 3 발표(9/9)와 출시 안내·업데이트(9/15, 9/19)뿐이었다. Apple의 비공개 제품 계획은 조사할 수 없다.
+기사 게시 전 마지막 AirPods Pro 발표(2025년 9월 AirPods Pro 3)의 센서 설명을 확인했다. 웹 검색으로는 2025년 9월부터 기사 게시 시점(2026-02-10)까지 AirPods 신제품 발표를 찾지 못했다. 팀 검수(2026-11-25)에서 Apple Newsroom 목록(2025-09-09~2026-02-16)을 열어 확인했다. AirPods 관련 글은 AirPods Pro 3 발표(9/9), 이벤트 안내 업데이트(9/11), 매장 출시 사진(9/19)뿐이었다. Apple의 비공개 제품 계획은 조사할 수 없다.
 
 **평가 포인트**
 
@@ -1097,7 +1097,7 @@ Milvus·vLLM·Llama 3.1을 이용한 RAG 구축 튜토리얼이다. 모델 소�
 
 - [삼성전자 / ‘갤럭시 버즈4 시리즈’ 공개](https://news.samsung.com/kr/%ec%82%bc%ec%84%b1%ec%a0%84%ec%9e%90-%ea%b0%a4%eb%9f%ad%ec%8b%9c-%eb%b2%84%ec%a6%884-%ec%8b%9c%eb%a6%ac%ec%a6%88-%ea%b3%b5%ea%b0%9c)
   - 내용: 27일 자정 사전 판매 시작, 3월 11일 국내 출시, 가격은 프로 35만 9,000원·기본형 25만 9,000원이라고 밝힌다.
-  - 확인 위치: 마지막 판매 안내 문단 ‘가격은 …’
+  - 확인 위치: 마지막 판매 안내 문단 “가격은 ‘갤럭시 버즈4 프로’ 35만 9,000원, ‘갤럭시 버즈4’ 25만 9,000원이다.”
   - 자료 확인 상태: 본문 확인
 
 **평가 포인트**
@@ -1140,7 +1140,7 @@ Milvus·vLLM·Llama 3.1을 이용한 RAG 구축 튜토리얼이다. 모델 소�
 
 - [기상청 기상자료개방포털 / 장마 통계](https://data.kma.go.kr/climate/rainySeason/selectRainySeasonList.do)
   - 내용: 중부지방 행에 시작 06.25., 종료 07.26.이 표시되며 표는 평년 통계로 제공된다.
-  - 확인 위치: ‘장마 평년값’ 지역별 표의 중부지방 행
+  - 확인 위치: ‘장마평년값’ 지역별 표의 중부지방 행(‘중부지방 06.25. 07.26.’)
   - 자료 확인 상태: 본문 확인
 - [아시아투데이 / 기상청의 SNS 장마 전망 부인](https://www.asiatoday.co.kr/kn/view.php?key=20260415010004858)
   - 내용: 기상청 공식 SNS 설명과 통보관 발언을 기사 본문에 인용해 사전 예보 여부를 검증할 수 있다.
@@ -1234,7 +1234,7 @@ Milvus·vLLM·Llama 3.1을 이용한 RAG 구축 튜토리얼이다. 모델 소�
 
 - [Copernicus C3S / Global Climate Highlights 2024](https://climate.copernicus.eu/global-climate-highlights-2024)
   - 내용: ERA5 기반 2024년 연평균은 산업화 이전 대비 1.60°C, 1991~2020 대비 0.72°C다. 장기 목표 판정에는 수십 년 평균이 필요하다.
-  - 확인 위치: ‘2024 was 0.72°C warmer than the 1991-2020 average, and 1.60°C warmer than the pre-industrial level’ 및 Paris Agreement 설명
+  - 확인 위치: ‘2024 was 0.72°C warmer than the 1991–2020 average, and 1.60°C warmer than the pre-industrial level’(1991과 2020 사이는 하이픈이 아닌 en dash ‘–’) 및 Paris Agreement 설명
   - 자료 확인 상태: 본문 확인
 
 **평가 포인트**
@@ -1251,7 +1251,6 @@ Milvus·vLLM·Llama 3.1을 이용한 RAG 구축 튜토리얼이다. 모델 소�
 **입력 본문 확보**: 위 원문 URL에서 전체 글을 수집해 사용한다. 이 문서의 요약·발췌·선정 주장은 기사 전문을 대신하지 않는다.
 
 ---
-
 <a id="fc026"></a>
 
 #### FC026
@@ -1980,7 +1979,7 @@ GNOME 프로젝트는 새 데스크톱 환경을 Fedora에서 사용할 수 있�
 - [Android AppFunctions 개발자 문서](https://developer.android.com/ai/appfunctions)
   - 내용: Android 16 이상 조건을 확인한다. 이 페이지에는 이전 Experimental/private preview 표현이 남아 있어, 출시 단계는 10월 28일 공식 발표를 우선한다.
   - 확인 위치: ‘AppFunctions is available on devices running Android 16 or higher.’
-  - 자료 확인 상태: 본문 확인 (2026-11-16 갱신본에서 확인. Android 16 조건이 기준 시점 이전 판에도 있었는지는 미확인)
+  - 자료 확인 상태: 본문 확인 (현재 페이지는 2026-11-16 갱신본. 기준 시점 이전 판인 Wayback Machine 2026-10-15 스냅숏(페이지 ‘Last updated 2026-09-22 UTC’)에도 같은 문장이 있음, 2026-11-25 확인: https://web.archive.org/web/20261015215925/https://developer.android.com/ai/appfunctions)
 
 **평가 포인트**
 
@@ -2203,10 +2202,10 @@ Supergiant Games는 정식 출시 예고와 함께 콘솔별 프레임률을 소
 - **검증 대상 기간·버전**: 2025년 10월 11일(KST) 기사 게시 시점까지 알려진 PlayStation 6의 출시 연도
 - **선정 주장**: 소니의 PlayStation 6는 2027년에 출시된다.
 - **참조 판정**: 근거 부족
-- **판정 이유**: 2027년은 유출자(KeplerL2, Moore's Law is Dead)의 주장이다. 기사 게시 시점까지 소니는 출시 연도를 발표하지 않았다. 소니의 콘솔 설계 책임자 마크 서니는 2025년 7월 인터뷰에서 차세대 준비를 ‘수년 단위(multi-year)’로 말했을 뿐 연도를 밝히지 않았다. 그래서 2027년 출시를 지지도 반박도 할 수 없다.
-- **주장 위치**: 기사 첫 문장과 KeplerL2의 NeoGAF 답변을 옮긴 둘째 문단
+- **판정 이유**: 2027년은 유출자(KeplerL2, Moore's Law is Dead)의 주장이다. 기사 게시 시점까지 소니는 출시 연도를 발표하지 않았다. 소니의 콘솔 설계 책임자 마크 서니는 2025년 7월 인터뷰에서 차세대 준비를 ‘수년 단위(multi-year)’로 말했고, 기사 이틀 전인 2025년 10월 9일 PlayStation 공식 영상에서는 새 기술을 ‘a future console in a few years' time’에 넣겠다고만 말했다. 둘 다 연도를 밝히지 않았다. 그래서 2027년 출시를 지지도 반박도 할 수 없다.
+- **주장 위치**: 기사 본문 첫 문장과 KeplerL2의 NeoGAF 답변을 옮긴 셋째 문단(‘In a new post on the NeoGAF forums…’)
 - **변형 주장**: 아니오
-- **검수**: 2026-11-25 정헌수 · ❌ 교체 (새 사례는 팀 검수 전)
+- **검수**: 2026-11-25 정헌수 · ✏️ 수정 반영 (FC041 교체 사례 검수 완료)
 
 **글의 맥락 — 요약**
 
@@ -2218,18 +2217,22 @@ TweakTown은 NeoGAF 포럼의 유출자 KeplerL2가 PS6의 2027년 출시를 ‘
 
 **근거 자료**
 
+- [PlayStation 공식 YouTube / From Project Amethyst to the Future of Play: AMD and Sony Interactive Entertainment’s Shared Vision](https://www.youtube.com/watch?v=1LCMzw-_dMw)
+  - 내용: 2025년 10월 9일(KST 22:00) PlayStation 공식 채널에 올라온 마크 서니·잭 후인(AMD) 대담이다. 서니는 Neural Arrays, Radiance Cores, Universal Compression을 소개한 뒤 “They only exist in simulation right now, but the results are quite promising, and I'm really excited about bringing them to a future console in a few years' time.”라고 말했다. 차세대 콘솔의 출시 연도는 밝히지 않았다. TweakTown이 인용한 KeplerL2의 NeoGAF 답변은 이 영상을 다룬 스레드에 달린 것이다.
+  - 확인 위치: 영상 끝부분 서니의 ‘a future console in a few years' time’ 발언(자막·대본)
+  - 자료 확인 상태: 본문 확인 (공식 1차 자료. 업로드 2025-10-09T06:00:03-07:00 = 2025-10-09T22:00:03+09:00로 기준 시점 이전. 대본은 2026-11-25 확인)
 - [Notebookcheck / 소니 콘솔 설계 책임자 마크 서니의 차세대 일정 발언 (Tom's Guide 인터뷰 인용)](https://www.notebookcheck.net/The-PS6-release-date-is-still-years-away-according-to-Sony-PlayStation-console-architect.1049556.0.html)
-  - 내용: 2025년 7월 2일 보도. 서니는 “What I'm trying to do is prepare for the next generation of consoles, so my timeframe is multi-year here.”라고 말했다. 기사는 업계 예상을 2027년 또는 2028년으로 적고, 소니가 연도를 밝히지 않았음을 전한다.
+  - 내용: 2025년 7월 2일 보도. 서니는 “What I'm trying to do is prepare for the next generation of consoles, so my timeframe is multi-year here.”라고 말했다. 기사는 출시 시기를 업계 예상(‘most insiders expect the system to arrive in 2027 or 2028’)으로만 적는다. 소니가 정한 연도는 나오지 않는다.
   - 확인 위치: ‘my timeframe is multi-year here’ 인용문과 ‘most insiders expect the system to arrive in 2027 or 2028’ 문장
-  - 자료 확인 상태: 본문 확인 (2차 보도. 기준 시점 이전 자료)
+  - 자료 확인 상태: 본문 확인 (2차 보도. 2025-07-02 게시, 페이지 수정 시각은 2026-10-05라서 기준 시점 이전 판인 Wayback Machine 2025-09-23 스냅숏에서도 두 문장을 확인함: https://web.archive.org/web/20250923145335/https://www.notebookcheck.net/The-PS6-release-date-is-still-years-away-according-to-Sony-PlayStation-console-architect.1049556.0.html)
 - [Digital Trends / 소니 CEO가 PS6 출시일을 정하지 않았다고 밝힘](https://www.digitaltrends.com/gaming/sony-ps6-launch-date-not-fixed-entertainment-strategy/) — 배경·추가 확인용
-  - 내용: 2026년 8월 16일 보도. 토토키 히로키 CEO가 월스트리트저널 인터뷰에서 PS6 출시일을 아직 정하지 않았다고 밝혔다. 기준 시점 이후 자료라서 판정 근거로는 쓰지 않는다.
+  - 내용: 2026년 8월 16일 보도. 월스트리트저널 보도를 인용해 토토키 히로키 CEO가 PS6 출시일을 아직 정하지 않았다고 전한다. 기준 시점 이후 자료라서 판정 근거로는 쓰지 않는다.
   - 확인 위치: ‘Sony CEO Hiroki Totoki has confirmed that the company still hasn't fixed a launch date for the PlayStation 6’
   - 자료 확인 상태: 본문 확인 (기준 시점 이후)
 
 **근거 부족 판단의 조사 범위**
 
-기사 게시 시점(2025-10-11 KST) 이전에 소니가 PS6 출시 연도를 발표했는지 찾았다. 웹 검색으로 찾은 소니 측 발언은 2025년 7월 마크 서니의 ‘multi-year’ 발언과, 같은 Notebookcheck 기사에 실린 니시노 히데아키 SIE CEO의 ‘next generation console strategy’ 언급뿐이다. 둘 다 연도를 밝히지 않았다. 소니의 비공개 출시 계획은 조사할 수 없다.
+기사 게시 시점(2025-10-11 KST) 이전에 소니가 PS6 출시 연도를 발표했는지 찾았다. 웹 검색으로 찾은 소니 측 발언은 2025년 7월 마크 서니의 ‘multi-year’ 발언, 같은 Notebookcheck 기사에 실린 니시노 히데아키 SIE CEO의 ‘next generation console strategy’ 언급, 2025년 10월 9일 PlayStation 공식 영상에서 서니가 말한 ‘a future console in a few years' time’이다. 셋 다 연도를 밝히지 않았다. 소니의 비공개 출시 계획은 조사할 수 없다.
 
 **평가 포인트**
 
@@ -2258,14 +2261,14 @@ TweakTown은 NeoGAF 포럼의 유출자 KeplerL2가 PS6의 2027년 출시를 ‘
 - **판정 이유**: 공식 README의 용도와 LICENSE의 MIT 표기가 일치한다. 모든 편집이 완벽하거나 전체 이용 비용이 0원이라는 주장은 검증 대상에 포함하지 않는다.
 - **주장 위치**: part_1
 - **변형 주장**: 아니오
-- **검수**: 2026-11-25 정헌수 · ✅ 통과
+- **검수**: 2026-11-25 정헌수 · ✏️ 수정 반영
 
 **근거 자료**
 
 - [browser-use/video-use README](https://github.com/browser-use/video-use/blob/main/README.md)
   - 내용: 코딩 에이전트와 대화해 폴더의 영상을 편집하는 프로젝트다. 애니메이션 도구로 Remotion 등을 사용할 수 있고 외부 서비스 키 설정도 안내한다.
-  - 확인 위치: Overview; Installation; animation pipeline
-  - 자료 확인 상태: 공식 GitHub 파일 본문 확인
+  - 확인 위치: 첫 문단 ‘edit videos with Claude Code. 100% open source.’; ‘What it does’ 절의 ‘Generates animation overlays via HyperFrames, Remotion, Manim, or PIL’; ‘Manual install’ 절의 ‘Add your ElevenLabs API key’
+  - 자료 확인 상태: 공식 GitHub 파일 본문 확인 (README 마지막 변경 커밋 43cfc56, 2026-10-08T22:16:59Z로 기준 시점 이전. 2026-11-25 확인)
 - [browser-use/video-use LICENSE](https://github.com/browser-use/video-use/blob/main/LICENSE)
   - 내용: 프로젝트 소스는 MIT License로 배포된다. 외부 LLM·음성 API 이용 요금과 같은 전체 실행 비용은 별도 문제다.
   - 확인 위치: MIT License, Copyright 2026 Browser Use

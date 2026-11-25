@@ -233,12 +233,11 @@ def test_multi_evidence_cases_get_distinct_ids(parsed):
 
 
 def test_background_only_evidence_is_flagged(parsed):
-    """FC041's second reference postdates its cutoff, so it is background only."""
+    """FC041's last reference postdates its cutoff, so it is background only."""
     rows = [e for e in parsed["evidence"] if e["claim_id"] == "FC041"]
 
-    assert len(rows) == 2
-    assert rows[0]["note"] is None
-    assert rows[1]["note"] == "배경·추가 확인용"
+    assert len(rows) == 3
+    assert [r["note"] for r in rows] == [None, None, "배경·추가 확인용"]
 
 
 def test_title_containing_a_colon_is_not_read_as_a_section(by_id, gold_by_id):
@@ -328,10 +327,10 @@ def test_per_case_evidence_cutoff_overrides_default():
 
 
 def test_every_case_records_its_review(gold_by_id):
-    """The '검수' line goes to gold only; FC041 was replaced after review."""
+    """The '검수' line goes to gold only. All 50 were checked on 2026-11-25,
+    including FC041's replacement."""
     assert all(g["review_note"] for g in gold_by_id.values())
-    drafts = sorted(cid for cid, g in gold_by_id.items() if g["review_status"] == "draft")
-    assert drafts == ["FC041"]
+    assert all(g["review_status"] == "reviewed" for g in gold_by_id.values())
 
 
 def test_review_record_is_not_agent_visible(parsed):
