@@ -6,6 +6,7 @@ source document - both need a human look, not a silent re-baseline.
 
 from __future__ import annotations
 
+import json
 from collections import Counter
 from pathlib import Path
 
@@ -222,3 +223,36 @@ def test_cases_without_an_excerpt_are_left_empty_not_invented(by_id):
     assert all(by_id[cid]["source_type"] in ("한국어 기사·정보글", "영어 기사")
                for cid in missing)
     assert all(by_id[cid]["source_url"] for cid in missing)
+
+
+# --- re-written (altered) posts and per-case cutoff ---------------------------
+_ALTERED = """#### FC999
+
+**시험 사례**
+
+- **입력 글**: 재가공 게시물 (연구자 작성, 원 보도 URL은 에이전트에 주지 않음)
+- **게시 시점**: 2026-05-19T09:13:12+09:00
+- **근거 기준 시점**: 2026-05-19T09:13:12+09:00
+- **선정 주장**: 키노트는 한국시간 6월 9일 오전 3시에 시작한다.
+- **참조 판정**: 반박
+- **판정 이유**: 공식 공지는 02:00 KST다.
+
+**입력 본문 — 게시물 전사**
+
+> 키노트는 한국시간 9일 오전 3시에 진행된다.
+"""
+
+
+def test_altered_post_has_no_source_url_and_no_annotator_note():
+    from task_a.dataset import parse_case, to_records
+    claim = to_records(parse_case("FC999", _ALTERED.split("\n", 1)[1]))["claim"]
+    assert claim["source_url"] is None
+    assert "연구자" not in json.dumps(claim, ensure_ascii=False)
+    assert "오전 3시" in claim["input_body"]
+
+
+def test_per_case_evidence_cutoff_overrides_default():
+    from task_a.dataset import DEFAULT_EVIDENCE_CUTOFF, parse_case, to_records
+    claim = to_records(parse_case("FC999", _ALTERED.split("\n", 1)[1]))["claim"]
+    assert claim["evidence_cutoff"] == "2026-05-19T09:13:12+09:00"
+    assert DEFAULT_EVIDENCE_CUTOFF == "2026-10-30T01:37:43+09:00"

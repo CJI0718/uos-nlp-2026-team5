@@ -22,6 +22,8 @@ BULLET = re.compile(r"^- (?P<text>.+)$")
 TABLE_ROW = re.compile(r"^\| \[(?P<case_id>FC\d{3})\][^|]*\| (?P<kind>[^|]+) \|.*\| (?P<label>[^|]+) \|\s*$")
 MD_LINK = re.compile(r"\[([^\]]*)\]\(([^)]*)\)")
 
+DEFAULT_EVIDENCE_CUTOFF = "2026-10-30T01:37:43+09:00"
+
 LABEL_MAP = {
     "지지": "supported",
     "반박": "refuted",
@@ -177,9 +179,16 @@ def agent_input_body(case: ParsedCase) -> str | None:
 
 
 def source_url(case: ParsedCase) -> str | None:
-    raw = case.fields.get("입력 글", "")
+    """The input post's URL, or None when the case has no linkable source.
+
+    Altered claims are given to the agent as a re-written post with no URL; the
+    field then carries an annotator note ('재가공 게시물 …') that must not leak.
+    """
+    raw = case.fields.get("입력 글", "").strip()
     match = MD_LINK.search(raw)
-    return match.group(2) if match else (raw or None)
+    if match:
+        return match.group(2)
+    return raw if raw.startswith(("http://", "https://")) else None
 
 
 def parse_source_kinds(text: str) -> dict[str, str]:
@@ -213,7 +222,9 @@ def to_records(case: ParsedCase, source_kind: str | None = None) -> dict:
         "source_type": source_kind,
         "claim_date": case.fields.get("게시 시점"),
         "target_period": case.fields.get("검증 대상 기간·버전"),
-        "evidence_cutoff": "2026-10-30T01:37:43+09:00",
+        # Per-case '근거 기준 시점' wins (e.g. not-enough-evidence cases judged
+        # as of their posting time); otherwise the dataset-wide cutoff.
+        "evidence_cutoff": case.fields.get("근거 기준 시점") or DEFAULT_EVIDENCE_CUTOFF,
         "input_body": agent_input_body(case),
     }
 
