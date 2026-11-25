@@ -1980,6 +1980,10 @@ GNOME 프로젝트는 새 데스크톱 환경을 Fedora에서 사용할 수 있�
   - 내용: Android 16 이상 조건을 확인한다. 이 페이지에는 이전 Experimental/private preview 표현이 남아 있어, 출시 단계는 10월 28일 공식 발표를 우선한다.
   - 확인 위치: ‘AppFunctions is available on devices running Android 16 or higher.’
   - 자료 확인 상태: 본문 확인 (현재 페이지는 2026-11-16 갱신본. 기준 시점 이전 판인 Wayback Machine 2026-10-15 스냅숏(페이지 ‘Last updated 2026-09-22 UTC’)에도 같은 문장이 있음, 2026-11-25 확인: https://web.archive.org/web/20261015215925/https://developer.android.com/ai/appfunctions)
+- [Android AppFunctions 개발자 문서 (기준 시점 이전 보관본, Wayback Machine 2026-10-15)](https://web.archive.org/web/20261015215925/https://developer.android.com/ai/appfunctions)
+  - 내용: 위 문서의 2026-09-22 갱신판이다. ‘AppFunctions is available on devices running Android 16 or higher.’가 같은 문장으로 있다. 현재 페이지는 기준 시점 이후 갱신본이라 C1 코퍼스에서 빠지므로, 이 보관본으로 조건을 확인한다.
+  - 확인 위치: ‘AppFunctions is available on devices running Android 16 or higher.’와 하단 ‘Last updated 2026-09-22 UTC’
+  - 자료 확인 상태: 본문 확인 (2026-11-25)
 
 **평가 포인트**
 
