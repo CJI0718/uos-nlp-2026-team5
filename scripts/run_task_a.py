@@ -85,6 +85,11 @@ def ledger_totals(path: Path = LEDGER) -> dict:
     return {"cost_usd": round(cost, 6), "tavily_searches": int(tavily), "episodes": episodes}
 
 
+def tavily_used_all() -> int:
+    """Tavily searches across every ledger: one key, one approved cap."""
+    return sum(ledger_totals(p)["tavily_searches"] for p in sorted(LEDGER.parent.glob("task_a_budget_ledger*.jsonl")))
+
+
 def ledger_append(row: dict, path: Path = LEDGER) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with _LEDGER_LOCK, path.open("a", encoding="utf-8") as fh:
@@ -258,7 +263,7 @@ def run_openai(args, arm: str, claim_ids: list[str], budget: Budget, tavily: Tav
         append_record(args.exp_id, arm, rec)
         ledger_append({"ts": _now(), "exp_id": args.exp_id, "backend": args.backend,
                        "model": args.model, "arm": arm, "claim_id": cid,
-                       "cost_usd": round(out.cost_usd, 6), "tavily_searches": searches})
+                       "cost_usd": round(out.cost_usd, 6), "tavily_searches": searches}, args.ledger)
         return rec
 
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
@@ -371,7 +376,8 @@ def run_claude(args, arm: str, claim_ids: list[str], budget: Budget, tavily: Tav
                "tavily_searches": searches, "finished_at": _now()}
         append_record(args.exp_id, arm, rec)
         ledger_append({"ts": _now(), "exp_id": args.exp_id, "backend": "claude", "model": args.model,
-                       "arm": arm, "claim_id": cid, "cost_usd": round(cost, 6), "tavily_searches": searches})
+                       "arm": arm, "claim_id": cid, "cost_usd": round(cost, 6), "tavily_searches": searches},
+                      args.ledger)
         if budget.remaining() <= 0:
             stop.set()
         return rec
@@ -595,7 +601,9 @@ def parse_args(argv=None):
     p.add_argument("--arms", default="C0,C1,C2")
     p.add_argument("--claims", default="all", help="all 또는 쉼표 구분 claim_id")
     p.add_argument("--limit", type=int, default=None, help="앞에서 N개만")
-    p.add_argument("--max-cost-usd", type=float, default=5.0, help="모든 실행을 합친 모델 비용 상한")
+    p.add_argument("--max-cost-usd", type=float, default=5.0, help="이 장부에 기록된 모든 실행을 합친 모델 비용 상한")
+    p.add_argument("--ledger", type=Path, default=LEDGER,
+                   help="비용 장부. 예산을 따로 승인받은 실행(예: Claude)은 다른 파일을 쓴다. Tavily는 모든 장부를 합쳐 센다")
     p.add_argument("--tavily-cap", type=int, default=600, help="모든 실행을 합친 Tavily 검색 상한")
     p.add_argument("--min-episode-budget", type=float, default=0.03,
                    help="남은 예산이 이보다 적으면 새 에피소드를 시작하지 않는다")
@@ -619,7 +627,8 @@ def parse_args(argv=None):
 def main(argv=None) -> int:
     args = parse_args(argv)
     if args.action == "ledger":
-        print(json.dumps(ledger_totals(), ensure_ascii=False, indent=2))
+        print(json.dumps({"ledger": str(args.ledger), **ledger_totals(args.ledger),
+                          "tavily_searches_all_ledgers": tavily_used_all()}, ensure_ascii=False, indent=2))
         return 0
     if args.action == "score":
         summary = score(args.exp_id)
@@ -640,14 +649,14 @@ def main(argv=None) -> int:
     if any(a != "C0" for a in arms) and not CORPUS.exists():
         raise SystemExit(f"C1·C2에는 코퍼스가 필요합니다: {CORPUS} (scripts/build_corpus.py)")
 
-    spent = ledger_totals()
+    spent = ledger_totals(args.ledger)
     budget = Budget(args.max_cost_usd, spent_before=spent["cost_usd"])
-    tavily = TavilyCounter(args.tavily_cap, used_before=spent["tavily_searches"])
+    tavily = TavilyCounter(args.tavily_cap, used_before=tavily_used_all())
     plan = {a: [c for c in claim_ids if c not in done_claims(args.exp_id, a)] for a in arms}
     print(f"계획: {args.backend}:{args.model} exp={args.exp_id} "
           + ", ".join(f"{a} {len(v)}개" for a, v in plan.items())
-          + f" | 지금까지 ${spent['cost_usd']:.4f}/${args.max_cost_usd}, "
-            f"Tavily {spent['tavily_searches']}/{args.tavily_cap}", file=sys.stderr)
+          + f" | 장부 {args.ledger.name}: ${spent['cost_usd']:.4f}/${args.max_cost_usd}, "
+            f"Tavily(전체) {tavily.used}/{args.tavily_cap}", file=sys.stderr)
     skipped = {a: len(claim_ids) - len(v) for a, v in plan.items() if len(claim_ids) - len(v)}
     if skipped:
         print(f"이미 기록이 있어 건너뜀: {skipped}", file=sys.stderr)
@@ -668,7 +677,7 @@ def main(argv=None) -> int:
         if budget.remaining() < args.min_episode_budget:
             print("예산 상한에 가까워 남은 조건을 실행하지 않습니다.", file=sys.stderr)
             break
-    print(json.dumps(ledger_totals(), ensure_ascii=False), file=sys.stderr)
+    print(json.dumps(ledger_totals(args.ledger), ensure_ascii=False), file=sys.stderr)
     return 0
 
 
