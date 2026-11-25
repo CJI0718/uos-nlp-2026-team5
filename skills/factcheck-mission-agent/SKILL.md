@@ -27,9 +27,24 @@ description: Evidence-grounded fact verification, distortion localization, and v
 4. C2 조건에서 코퍼스 근거가 없거나, 서로 충돌하거나, 1차 출처가 아니라면 `search_web`과 `fetch_url`로 독립된 1차 출처를 확보합니다.
    - `fetch_url`로 연 페이지는 `read_evidence(evidence_id=URL, offset=…)`로 이어 읽습니다. 다시 `fetch_url`을 부르면 외부 호출 예산만 씁니다.
 
+### Step 1.5. 판정 기준: 세 라벨의 경계
+
+- `supported`: `evidence_cutoff`까지 공개된 자료가 주장의 값·날짜·조건을 확인한다.
+- `refuted`: `evidence_cutoff`까지 공개된 자료가 주장과 **다른 값을 확정**한다.
+- `not_enough_evidence`: 어느 쪽도 확정할 자료가 없다.
+
+**아직 일어나지 않은 일에 관한 주장**(출시 예정가, 출시 연도, 탑재 예정 부품, 미래 사건의 발생 여부 등)은 다음 순서로 판정합니다.
+1. `evidence_cutoff`까지 제조사·기관이 그 값을 **확정해 발표**했는가? 확정 발표가 주장과 같으면 `supported`, 다르면 `refuted`입니다.
+2. 확정 발표가 없으면 `not_enough_evidence`입니다.
+   - 애널리스트·유출자·언론의 전망을 전한 기사는 "그런 전망이 있다"는 근거일 뿐, 주장한 미래 사실의 근거가 아닙니다. 전망 보도만으로 `supported`를 내지 않습니다.
+   - 주장이 전망을 사실처럼 단정했다는 이유만으로 `refuted`를 내지 않습니다. 이때는 `not_enough_evidence`로 판정하고, 해당하면 `distortion_type`에 `forecast_as_fact`를 적습니다.
+3. 예외: 주장이 "X가 그렇게 전망했다/발표했다"는 **귀속 주장**이면, 그 전망·발표 자료로 `supported`/`refuted`를 판정합니다.
+
+예(가상): "Acme Phone 2는 999달러에 출시될 것이다" — 출시 전 공식 가격 발표가 없고 증권사 예상가 보도만 있으면 `not_enough_evidence`. "Acme 증권은 Acme Phone 2의 가격을 999달러로 예상했다"는 그 보고서로 `supported`.
+
 ### Step 2. 결정론적 검산과 왜곡 지점·원인 특정
 1. **암산 금지**: 차액(`diff`), 증감률(`pct_change`), 퍼센트포인트 차이(`percentage_point_gap`), 시간대 변환(`tz_convert`), 단위 변환(`scale_unit`), 곱셈·비율(`multiply`, `ratio`)은 `calculate_comparison`으로 계산합니다.
-2. 주장이 반박(`refuted`)되거나 맥락 왜곡이 있으면 다음 세 가지를 특정합니다.
+2. 주장이 반박(`refuted`)되거나 맥락 왜곡이 있으면 다음 세 가지를 특정합니다. `not_enough_evidence`일 때도 왜곡 유형이 분명하면 `distortion_type`과 `problematic_span`을 적을 수 있습니다.
    - `problematic_span`: 주장 또는 입력 글에서 틀리거나 과장된 구체적 구절
    - `distortion_type`:
      - `timezone_or_date_error`: 시간대 미변환, 발표일·시행일·종료일 착오
@@ -37,7 +52,7 @@ description: Evidence-grounded fact verification, distortion localization, and v
      - `unit_or_scale_error`: `%`와 `%p`, `억`과 `만`, `billion`과 `million` 같은 단위·자릿수 혼동
      - `missing_condition_or_scope`: 적용 조건·지역·용량·대상 범위 누락
      - `overgeneralization`: 일부 조건·실험 결과를 전체 성능이나 보편 사실로 과장
-     - `forecast_as_fact`: 전망·예측·계획을 확정된 사실로 서술
+     - `forecast_as_fact`: 전망·예측·계획을 확정된 사실로 서술 (공식 확정 값이 없으면 판정은 `not_enough_evidence`. Step 1.5 참고)
      - `source_misattribution`: 개발 주체·발표 기관 오기
      - `unverified_claim`: 재현·검증 가능한 공식 자료가 없는 일방적 주장
      - `none`: 왜곡 없음 (`supported`)

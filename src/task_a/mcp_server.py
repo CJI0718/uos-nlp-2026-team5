@@ -612,6 +612,10 @@ class AgentEnvironment:
                 },
             })
         for spec in self.registry.specs.values():
+            # List only what the arm allows. In exp-005 the C1 agent spent 10 of
+            # 239 tool calls on web tools the server then refused.
+            if self.arm == "C0" or (spec.external and self.arm != "C2"):
+                continue
             tools.append({
                 "name": spec.name,
                 "description": spec.description,

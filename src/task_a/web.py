@@ -28,7 +28,7 @@ USER_AGENT = "uos-nlp-team5-factcheck-agent/0.1 (academic research)"
 #: Raw bytes read per page. News pages are often several hundred KB of markup.
 MAX_DOWNLOAD_BYTES = 4 * 1024 * 1024
 #: Extracted text kept per page; the agent pages through it with read_evidence.
-MAX_PAGE_TEXT_CHARS = 100_000
+MAX_PAGE_TEXT_CHARS = 500_000   # matches corpus_build.MAX_TEXT_CHARS
 _DDG_RESULT_RE = re.compile(
     r'<a[^>]+class="[^"]*result__a[^"]*"[^>]+href="(?P<url>[^"]+)"[^>]*>(?P<title>.*?)</a>'
     r'(?:.*?<a[^>]+class="[^"]*result__snippet[^"]*"[^>]*>(?P<snippet>.*?)</a>)?',
@@ -75,6 +75,7 @@ def to_ascii_url(url: str) -> str:
 
 
 _NAVER_BLOG_PATH = re.compile(r"^/([A-Za-z0-9_-]+)/(\d+)/?$")
+_GITHUB_BLOB_PATH = re.compile(r"^/([^/]+/[^/]+)/blob/(.+[^/])$")
 
 
 def readable_url(url: str) -> str:
@@ -82,10 +83,20 @@ def readable_url(url: str) -> str:
 
     Naver's desktop blog page (blog.naver.com/<id>/<no> or PostView.naver?blogId=&logNo=)
     loads the post in an inner frame, so the fetched HTML has no body text. The
-    mobile address serves the post directly. Other URLs are returned unchanged.
+    mobile address serves the post directly.
+
+    A GitHub file page (github.com/<owner>/<repo>/blob/<ref>/<path>) renders the
+    file with scripts, so extraction keeps only the site menu (exp-005 FC040:
+    2,367 characters of navigation, no README text). The raw file at
+    raw.githubusercontent.com has the same content at the same commit.
+    Other URLs are returned unchanged.
     """
     parts = urllib.parse.urlsplit(url)
-    if (parts.hostname or "").lower() not in ("blog.naver.com", "www.blog.naver.com"):
+    host = (parts.hostname or "").lower()
+    if host in ("github.com", "www.github.com"):
+        m = _GITHUB_BLOB_PATH.match(parts.path)
+        return f"https://raw.githubusercontent.com/{m.group(1)}/{m.group(2)}" if m else url
+    if host not in ("blog.naver.com", "www.blog.naver.com"):
         return url
     m = _NAVER_BLOG_PATH.match(parts.path)
     if m:

@@ -35,7 +35,9 @@ from task_a.tools import check_url
 from task_a.web import USER_AGENT, readable_url, to_ascii_url
 
 MIN_TEXT_CHARS = 300
-MAX_TEXT_CHARS = 100_000
+# 500k: one reference (FC040's README, read from the raw file since exp-005) is
+# 422k characters with the cited line at 351k. Only that document is affected.
+MAX_TEXT_CHARS = 500_000
 MAX_DOWNLOAD_BYTES = 8 * 1024 * 1024
 
 @dataclass
@@ -132,7 +134,10 @@ def extract(fetched: Fetched) -> Extracted | None:
     if "html" in fetched.content_type or "<html" in raw[:2000].lower():
         return extract_html(raw, fetched.url)
     text = re.sub(r"\s+", " ", raw).strip()
-    return Extracted(title="", text=text, source_type="text")
+    lines = [ln.strip() for ln in raw.splitlines() if ln.strip()]
+    first = next((ln[2:].strip() for ln in lines if ln.startswith("# ")),
+                 next((ln for ln in lines if not ln.startswith("<")), ""))
+    return Extracted(title=first[:200], text=text, source_type="text")
 
 
 # --------------------------------------------------------------------------
