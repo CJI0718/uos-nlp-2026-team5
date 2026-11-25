@@ -63,6 +63,7 @@ GOLD_MAP = ROOT / "data/raw/task_a/corpus_c1.gold_map.jsonl"
 CLAIMS = ROOT / "data/task_a/claims.jsonl"
 GOLD = ROOT / "data/task_a/gold.jsonl"
 EVIDENCE = ROOT / "data/task_a/evidence.jsonl"
+CLAIM_TYPES = ROOT / "data/task_a/claim_types.json"
 DATA_VERSION = "claims-2026-11-25"
 SERVER = "factcheck-mission"
 # A C2 episode may use up to max_external_calls searches; never start one that
@@ -434,6 +435,7 @@ def score(exp_id: str) -> dict:
     gold_rows = {r["claim_id"]: r for r in read_jsonl(GOLD)}
     refs = reference_sources()
     altered = {cid for cid, g in gold_rows.items() if g.get("altered_input")}
+    types = json.loads(CLAIM_TYPES.read_text(encoding="utf-8"))["types"] if CLAIM_TYPES.exists() else {}
     out_dir = ROOT / "results" / exp_id
     arms_rows: dict[str, list[dict]] = {}
     table, episodes = [], []
@@ -470,7 +472,7 @@ def score(exp_id: str) -> dict:
             episodes.append({
                 "arm": arm, "claim_id": cid, "gold": label.value if label else None,
                 "verdict": res.get("verdict"), "correct": g.v, "cites_reference": e,
-                "grounded_auto": ve, "altered_input": cid in altered,
+                "grounded_auto": ve, "altered_input": cid in altered, "claim_type": types.get(cid),
                 "execution_status": res.get("execution_status"),
                 "distortion_type": res.get("distortion_type"),
                 "cited_evidence_ids": res.get("cited_evidence_ids"),
@@ -512,6 +514,10 @@ def score(exp_id: str) -> dict:
             "completion_tokens_total": sum(e["completion_tokens"] or 0 for e in arm_eps),
             "missions": dict(Counter(f"{e['mission_type']}:{e['mission_status']}"
                                      for e in arm_eps if e["mission_type"])),
+            "accuracy_by_claim_type": {
+                t: acc_of(lambda g, t=t: types.get(g.claim_id) == t)
+                for t in sorted(set(types.values()))},
+            "confusion": dict(Counter(f"{e['gold']}->{e['verdict']}" for e in arm_eps)),
         })
 
     trans = {}
