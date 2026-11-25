@@ -28,6 +28,7 @@ uv run python scripts/extract_fc_data.py
 **작성과 검수.**
 - 교체 사례 29개는 GPT로 후보 초안을 만든 뒤 Claude Code로 근거 접근성, 수치, 정답 누출을 점검하고, 팀원이 근거를 열어 대조해 고쳤다(2026-11-25). 검수 전후 기록은 커밋 `123e652`의 `data/task_a/evaluation_replacement_candidates.md`에 남아 있다.
 - 검증 범위 밖인 3개(기존 FC004 수상자, 기존 FC018 개발 주체, 교체 후보 FC010 생명체 존재)는 2026-11-25 수치·사양형 사례로 바꿨다. FC018은 예비 후보 R03, FC010은 R04를 다듬었고 FC004는 새로 찾았다. 이 3개는 **팀 검수 전**이다.
+- 같은 날 범위 경계에 있던 3개(FC028 수상자 귀속, FC032 공개 여부, FC034 순위)는 글과 근거를 그대로 두고 선정 주장을 숫자 부분으로 고쳤다. 정답은 셋 다 지지이며, 고친 주장 문장은 **팀 검수 전**이다.
 - 기존 사례 18개는 2026년 10월 작성분이며 독립 검수 전 초안이다.
 
 ## 1. 전체 사례 찾아보기
@@ -63,13 +64,13 @@ ID를 누르면 아래 §2의 해당 상세 사례로 이동한다. 평가 주�
 | [FC025](#fc025) | 한국어 기사·정보글 | [2024년 전 지구 평균기온 상승폭](https://www.hankookilbo.com/news/article/A2025011016220001388) | 지지 |
 | [FC026](#fc026) | 영어 기사 | [소행성 2024 YR4의 2032년 달 충돌 여부](https://www.livescience.com/space/asteroids/james-webb-telescope-ups-the-odds-that-city-killer-asteroid-2024-yr4-will-hit-the-moon-in-2032) | 근거 부족 |
 | [FC027](#fc027) | 영어 기사 | [Crew-9 우주정거장 분리 요일의 실제 기사 오류](https://www.theguardian.com/science/2025/mar/18/nasa-astronauts-iss-spacex-dragon-capsule-return-time-sunita-williams-barry-wilmore) | 반박 |
-| [FC028](#fc028) | 영어 기사 | [IceCube 구상과 프랜시스 핼즌의 노벨상 사이의 연도 차](https://www.theguardian.com/science/2026/oct/06/nobel-prize-in-physics-francis-halzen-south-pole-neutrinos-icecube-detector) | 지지 |
+| [FC028](#fc028) | 영어 기사 | [IceCube 구상 연도와 노벨상 발표까지의 연도 차](https://www.theguardian.com/science/2026/oct/06/nobel-prize-in-physics-francis-halzen-south-pole-neutrinos-icecube-detector) | 지지 |
 | [FC029](#fc029) | 재가공 게시물 · 영어 기사 기반 | IEA의 데이터센터 전력 수요 전망에서 ‘네 배’의 범위 | 반박 |
 | [FC030](#fc030) | 재가공 게시물 · 영어 기사 기반 | 3I/ATLAS의 공식 발견 보고와 과거 관측일 | 반박 |
 | [FC031](#fc031) | Threads | [Linux CVE-2026-98432의 CVSS 버전과 점수](https://www.threads.com/@choi.openai/post/DfFVR0yCk-2) | 지지 |
-| [FC032](#fc032) | Threads | [Mistral Large 4 공개 가중치와 총 매개변수](https://www.threads.com/@choi.openai/post/DfFR6PUD9uh) | 지지 |
+| [FC032](#fc032) | Threads | [Mistral Large 4의 총 매개변수](https://www.threads.com/@choi.openai/post/DfFR6PUD9uh) | 지지 |
 | [FC033](#fc033) | Threads | [뉴멕시코 법원의 Meta 제재금 명령](https://www.threads.com/@jisang0914/post/DexXv22EzAa) | 지지 |
-| [FC034](#fc034) | Threads | [Mistral FrontierCode 2.0 공개 모델 비교](https://www.threads.com/@testingcatalog/post/DfFOUzBDf35) | 지지 |
+| [FC034](#fc034) | Threads | [Mistral FrontierCode 2.0 점수와 차상위 공개 모델과의 차이](https://www.threads.com/@testingcatalog/post/DfFOUzBDf35) | 지지 |
 | [FC035](#fc035) | 재가공 게시물 · Bluesky 기반 | Raspberry Pi 500+ 기본 장착 SSD 용량 | 반박 |
 | [FC036](#fc036) | Bluesky | [Fedora 44 Workstation에 포함된 GNOME 50의 출시 간격](https://bsky.app/profile/gnome.org/post/3mkl2pivh2h2a) | 지지 |
 | [FC037](#fc037) | Threads | [Android AppFunctions의 베타 전환과 OS 조건](https://www.threads.com/@appcast/post/DfDkHfzia-R) | 지지 |
@@ -1306,14 +1307,14 @@ NASA 행성방위 담당 부서의 4월·6월 발표에서 관측 대상과 날�
 
 #### FC028
 
-**IceCube 구상과 프랜시스 핼즌의 노벨상 사이의 연도 차**
+**IceCube 구상 연도와 노벨상 발표까지의 연도 차**
 
 - **입력 글**: [The Guardian / 남극 중성미자 연구로 물리학상을 받은 프랜시스 핼즌](https://www.theguardian.com/science/2026/oct/06/nobel-prize-in-physics-francis-halzen-south-pole-neutrinos-icecube-detector)
 - **게시 시점**: 2026-10-06T20:25:25+09:00
 - **검증 대상 기간·버전**: 1988년 구상 제시와 2026년 10월 노벨 물리학상 수상자 발표
-- **선정 주장**: 남극 얼음을 이용한 중성미자 관측을 제안한 프랜시스 핼즌은 제안 연도로부터 38년 뒤인 2026년 노벨 물리학상 수상자로 발표됐다.
+- **선정 주장**: 프랜시스 핼즌이 남극 얼음을 이용한 중성미자 관측 구상을 처음 제시한 해는 1988년으로, 2026년 노벨 물리학상 발표보다 38년 앞선다.
 - **참조 판정**: 지지
-- **판정 이유**: 스웨덴 왕립과학원은 첫 구상 제시를 1988년으로 적고, 2026년 수상자로 Francis Halzen을 지명했다. 두 연도의 차이는 2026 − 1988 = 38년이다.
+- **판정 이유**: 스웨덴 왕립과학원은 핼즌의 첫 구상 제시를 1988년으로 적고, 2026년 물리학상 발표에서 그를 수상자로 밝혔다. 두 연도의 차이는 2026 − 1988 = 38년이다.
 - **주장 위치**: 수상자를 밝힌 도입부와 ‘in 1988 put forward a plan’이 들어 있는 실험 구상 문단
 - **변형 주장**: 아니오
 
@@ -1334,7 +1335,7 @@ NASA 행성방위 담당 부서의 4월·6월 발표에서 관측 대상과 날�
 
 **평가 포인트**
 
-- 최초 제안 연도와 수상 발표 연도를 연결한다. 2011년은 검출기 완공 연도다.
+- 최초 제안 연도(1988)를 찾고 발표 연도와의 차를 계산한다. 2011년은 검출기 완공 연도라서 기준으로 쓰면 오답이다.
 
 **판정 범위와 주의사항**
 
@@ -1514,14 +1515,14 @@ Space.com은 새로 발견된 성간 천체의 이름과 관측 상황을 설명
 
 #### FC032
 
-**Mistral Large 4 공개 가중치와 총 매개변수**
+**Mistral Large 4의 총 매개변수**
 
 - **입력 글**: [@choi.openai](https://www.threads.com/@choi.openai/post/DfFR6PUD9uh)
 - **게시 시점**: 50분 · 화면 표시값이며 절대 시각·시간대가 모두 확인된 것은 아님
 - **검증 대상 기간·버전**: 2026-10-29 공개 가중치 발표와 수집 시점 저장소 상태
-- **선정 주장**: 약 1조 개 총 매개변수를 가진 Mistral Large 4의 개선된 가중치가 Hugging Face에 공개됐다.
+- **선정 주장**: Mistral AI가 가중치를 공개한 Mistral Large 4의 총 매개변수는 약 1조(1T) 개다.
 - **참조 판정**: 지지
-- **판정 이유**: 지지. 발표와 공식 모델 카드·가중치 파일 목록이 부합한다. 약 1조는 총 매개변수이며 토큰당 활성 매개변수와 다르다.
+- **판정 이유**: 지지. 공식 모델 카드와 저장소 이름(Mistral-Large-4-1T-A52B)이 총 매개변수 약 1T를 밝힌다. 1T = 1조다. 약 1조는 총 매개변수이며 토큰당 활성 매개변수(약 52B, 임베딩·출력층 제외 49B)와 다르다.
 - **주장 위치**: part_1
 
 **근거 자료**
@@ -1532,7 +1533,7 @@ Space.com은 새로 발견된 성간 천체의 이름과 관측 상황을 설명
   - 자료 확인 상태: 관련 페이지 본문 확인
 - [Mistral 공식 Hugging Face 모델 카드](https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B)
   - 내용: 모델 카드는 약 1T 총 매개변수와 자체 배포 방법을 제시한다. GLM-5.3과의 특정 코딩 평가 비교에서 작업당 평균 토큰 47% 절감을 보고한다. 모든 작업의 비용 절감률이라는 뜻은 아니다.
-  - 확인 위치: Key Features; Agentic Coding; Usage
+  - 확인 위치: Key Features의 ‘~1T total / ~52B active parameters’
   - 자료 확인 상태: 공식 모델 카드 본문 확인
 - [Mistral 공식 Hugging Face 파일 목록](https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/tree/main)
   - 내용: 가중치 shard와 설정·라이선스 파일이 실제 목록에 존재한다. 공개 예정 안내만 있는 빈 저장소와 구별된다. 대용량 가중치 다운로드나 추론 실행은 수행하지 않았다.
@@ -1541,9 +1542,9 @@ Space.com은 새로 발견된 성간 천체의 이름과 관측 상황을 설명
 
 **평가 포인트**
 
-- 10월 초 API preview와 가중치 공개 구분
-- 총 매개변수와 활성 매개변수 구분
-- 모델 카드만 아니라 가중치 파일 목록 확인
+- 1T를 1조로 읽는다. 1T를 1,000억이나 10조로 옮기면 오답이다.
+- 총 매개변수(약 1T)와 토큰당 활성 매개변수(약 52B)를 구분한다.
+- 개발사 발표만이 아니라 공식 모델 카드에서 수치를 확인한다.
 
 **판정 범위와 주의사항**
 
@@ -1723,35 +1724,34 @@ Space.com은 새로 발견된 성간 천체의 이름과 관측 상황을 설명
 
 #### FC034
 
-**Mistral FrontierCode 2.0 공개 모델 비교**
+**Mistral FrontierCode 2.0 점수와 차상위 공개 모델과의 차이**
 
 - **입력 글**: [@testingcatalog](https://www.threads.com/@testingcatalog/post/DfFOUzBDf35)
 - **게시 시점**: 1시간 · 화면 표시값이며 절대 시각·시간대가 모두 확인된 것은 아님
 - **검증 대상 기간·버전**: 해당 공개 발표에 제시된 FrontierCode 2.0 비교 결과
-- **선정 주장**: Mistral의 가중치 공개 발표에 제시된 FrontierCode 2.0 결과에서 Mistral Large 4는 비교 대상 공개 모델 중 선두다.
+- **선정 주장**: Mistral의 가중치 공개 발표에 제시된 FrontierCode 2.0 결과에서 Mistral Large 4의 점수는 19.7%로, 비교 대상 공개 모델 중 두 번째로 높은 점수보다 0.4%포인트 높다.
 - **참조 판정**: 지지
-- **판정 이유**: 지지. 공개 발표의 해당 비교에서는 19.7%로 선두다. 개발사가 보고한 벤치마크 결과이며 모든 모델 전체 1위라는 결론으로 확대하지 않는다.
+- **판정 이유**: 지지. 공개 발표의 비교 그래프에서 Mistral Large 4는 19.7%, 다음 값은 DeepSeek V4.1 Flash의 19.3%다. 19.7 − 19.3 = 0.4%포인트다. 개발사가 보고한 벤치마크 결과이며 독립 재현값이 아니다.
 - **주장 위치**: part_1
 
 **근거 자료**
 
 - [Mistral Large 4 공개 가중치 발표](https://mistral.ai/news/mistral-large-4-oss/)
   - 내용: 개선된 가중치 공개와 FrontierCode 2.0에서 19.7%로 비교 공개 모델 중 선두라는 결과를 발표한다. 성능 수치는 개발사 발표에 기반하며 이번 작업에서 독립 재실험하지 않았다.
-  - 확인 위치: Built for the Builders; Cognition - FrontierCode 2.0; Token Efficiency
-  - 자료 확인 상태: 관련 페이지 본문 확인
+  - 확인 위치: ‘Mistral Large 4 leads with a score of 19.7%’ 문장과 ‘Cognition - FrontierCode 2.0’ 그래프. DeepSeek V4.1 Flash의 19.3%는 그래프 데이터(원본 HTML)에만 있고 자동 추출 본문에는 없다
+  - 자료 확인 상태: 본문 확인 (2026-11-25 그래프 데이터에서 19.3% 확인)
 
 **평가 포인트**
 
-- Cognition FrontierCode 2.0이라는 벤치마크 식별
-- open models 범위 유지
-- 공개된 표의 순위와 보편적 능력 우열 구분
-- Mistral Small을 원한다는 문장은 사실 주장이 아닌 의견
+- Cognition FrontierCode 2.0이라는 벤치마크를 식별하고 공식 발표의 그래프 값과 대조한다.
+- 비교 대상 공개 모델 중 두 번째 값(19.3%)을 찾아 차이를 %포인트로 계산한다.
+- Mistral Small을 원한다는 문장은 사실 주장이 아닌 의견이다.
 
 **판정 범위와 주의사항**
 
 - 표·발표에 제시된 순위의 확인이다. 독립적인 재현 실험이나 모든 모델·모든 코딩 작업의 보편적 1위를 검증하는 주장이 아니다.
 - 이 사례에서 판정을 확정하지 않은 내용: 모든 코딩 벤치마크에서 세계 1위라는 해석 / 독립 재평가로 확인된 순위 / 추론 비용의 일반적 절감률
-- 보조 설명: 19.7%와 다음 값 19.3%의 차이는 0.4%p다. 표만으로 통계적 유의성을 주장할 수 없다.
+- 보조 설명: 0.4%포인트 차이만으로 통계적 유의성을 주장할 수 없다. 이 사례는 보고된 값의 산술만 판정한다.
 
 **입력 본문 — 작성자 본문 전사**
 
