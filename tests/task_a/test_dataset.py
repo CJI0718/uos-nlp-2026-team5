@@ -46,17 +46,17 @@ def test_label_distribution_matches_section_0(parsed):
 
 
 def test_source_kind_distribution_matches_section_0(parsed):
-    """§0: Korean articles 28 (4 re-written), English 9 (2 re-written),
-    Threads 5, X 4, Bluesky 4 (2 re-written)."""
+    """§0: Korean articles 28 (4 re-written), English 10 (2 re-written),
+    Threads 5, X 3, Bluesky 4 (2 re-written)."""
     kinds = Counter(g["source_kind"] for g in parsed["gold"])
 
     assert kinds == {
         "한국어 기사·정보글": 24,
         "재가공 게시물 · 한국어 기사 기반": 4,
-        "영어 기사": 7,
+        "영어 기사": 8,
         "재가공 게시물 · 영어 기사 기반": 2,
         "Threads": 5,
-        "X": 4,
+        "X": 3,
         "Bluesky": 2,
         "재가공 게시물 · Bluesky 기반": 2,
     }
@@ -69,18 +69,13 @@ def test_no_case_is_left_pending(gold_by_id):
 
 
 def test_nei_cases_record_their_investigation_and_cutoff(by_id, gold_by_id):
-    """Prediction-style NEE cases are judged as of their posting time.
-
-    FC041 predates the per-case cutoff field and keeps the dataset default.
-    """
-    from task_a.dataset import DEFAULT_EVIDENCE_CUTOFF
+    """All six NEE cases are predictions judged as of their posting time."""
     nei = sorted(cid for cid, g in gold_by_id.items() if g["label"] == "not_enough_evidence")
 
     assert nei == ["FC003", "FC010", "FC017", "FC026", "FC038", "FC041"]
     assert all(gold_by_id[cid]["nei_investigation"] for cid in nei)
-    for cid in ("FC003", "FC010", "FC017", "FC026", "FC038"):
+    for cid in nei:
         assert by_id[cid]["evidence_cutoff"] == by_id[cid]["claim_date"], cid
-    assert by_id["FC041"]["evidence_cutoff"] == DEFAULT_EVIDENCE_CUTOFF
 
 
 def test_fc002_fields(by_id):
@@ -238,11 +233,12 @@ def test_multi_evidence_cases_get_distinct_ids(parsed):
 
 
 def test_background_only_evidence_is_flagged(parsed):
-    """FC041's reference is background, explicitly not proof for or against."""
+    """FC041's second reference postdates its cutoff, so it is background only."""
     rows = [e for e in parsed["evidence"] if e["claim_id"] == "FC041"]
 
-    assert len(rows) == 1
-    assert rows[0]["note"] == "배경·추가 확인용"
+    assert len(rows) == 2
+    assert rows[0]["note"] is None
+    assert rows[1]["note"] == "배경·추가 확인용"
 
 
 def test_title_containing_a_colon_is_not_read_as_a_section(by_id, gold_by_id):
@@ -252,23 +248,28 @@ def test_title_containing_a_colon_is_not_read_as_a_section(by_id, gold_by_id):
 
     assert claim["text"] == "일반 Windows 10 지원은 2025년 10월 24일 종료된다."
     assert claim["source_url"] == "https://zdnet.co.kr/view/?no=20250423093406"
-    assert claim["claim_date"] == "2025-04-23"
+    assert claim["claim_date"] == "2025-04-23T12:00:00+09:00"
     assert gold_by_id["FC044"]["label"] == "refuted"
     assert "10월 14일" in gold_by_id["FC044"]["rationale"]
 
 
 def test_every_sns_case_has_a_transcript(by_id):
-    """11 SNS inputs (Threads 5 + X 4 + Bluesky 2) carry the author's text."""
+    """10 SNS inputs (Threads 5 + X 3 + Bluesky 2) carry the author's text."""
     sns = [c for c in by_id.values() if c["source_type"] in ("Threads", "X", "Bluesky")]
 
-    assert len(sns) == 11
+    assert len(sns) == 10
     assert all(c["input_body"] for c in sns), [c["claim_id"] for c in sns if not c["input_body"]]
 
 
-def test_x_posting_times_are_absolute(by_id):
-    """X status IDs encode the posting time; the screen showed only a clock time."""
-    assert by_id["FC040"]["claim_date"].startswith("2026-10-29T04:47:54+09:00")
-    assert by_id["FC043"]["claim_date"].startswith("2026-10-29T13:23:20+09:00")
+def test_sns_posting_times_are_absolute(by_id):
+    """X status IDs and Threads post codes encode the posting time; the screen
+    showed only a clock time or a relative one ('21분')."""
+    assert by_id["FC040"]["claim_date"] == "2026-10-29T04:47:54+09:00"
+    assert by_id["FC043"]["claim_date"] == "2026-10-29T13:23:20+09:00"
+    assert by_id["FC031"]["claim_date"] == "2026-10-30T00:30:03+09:00"
+    assert by_id["FC037"]["claim_date"] == "2026-10-29T08:01:14+09:00"
+    threads = [c for c in by_id.values() if c["source_type"] == "Threads"]
+    assert all(c["claim_date"][:4] == "2026" for c in threads)
 
 
 def test_translated_posts_record_the_translation_heading(by_id):
@@ -286,7 +287,8 @@ def test_cases_without_an_excerpt_are_left_empty_not_invented(by_id):
     """
     missing = [cid for cid, c in by_id.items() if not c["input_body"]]
 
-    assert missing == ["FC007", "FC011", "FC021", "FC025", "FC044", "FC048"]
+    # Since the 2026-11-25 review every case carries an excerpt or transcript.
+    assert missing == []
     assert all(by_id[cid]["source_type"] in ("한국어 기사·정보글", "영어 기사")
                for cid in missing)
     assert all(by_id[cid]["source_url"] for cid in missing)
@@ -323,3 +325,15 @@ def test_per_case_evidence_cutoff_overrides_default():
     claim = to_records(parse_case("FC999", _ALTERED.split("\n", 1)[1]))["claim"]
     assert claim["evidence_cutoff"] == "2026-05-19T09:13:12+09:00"
     assert DEFAULT_EVIDENCE_CUTOFF == "2026-10-30T01:37:43+09:00"
+
+
+def test_every_case_records_its_review(gold_by_id):
+    """The '검수' line goes to gold only; FC041 was replaced after review."""
+    assert all(g["review_note"] for g in gold_by_id.values())
+    drafts = sorted(cid for cid, g in gold_by_id.items() if g["review_status"] == "draft")
+    assert drafts == ["FC041"]
+
+
+def test_review_record_is_not_agent_visible(parsed):
+    blob = json.dumps(parsed["claims"], ensure_ascii=False)
+    assert "정헌수" not in blob and "검수" not in blob

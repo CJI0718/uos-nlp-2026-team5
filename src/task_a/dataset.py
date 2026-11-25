@@ -204,6 +204,18 @@ def parse_source_kinds(text: str) -> dict[str, str]:
     return kinds
 
 
+def _review_status(case: ParsedCase, pending: bool) -> str:
+    """'pending' (no label yet), 'reviewed' (a human checked it), or 'draft'.
+
+    The '검수' line records who checked the case and when. A replacement case
+    whose line says '검수 전' has not been checked yet and stays a draft.
+    """
+    if pending:
+        return "pending"
+    note = case.fields.get("검수", "")
+    return "reviewed" if note and "검수 전" not in note else "draft"
+
+
 def to_records(case: ParsedCase, source_kind: str | None = None) -> dict:
     """Split one parsed case into claim / gold / evidence records."""
     label_text = case.fields.get("참조 판정", "").strip()
@@ -245,7 +257,8 @@ def to_records(case: ParsedCase, source_kind: str | None = None) -> dict:
         "label": label,
         "label_text": label_text,
         "rationale": case.fields.get("판정 이유", "").strip(),
-        "review_status": "pending" if pending else "draft",
+        "review_status": _review_status(case, pending),
+        "review_note": case.fields.get("검수"),
         "source_kind": source_kind,
         "altered_input": altered,
         # 주장 위치 is annotator metadata, not solver input: for FC044 it reads
