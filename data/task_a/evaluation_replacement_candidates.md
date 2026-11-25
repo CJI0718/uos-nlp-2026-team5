@@ -2,62 +2,73 @@
 
 ## 1. 교체 후보 요약
 
-| 교체 ID | 새 주제 | 출처 유형 | 게시 시점 | 정답 | 오류 유형 | 변형 주장 여부 | 1차 출처 확인 | 확신도(상/중/하) |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [FC001](#fc001) | 맥북 네오의 국내 교육 가격 차이 | 한국어 기사 | 2026-03-05T00:17:24+09:00 | 지지 | 두 시작가의 차액·할인율 | 아니오 | [확인](https://www.apple.com/kr/newsroom/2026/03/say-hello-to-macbook-neo/) | 상 |
-| [FC002](#fc002) | WWDC26 키노트의 한국 날짜와 시각 | 한국어 기사 · 재가공 게시물 | 2026-05-19T09:13:12+09:00 | 반박 | 일광절약시간·자정 경계 | 예 | [확인](https://www.apple.com/newsroom/2026/05/apple-kicks-off-worldwide-developers-conference-on-june-8/) | 상 |
-| [FC003](#fc003) | 첫 폴더블 아이폰의 미국 출시가 전망 | 한국어 기사 | 2025-07-30T11:00:01+09:00 | 근거 부족 | 증권사 예상가의 공식 확인 여부 | 아니오 | [관련 발표 확인](https://www.apple.com/newsroom/archive/?page=20) | 중 |
-| [FC005](#fc005) | 누리호 4차 발사 후 부탑재위성 교신 집계 | 한국어 기사 · 재가공 게시물 | 2025-12-02T09:45:00+09:00 | 반박 | 전체 탑재 수와 교신 확인 수 | 예 | [확인](https://www.kasa.go.kr/prog/bbsArticle/BBSMSTR_000000000010/view.do?bbsId=BBSMSTR_000000000010&nttId=B000000002458Lm9aT5) | 상 |
-| [FC006](#fc006) | 2026년도 최저임금의 209시간 월 환산 | 한국어 기사 | 2025-08-05T09:00:03+09:00 | 지지 | 시간급에서 월액으로 환산 | 아니오 | [확인](https://www.moel.go.kr/news/enews/report/enewsView.do?news_seq=18144) | 상 |
-| [FC008](#fc008) | 8월 12일 지구 중력 상실설 | 한국어 기사 | 2026-02-03T17:28:54+09:00 | 반박 | 기사에 인용된 실제 과학 괴담 | 아니오 | [확인](https://spaceplace.nasa.gov/what-is-gravity/en/) | 상 |
-| [FC010](#fc010) | K2-18 b의 대기 관측과 생명체 존재 가설 | 한국어 기사 | 2025-04-17T16:33:26+09:00 | 근거 부족 | 잠정 관측에서 생물 존재로 확대 | 아니오 | [관련 발표 확인](https://www.cardiff.ac.uk/news/view/2909933-strongest-hints-yet-of-biological-activity-outside-the-solar-system) | 중 |
-| [FC012](#fc012) | 토성 위성 128개 인정 전후의 증가율 | 한국어 기사 | 2025-03-12T14:29:45+09:00 | 지지 | 신규 발견과 누계의 분모 복원 | 아니오 | [확인](https://news.ubc.ca/2025/03/saturn-128-new-moons/) | 상 |
-| [FC013](#fc013) | 최가온의 올림픽 하프파이프 결선 점수 차 | 한국어 기사 | 2026-02-13T05:19:19+09:00 | 지지 | 결선 순위와 점수 차 | 아니오 | [확인](https://www.fis-ski.com/DB/general/results.html?competitorid=264594&raceid=24093&sectorcode=SB) | 상 |
-| [FC014](#fc014) | 2027학년도 수능과 성적 통지 예정일 간격 | 한국어 기사 | 2026-11-19T10:21:50+09:00 | 지지 | 학년도와 역년·날짜 차 | 아니오 | [확인](https://www.korea.kr/briefing/policyBriefingView.do?newsId=156752001) | 상 |
-| [FC016](#fc016) | 아르테미스 II 실제 발사 시각의 한미 날짜 | 한국어 기사 | 2026-04-02T07:41:55+09:00 | 지지 | 실제 이륙 시각의 시간대 변환 | 아니오 | [확인](https://www.nasa.gov/blogs/missions/2026/04/01/live-artemis-ii-launch-day-updates/) | 상 |
-| [FC017](#fc017) | 오픈AI 첫 스피커의 출시 가격대 | 한국어 기사 | 2026-08-07T10:39:42+09:00 | 근거 부족 | 미공개 제품의 익명 소식통 가격 | 아니오 | [관련 발표 확인](https://openai.com/sam-and-jony/?build=website) | 중 |
-| [FC019](#fc019) | Qwen3.5-397B-A17B의 전체·활성 매개변수 | 한국어 기사 | 2026-03-06T07:00:02+09:00 | 지지 | 모델명 해석과 활성 비중 | 아니오 | [확인](https://huggingface.co/Qwen/Qwen3.5-397B-A17B) | 상 |
-| [FC022](#fc022) | 갤럭시 버즈4 프로와 기본형의 국내 가격 차이 | 한국어 기사 | 2026-02-26T09:56:26+09:00 | 지지 | 모델별 가격 대응·프리미엄 계산 | 아니오 | [확인](https://news.samsung.com/kr/%EC%82%BC%EC%84%B1%EC%A0%84%EC%9E%90-%EA%B0%A4%EB%9F%AD%EC%8B%9C-s26-%EC%8B%9C%EB%A6%AC%EC%A6%88-%EC%82%AC%EC%A0%84-%ED%8C%90%EB%A7%A4-%EC%8B%9C%EC%9E%91) | 상 |
-| [FC023](#fc023) | ‘올해 기상청 장마 예보’로 유통된 중부지방 날짜 | 한국어 기사 | 2026-05-20T06:30:01+09:00 | 반박 | 평년값을 특정 연도 공식 예보로 오인 | 아니오 | [확인](https://data.kma.go.kr/climate/rainySeason/selectRainySeasonList.do) | 상 |
-| [FC024](#fc024) | 하얼빈 동계아시안게임 한국의 최종 메달 합계 | 한국어 기사 | 2025-02-14T17:57:51+09:00 | 지지 | 국가별 최종 집계·금메달 비중 | 아니오 | [확인](https://www.sports.or.kr/sports/bbs/BMSR00001/view.do?boardId=70308&menuNo=200024) | 상 |
-| [FC026](#fc026) | 소행성 2024 YR4의 2032년 달 충돌 여부 | 영어 기사 | 2025-06-17T06:09:37+09:00 | 근거 부족 | 당시 궤도 확률과 실제 충돌의 구분 | 아니오 | [관련 발표 확인](https://science.nasa.gov/blogs/planetary-defense/2025/06/05/nasas-webb-observations-update-asteroid-2024-yr4s-lunar-impact-odds/) | 상 |
-| [FC027](#fc027) | Crew-9 우주정거장 분리 요일의 실제 기사 오류 | 영어 기사 | 2025-03-19T07:30:28+09:00 | 반박 | 실제 기사 본문의 요일 오류 | 아니오 | [확인](https://www.nasa.gov/blogs/spacestation/2025/03/18/dragon-undocks-with-spacex-crew-9-members-for-return-to-earth/) | 상 |
-| [FC028](#fc028) | IceCube 구상과 프랜시스 핼즌의 노벨상 사이의 연도 차 | 영어 기사 | 2026-10-06T20:25:25+09:00 | 지지 | 수상자·공로 대응 및 연도 차 | 아니오 | [확인](https://www.kva.se/en/news/the-nobel-prize-in-physics-2026/) | 상 |
-| [FC029](#fc029) | IEA의 데이터센터 전력 수요 전망에서 ‘네 배’의 범위 | 영어 기사 · 재가공 게시물 | 2025-04-10T13:00:18+09:00 | 반박 | 전체 데이터센터와 AI 전용 시설 혼동 | 예 | [확인](https://www.iea.org/reports/energy-and-ai/executive-summary) | 상 |
-| [FC030](#fc030) | 3I/ATLAS의 공식 발견 보고와 과거 관측일 | 영어 기사 · 재가공 게시물 | 2025-07-07T19:15:28+09:00 | 반박 | 기록영상 촬영일과 최초 보고일 | 예 | [확인](https://science.nasa.gov/blogs/planetary-defense/2025/07/02/nasa-discovers-interstellar-comet-moving-through-solar-system/) | 상 |
-| [FC035](#fc035) | Raspberry Pi 500+ 기본 장착 SSD 용량 | SNS · Bluesky · 재가공 게시물 | 2025-09-25T16:04:20.252+09:00 | 반박 | 기본 저장장치 용량 바꾸기 | 예 | [확인](https://www.raspberrypi.com/news/the-ultimate-all-in-one-pc-raspberry-pi-500-plus-on-sale-now-at-200/) | 상 |
-| [FC036](#fc036) | Fedora 44 Workstation에 포함된 GNOME 50의 출시 간격 | SNS · Bluesky | 2026-04-29T02:00:27.066+09:00 | 지지 | 배포판·데스크톱 버전 대응 및 날짜 차 | 아니오 | [확인](https://fedoramagazine.org/announcing-fedora-linux-44/) | 상 |
-| [FC038](#fc038) | 컨트롤러 포함 Steam Machine 512GB의 예상가 | SNS · Bluesky | 2025-11-13T04:47:57.856+09:00 | 근거 부족 | SNS 작성자의 가격 예측과 공식 가격 | 아니오 | [관련 발표 확인](https://steamcommunity.com/groups/steam_hardware/eventcomments/688615158419885099/) | 상 |
-| [FC039](#fc039) | Hades II의 Switch 2 TV 모드 프레임률 | SNS · Bluesky · 재가공 게시물 | 2025-09-12T22:36:28.408+09:00 | 반박 | 같은 기기의 TV·휴대 모드 수치 혼동 | 예 | [확인](https://www.supergiantgames.com/blog/hades2-coming-sep25/) | 상 |
-| [FC045](#fc045) | Gemma 4 최초 공개 모델 중 20B 초과 모델의 구조와 라이선스 | 영어 기사 | 2026-04-03T01:01:33+09:00 | 지지 | 출시 목록의 규모 필터와 라이선스 | 아니오 | [확인](https://blog.google/innovation-and-ai/technology/developers-tools/gemma-4/) | 상 |
-| [FC046](#fc046) | 갤럭시 Z 폴드8 일반형과 울트라의 펼친 두께 | 한국어 기사 · 재가공 게시물 | 2026-07-23T00:43:49+09:00 | 반박 | 모델별 사양표에서 인접 수치 대입 | 예 | [확인](https://news.samsung.com/kr/%EC%82%BC%EC%84%B1%EC%A0%84%EC%9E%90-%EA%B0%A4%EB%9F%AD%EC%8B%9C-z-%ED%8F%B4%EB%93%9C8-%EC%9A%B8%ED%8A%B8%EB%9D%BC%C2%B7%ED%8F%B4%EB%93%9C8%C2%B7%ED%94%8C%EB%A6%BD8-%EB%93%B1-%ED%8F%B4%EB%8D%94) | 상 |
-| [FC047](#fc047) | 삼성전자 3분기 전사 영업이익에서 DS부문의 비중 | 한국어 기사 | 2026-10-29T10:33:57+09:00 | 지지 | 전사 연결 수치와 사업부 수치의 분모 | 아니오 | [확인](https://news.samsung.com/kr/%EC%82%BC%EC%84%B1%EC%A0%84%EC%9E%90-2026%EB%85%84-3%EB%B6%84%EA%B8%B0-%EC%8B%A4%EC%A0%81-%EB%B0%9C%ED%91%9C) | 상 |
-| [FC049](#fc049) | 루빈 천문대 시험 관측의 시간당 소행성 발견 수 | 영어 기사 | 2025-06-24T13:47:10+09:00 | 지지 | 여러 밤의 누적 시간·단순 평균 | 아니오 | [확인](https://rubinobservatory.org/news/first-imagery-rubin) | 상 |
-| [FC050](#fc050) | 유클리드 첫 심층 관측의 은하 수와 형태 분류 목록 | 영어 기사 | 2025-03-19T20:00:00+09:00 | 지지 | 전체 관측과 세부 카탈로그 규모 비교 | 아니오 | [확인](https://www.esa.int/Science_Exploration/Space_Science/Euclid/Euclid_opens_data_treasure_trove_offers_glimpse_of_deep_fields) | 상 |
-| **합계** | **30개** | 한국어 18 · 영어 8 · SNS 4 |  | **지지 15 · 반박 10 · 근거 부족 5** |  | 예 7 · 아니오 23 | 30개에서 관련 1차 자료 확인 |  |
+| 교체 ID        | 새 주제                                                   | 출처 유형                       | 게시 시점                     | 정답                                        | 오류 유형                             | 변형 주장 여부    | 1차 출처 확인                                                                                                                                                                                                                        | 확신도(상/중/하) |
+| -------------- | --------------------------------------------------------- | ------------------------------- | ----------------------------- | ------------------------------------------- | ------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------- |
+| [FC001](#fc001) | 맥북 네오의 국내 교육 가격 차이                           | 한국어 기사                     | 2026-03-05T00:17:24+09:00     | 지지                                        | 두 시작가의 차액·할인율              | 아니오            | [확인](https://www.apple.com/kr/newsroom/2026/03/say-hello-to-macbook-neo/)                                                                                                                                                           | 상               |
+| [FC002](#fc002) | WWDC26 키노트의 한국 날짜와 시각                          | 한국어 기사 · 재가공 게시물    | 2026-05-19T09:13:12+09:00     | 반박                                        | 일광절약시간·자정 경계               | 예                | [확인](https://www.apple.com/newsroom/2026/05/apple-kicks-off-worldwide-developers-conference-on-june-8/)                                                                                                                             | 상               |
+| [FC003](#fc003) | 첫 폴더블 아이폰의 미국 출시가 전망                       | 한국어 기사                     | 2025-07-30T11:00:01+09:00     | 근거 부족                                   | 증권사 예상가의 공식 확인 여부        | 아니오            | [관련 발표 확인](https://www.apple.com/newsroom/2025/02/apple-debuts-iphone-16e-a-powerful-new-member-of-the-iphone-16-family/)                                                                                                       | 중               |
+| [FC005](#fc005) | 누리호 4차 발사 후 부탑재위성 교신 집계                   | 한국어 기사 · 재가공 게시물    | 2025-12-02T09:45:00+09:00     | 반박                                        | 전체 탑재 수와 교신 확인 수           | 예                | [확인](https://www.kasa.go.kr/prog/bbsArticle/BBSMSTR_000000000010/view.do?bbsId=BBSMSTR_000000000010&nttId=B000000002458Lm9aT5)                                                                                                      | 상               |
+| [FC006](#fc006) | 2026년도 최저임금의 209시간 월 환산                       | 한국어 기사                     | 2025-08-05T09:00:03+09:00     | 지지                                        | 시간급에서 월액으로 환산              | 아니오            | [확인](https://www.moel.go.kr/news/enews/report/enewsView.do?news_seq=18144)                                                                                                                                                          | 상               |
+| [FC008](#fc008) | 8월 12일 지구 중력 상실설                                 | 한국어 기사                     | 2026-02-03T17:28:54+09:00     | 반박                                        | 기사에 인용된 실제 과학 괴담          | 아니오            | [확인](https://spaceplace.nasa.gov/what-is-gravity/en/)                                                                                                                                                                               | 상               |
+| [FC010](#fc010) | K2-18 b의 대기 관측과 생명체 존재 가설                    | 한국어 기사                     | 2025-04-17T16:33:26+09:00     | 근거 부족                                   | 잠정 관측에서 생물 존재로 확대        | 아니오            | [관련 발표 확인](https://www.cam.ac.uk/stories/strongest-hints-of-biological-activity)                                                                                                                                                | 중               |
+| [FC012](#fc012) | 토성 위성 128개 인정 전후의 증가율                        | 한국어 기사                     | 2025-03-12T14:29:45+09:00     | 지지                                        | 신규 발견과 누계의 분모 복원          | 아니오            | [확인](https://news.ubc.ca/2025/03/saturn-128-new-moons/)                                                                                                                                                                             | 상               |
+| [FC013](#fc013) | 최가온의 올림픽 하프파이프 결선 점수 차                   | 한국어 기사                     | 2026-02-13T05:19:19+09:00     | 지지                                        | 결선 순위와 점수 차                   | 아니오            | [확인](https://www.fis-ski.com/DB/general/results.html?competitorid=264594&raceid=24093&sectorcode=SB)                                                                                                                                | 상               |
+| [FC014](#fc014) | 2027학년도 수능과 성적 통지 예정일 간격                   | 한국어 기사                     | 2026-11-19T10:21:50+09:00     | 지지                                        | 학년도와 역년·날짜 차                | 아니오            | [확인](https://www.korea.kr/briefing/policyBriefingView.do?newsId=156752001)                                                                                                                                                          | 상               |
+| [FC016](#fc016) | 아르테미스 II 실제 발사 시각의 한미 날짜                  | 한국어 기사                     | 2026-04-02T07:41:55+09:00     | 지지                                        | 실제 이륙 시각의 시간대 변환          | 아니오            | [확인](https://www.nasa.gov/blogs/missions/2026/04/01/live-artemis-ii-launch-day-updates/)                                                                                                                                            | 상               |
+| [FC017](#fc017) | 오픈AI 첫 스피커의 출시 가격대                            | 한국어 기사                     | 2026-08-07T10:39:42+09:00     | 근거 부족                                   | 미공개 제품의 익명 소식통 가격        | 아니오            | [관련 발표 확인](https://openai.com/sam-and-jony/?build=website)                                                                                                                                                                      | 중               |
+| [FC019](#fc019) | Qwen3.5-397B-A17B의 전체·활성 매개변수                   | 한국어 기사                     | 2026-03-06T07:00:02+09:00     | 지지                                        | 모델명 해석과 활성 비중               | 아니오            | [확인](https://huggingface.co/Qwen/Qwen3.5-397B-A17B)                                                                                                                                                                                 | 상               |
+| [FC022](#fc022) | 갤럭시 버즈4 프로와 기본형의 국내 가격 차이               | 한국어 기사                     | 2026-02-26T09:56:26+09:00     | 지지                                        | 모델별 가격 대응·프리미엄 계산       | 아니오            | [확인](https://news.samsung.com/kr/%ec%82%bc%ec%84%b1%ec%a0%84%ec%9e%90-%ea%b0%a4%eb%9f%ad%ec%8b%9c-%eb%b2%84%ec%a6%884-%ec%8b%9c%eb%a6%ac%ec%a6%88-%ea%b3%b5%ea%b0%9c)                                                               | 상               |
+| [FC023](#fc023) | ‘올해 기상청 장마 예보’로 유통된 중부지방 날짜          | 한국어 기사                     | 2026-05-20T06:30:01+09:00     | 반박                                        | 평년값을 특정 연도 공식 예보로 오인   | 아니오            | [확인](https://data.kma.go.kr/climate/rainySeason/selectRainySeasonList.do)                                                                                                                                                           | 상               |
+| [FC024](#fc024) | 하얼빈 동계아시안게임 한국의 최종 메달 합계               | 한국어 기사                     | 2025-02-14T17:57:51+09:00     | 지지                                        | 국가별 최종 집계·금메달 비중         | 아니오            | [확인](https://www.sports.or.kr/sports/bbs/BMSR00001/view.do?boardId=70308&menuNo=200024)                                                                                                                                             | 상               |
+| [FC026](#fc026) | 소행성 2024 YR4의 2032년 달 충돌 여부                     | 영어 기사                       | 2025-06-17T06:09:37+09:00     | 근거 부족                                   | 당시 궤도 확률과 실제 충돌의 구분     | 아니오            | [관련 발표 확인](https://science.nasa.gov/blogs/planetary-defense/2025/06/05/nasas-webb-observations-update-asteroid-2024-yr4s-lunar-impact-odds/)                                                                                    | 상               |
+| [FC027](#fc027) | Crew-9 우주정거장 분리 요일의 실제 기사 오류              | 영어 기사                       | 2025-03-19T07:30:28+09:00     | 반박                                        | 실제 기사 본문의 요일 오류            | 아니오            | [확인](https://www.nasa.gov/blogs/spacestation/2025/03/18/dragon-undocks-with-spacex-crew-9-members-for-return-to-earth/)                                                                                                             | 상               |
+| [FC028](#fc028) | IceCube 구상과 프랜시스 핼즌의 노벨상 사이의 연도 차      | 영어 기사                       | 2026-10-06T20:25:25+09:00     | 지지                                        | 수상자·공로 대응 및 연도 차          | 아니오            | [확인](https://www.kva.se/en/news/the-nobel-prize-in-physics-2026/)                                                                                                                                                                   | 상               |
+| [FC029](#fc029) | IEA의 데이터센터 전력 수요 전망에서 ‘네 배’의 범위      | 영어 기사 · 재가공 게시물      | 2025-04-10T13:00:18+09:00     | 반박                                        | 전체 데이터센터와 AI 전용 시설 혼동   | 예                | [확인](https://www.iea.org/reports/energy-and-ai/executive-summary)                                                                                                                                                                   | 상               |
+| [FC030](#fc030) | 3I/ATLAS의 공식 발견 보고와 과거 관측일                   | 영어 기사 · 재가공 게시물      | 2025-07-07T19:15:28+09:00     | 반박                                        | 기록영상 촬영일과 최초 발견일         | 예                | [확인](https://science.nasa.gov/blogs/planetary-defense/2025/07/02/nasa-discovers-interstellar-comet-moving-through-solar-system/)                                                                                                    | 상               |
+| [FC035](#fc035) | Raspberry Pi 500+ 기본 장착 SSD 용량                      | SNS · Bluesky · 재가공 게시물 | 2025-09-25T16:04:20.252+09:00 | 반박                                        | 기본 저장장치 용량 바꾸기             | 예                | [확인](https://www.raspberrypi.com/news/the-ultimate-all-in-one-pc-raspberry-pi-500-plus-on-sale-now-at-200/)                                                                                                                         | 상               |
+| [FC036](#fc036) | Fedora 44 Workstation에 포함된 GNOME 50의 출시 간격       | SNS · Bluesky                  | 2026-04-29T02:00:27.066+09:00 | 지지                                        | 배포판·데스크톱 버전 대응 및 날짜 차 | 아니오            | [확인](https://fedoramagazine.org/announcing-fedora-linux-44/)                                                                                                                                                                        | 상               |
+| [FC038](#fc038) | 컨트롤러 포함 Steam Machine 512GB의 예상가                | SNS · Bluesky                  | 2025-11-13T04:47:57.856+09:00 | 근거 부족                                   | SNS 작성자의 가격 예측과 공식 가격    | 아니오            | [관련 발표 확인](https://www.theverge.com/tech/818111/valve-steam-machine-hands-on-preview-specs-announcement)                                                                                                                        | 상               |
+| [FC039](#fc039) | Hades II의 Switch 2 TV 모드 프레임률                      | SNS · Bluesky · 재가공 게시물 | 2025-09-12T22:36:28.408+09:00 | 반박                                        | 같은 기기의 TV·휴대 모드 수치 혼동   | 예                | [확인](https://www.supergiantgames.com/blog/hades2-coming-sep25/)                                                                                                                                                                     | 상               |
+| [FC045](#fc045) | Gemma 4 최초 공개 모델 중 20B 초과 모델의 구조와 라이선스 | 영어 기사                       | 2026-04-03T01:01:33+09:00     | 지지                                        | 출시 목록의 규모 필터와 라이선스      | 아니오            | [확인](https://blog.google/innovation-and-ai/technology/developers-tools/gemma-4/)                                                                                                                                                    | 상               |
+| [FC046](#fc046) | 갤럭시 Z 폴드8 일반형과 울트라의 펼친 두께                | 한국어 기사 · 재가공 게시물    | 2026-07-23T00:43:49+09:00     | 반박                                        | 모델별 사양표에서 인접 수치 대입      | 예                | [확인](https://news.samsung.com/kr/%EC%82%BC%EC%84%B1%EC%A0%84%EC%9E%90-%EA%B0%A4%EB%9F%AD%EC%8B%9C-z-%ED%8F%B4%EB%93%9C8-%EC%9A%B8%ED%8A%B8%EB%9D%BC%C2%B7%ED%8F%B4%EB%93%9C8%C2%B7%ED%94%8C%EB%A6%BD8-%EB%93%B1-%ED%8F%B4%EB%8D%94) | 상               |
+| [FC047](#fc047) | 삼성전자 3분기 전사 영업이익에서 DS부문의 비중            | 한국어 기사                     | 2026-10-29T10:33:57+09:00     | 지지                                        | 전사 연결 수치와 사업부 수치의 분모   | 아니오            | [확인](https://news.samsung.com/kr/%EC%82%BC%EC%84%B1%EC%A0%84%EC%9E%90-2026%EB%85%84-3%EB%B6%84%EA%B8%B0-%EC%8B%A4%EC%A0%81-%EB%B0%9C%ED%91%9C)                                                                                      | 상               |
+| [FC049](#fc049) | 루빈 천문대 시험 관측의 시간당 소행성 발견 수             | 영어 기사                       | 2025-06-24T13:47:10+09:00     | 지지                                        | 여러 밤의 누적 시간·단순 평균        | 아니오            | [확인](https://rubinobservatory.org/news/first-imagery-rubin)                                                                                                                                                                         | 상               |
+| [FC050](#fc050) | 유클리드 첫 심층 관측의 은하 수와 형태 분류 목록          | 영어 기사                       | 2025-03-19T20:00:00+09:00     | 지지                                        | 전체 관측과 세부 카탈로그 규모 비교   | 아니오            | [확인](https://www.esa.int/Science_Exploration/Space_Science/Euclid/Euclid_opens_data_treasure_trove_offers_glimpse_of_deep_fields)                                                                                                   | 상               |
+| **합계** | **30개**                                            | 한국어 18 · 영어 8 · SNS 4    |                               | **지지 15 · 반박 10 · 근거 부족 5** |                                       | 예 7 · 아니오 23 | 30개에서 관련 1차 자료 확인                                                                                                                                                                                                          |                  |
 
-입력 글은 2025년 15개와 2026년 15개다. 유지하는 20개(지지 15·반박 4·근거 부족 1)와 합치면 전체 50개는 **지지 30·반박 14·근거 부족 6**이 된다. SNS 네 건 모두 공개 원게시물을 직접 확인했다.
+입력 글은 2025년 15개와 2026년 15개다. 유지하는 20개(지지 15·반박 4·근거 부족 1)와 합치면 전체 50개는 **지지 30·반박 14·근거 부족 6**이 된다. SNS 네 건의 공개 원게시물은 모두 직접 확인했으며, 이 중 FC035·FC039는 원게시물을 옮긴 재가공 게시물을 입력으로 쓴다.
 
 **팀 검수 시 적용할 기준**
 
 - 모든 시각은 입력 글의 최초 게시 시각을 한국 표준시(KST, UTC+9)로 환산한 값이다. 기사 본문·등록 정보 또는 HTML의 공개 발행 메타데이터와 Bluesky 게시물의 UTC 시각을 사용했다. 본문을 수정한 매체는 현재 공개본의 문구를 인용했으며 초판 문구까지 복원한 것은 아니다.
+- 재가공 게시물의 게시 시점은 그 게시물이 옮긴 원 보도(원게시물)의 최초 게시 시각이다. 연구자가 전사를 작성한 날짜가 아니다.
 - 반박 10개 중 FC027은 언론사 본문에서 확인한 오류다. FC008·FC023은 기사가 인용하고 검증한 실제 유포 주장이다. 나머지 7개는 숫자나 날짜 하나를 바꿨다. 변형 사례의 입력은 원 보도를 옮기며 값 하나를 바꾼 **재가공 게시물**(연구자 작성)이며, 원 보도 URL은 에이전트에게 주지 않고 근거 자료로만 쓴다. 해당 오류를 원 보도의 기자나 작성자에게 귀속시키지 않는다.
 - 근거 부족은 입력 글이 소개한 가설·예측의 실현 여부를 게시 당시의 공개 근거로 판단한 결과다. 숫자와 대상은 그대로 두고, 기사 작성자·연구자가 확정적으로 주장했는지는 각 사례의 맥락에 기록했다. 표의 ‘관련 발표 확인’은 공식 자료를 읽었다는 뜻이다. 확신도는 참조 판정에 대한 검수 의견이다.
 - 상세의 판정 이유·근거·평가 포인트는 채점자용이다. 근거 부족 사례에는 `근거 기준 시점`을 입력 글 게시 시각으로 적었다. 그 뒤에 나온 자료는 판정에 쓰지 않는다. 링크에는 제목을 짧게 표시했고 영문 제목은 한국어로 옮겼다. 원문 발췌의 […]는 생략 부분이다.
 
 **검토 반영 (2026-11-25)**
 
-| 사례 | 고친 것 | 이유 |
-| --- | --- | --- |
-| FC002·005·029·030·035·039·046 | 원문 발췌를 바꾼 값으로 쓴 재가공 게시물로 교체. 원 보도는 근거 자료로 옮김 | 발췌에 맞는 값이 그대로 있어 검색 없이 반박할 수 있었음 |
-| FC003·010·017·026·038 | `근거 기준 시점`을 게시 시각으로 추가 | 근거 부족 판정은 게시 당시 기준. 데이터 전체 기본값(2026-10-30) 대신 사례별 값을 쓰게 함 |
-| FC014 | `근거 기준 시점` 2026-11-25 추가 | 게시일(11-19)이 데이터 전체 기본값보다 늦음 |
-| FC022 | 근거를 삼성 뉴스룸 ‘갤럭시 버즈4 시리즈 공개’로 교체 | 이전 근거(S26 사전 판매)에는 버즈4 가격이 없었음 |
-| FC010 | Cardiff(HTTP 403) 대신 케임브리지대 발표로 교체. ESA 자료는 2023년 선행 발표로 표시 | 자동 수집 불가, 시점 불일치 |
-| FC029 | IEA 뉴스 대신 IEA 발표를 옮긴 NS Energy와 Scientific American 추가. IEA 요약은 유지하고 URL 끝의 잘못된 공백 문자(%C2%A0) 제거. 2026-11-25 팀원이 요약 원문에서 415TWh·945TWh 확인 | IEA 페이지가 자동 수집기에 HTTP 403 |
-| FC049 | GeekWire 추가, 루빈 페이지의 2,104 위치 표시 | 자동 추출 본문에 2,104가 빠짐 |
-| FC003·038 | 내용이 비어 있는 페이지(뉴스룸 목록, Steam 커뮤니티) 근거에서 제외 | 본문 269자·215자 |
-| FC019 | 모델 카드의 확인 위치 보강 | 자동 추출 본문에 매개변수 줄이 빠짐 |
+| 사례                                | 고친 것                                                                                                                                                                             | 이유                                                                                     |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| FC002·005·029·030·035·039·046 | 원문 발췌를 바꾼 값으로 쓴 재가공 게시물로 교체. 원 보도는 근거 자료로 옮김                                                                                                         | 발췌에 맞는 값이 그대로 있어 검색 없이 반박할 수 있었음                                  |
+| FC003·010·017·026·038           | `근거 기준 시점`을 게시 시각으로 추가                                                                                                                                             | 근거 부족 판정은 게시 당시 기준. 데이터 전체 기본값(2026-10-30) 대신 사례별 값을 쓰게 함 |
+| FC014                               | `근거 기준 시점` 2026-11-25 추가                                                                                                                                                  | 게시일(11-19)이 데이터 전체 기본값보다 늦음                                              |
+| FC022                               | 근거를 삼성 뉴스룸 ‘갤럭시 버즈4 시리즈 공개’로 교체                                                                                                                              | 이전 근거(S26 사전 판매)에는 버즈4 가격이 없었음                                         |
+| FC010                               | 케임브리지대 발표를 주 근거로 추가하고 같은 내용의 Cardiff 발표는 둘째 근거로 유지. ESA 자료는 2023년 선행 발표로 표시                                                              | Cardiff 페이지 수집 결과가 접속 환경에 따라 달랐음(HTTP 403 또는 정상). 시점 불일치      |
+| FC029                               | IEA 뉴스 대신 IEA 발표를 옮긴 NS Energy와 Scientific American 추가. IEA 요약은 유지하고 URL 끝의 잘못된 공백 문자(%C2%A0) 제거. 2026-11-25 팀원이 요약 원문에서 415TWh·945TWh 확인 | IEA 페이지가 자동 수집기에 HTTP 403                                                      |
+| FC049                               | GeekWire 추가, 루빈 페이지의 2,104 위치 표시                                                                                                                                        | 자동 추출 본문에 2,104가 빠짐                                                            |
+| FC003·038                          | 내용이 비어 있는 페이지(뉴스룸 목록, Steam 커뮤니티) 근거에서 제외                                                                                                                  | 본문 269자·215자                                                                        |
+| FC019                               | 모델 카드의 확인 위치 보강                                                                                                                                                          | 자동 추출 본문에 매개변수 줄이 빠짐                                                      |
+| FC003·010·022·038 (요약표)       | 요약표 ‘1차 출처 확인’ 링크를 상세의 근거와 맞춤: FC003 Apple iPhone 16e 발표, FC010 케임브리지대 발표, FC022 삼성 ‘갤럭시 버즈4 시리즈 공개’, FC038 The Verge Valve 취재       | 요약표에 교체 전 링크(뉴스룸 목록, Cardiff, S26 사전 판매, Steam 커뮤니티)가 남아 있었음 |
+| FC010                               | 상세 근거에 Cardiff 발표를 둘째 근거로 추가                                                                                                                                         | 한쪽 수집이 실패해도 같은 발표 원문으로 채점할 수 있게 함                                |
+| FC002·029·030·035·039           | 재가공 게시물 전사를 원 보도 원문 그대로 옮기고 표시한 값 하나만 바꾸도록 다시 씀. FC029는 IEA를 밝힌 앞 문장을 원문 그대로 함께 옮김                                               | 이전 전사에 문장 추가·삭제·동사 변경 등 값 외 수정이 있었음                            |
+| FC030                               | 선정 주장·판정 이유·오류 유형·판정 범위를 원문 표현 ‘first spotted’(최초 포착·발견)에 맞춤                                                                                    | 전사를 원문 그대로 두면서 바꾼 값은 날짜 하나로 제한                                     |
+| FC023                               | 판정 이유의 ‘2009년에 중단’을 ‘2009년 이후 사전에 발표하지 않고 있다’로 수정                                                                                                    | 근거 기사 원문 표현에 맞춤                                                               |
+| FC026                               | 원문 발췌를 4.3% 확률·12월 22일 달 충돌 문장으로 교체                                                                                                                              | 이전 발췌에 선정 주장의 대상·날짜가 없었음                                              |
+| FC049                               | GeekWire 확인 위치를 소행성 영상 설명의 ‘In about 10 hours of observations’ 문장으로 교체                                                                                         | 이전 위치 ‘just 10 hours of observing’은 Virgo 이미지 촬영 시간에 관한 문장이었음      |
+| R01·R02·R03                       | 재가공 게시물 형식으로 전환. 입력은 원 기사 문장에서 값 하나만 바꾼 전사, 원 기사는 ‘원 보도’로 근거에만 둠                                                                       | 변형 사례인데 정답이 그대로 있는 원 기사를 입력으로 연결하고 있었음                      |
+| R05                                 | ‘1차 출처 확인’ 표시를 ‘관련 발표 확인’으로 변경                                                                                                                                | VGC 본문을 직접 열어 분석가 전망과 CEO 발언 재인용을 확인                                |
+| 검수 기준                           | SNS 원게시물 확인 문장 보완, 재가공 게시물의 게시 시점 기준 추가                                                                                                                    | FC035·FC039의 입력은 원게시물이 아니라 재가공 게시물임                                  |
 
 ## 2. 사례 상세
 
@@ -124,7 +135,7 @@
 
 **입력 본문 — 게시물 전사**
 
-> 애플이 WWDC26 일정을 공개했다. 키노트는 8일 오전 10시(현지시간·한국시간 9일 오전 3시)에 진행되며, 애플 홈페이지와 유튜브 등을 통해 실시간 중계된다.
+> 키노트는 8일 오전 10시(현지시간·한국시간 9일 오전 3시) 진행되며, 애플 홈페이지와 유튜브 등을 통해 실시간 중계된다.
 
 **근거 자료**
 
@@ -364,6 +375,10 @@ YTN은 발사 후 위성과 통신했는지를 집계한 우주항공청 발표�
   - 내용: 관측 신호가 ‘three-sigma’, 즉 우연일 확률 0.3% 수준이며 발견으로 인정되는 5σ에 못 미친다고 밝힌다. 주저자는 알려지지 않은 화학 과정일 가능성도 언급한다.
   - 확인 위치: ‘three-sigma’ 문단과 ‘previously unknown chemical processes’ 문장
   - 자료 확인 상태: 본문 확인
+- [카디프대학교 / K2-18 b의 생물 활동 단서 발표 (같은 연구의 공동 발표)](https://www.cardiff.ac.uk/news/view/2909933-strongest-hints-yet-of-biological-activity-outside-the-solar-system)
+  - 내용: 케임브리지대 발표와 같은 제목·같은 연구 결과를 싣는다. 한쪽 페이지 수집이 실패할 때 채점에 쓰는 둘째 근거다.
+  - 확인 위치: ‘three-sigma’ 문단
+  - 자료 확인 상태: 본문 확인 (접속 환경에 따라 HTTP 403이 나온 적 있음)
 - [ESA/Webb / K2-18 b 대기 관측 (2023년 9월 선행 발표)](https://esawebb.org/news/weic2321/)
   - 내용: 2023년 선행 관측에서 메탄과 이산화탄소를 확인했고 DMS는 가능성으로 구분했다.
   - 확인 위치: DMS 가능성과 후속 관측에 관한 문단
@@ -704,7 +719,7 @@ IT조선 칼럼은 Qwen3.5의 여러 모델 중 397B-A17B가 토큰을 처리할
 - **검증 대상 기간·버전**: 2026년 5월 20일까지 유포된 장마 달력과 1991~2020년 장마 평년값
 - **선정 주장**: 중부지방의 6월 25일~7월 26일은 기상청이 2026년 장마의 시작일과 종료일로 공식 예보한 기간이다.
 - **참조 판정**: 반박
-- **판정 이유**: 기상청 표의 6월 25일과 7월 26일은 1991~2020년의 중부지방 평년값이다. 기간 자료는 2020 − 1991 + 1 = 30개 연도를 요약한다. 기상청은 해당 SNS 전망이 기관의 공지가 아니며 장마 시종일 사전 발표를 2009년에 중단했다고 밝혔다.
+- **판정 이유**: 기상청 표의 6월 25일과 7월 26일은 1991~2020년의 중부지방 평년값이다. 기간 자료는 2020 − 1991 + 1 = 30개 연도를 요약한다. 기상청은 해당 SNS 전망이 기관의 공지가 아니며 2009년 이후 장마의 시작과 종료 시점을 사전에 발표하지 않고 있다고 밝혔다.
 - **주장 위치**: ‘올해 장마 기간’ 게시물의 출처를 검증한 문단과 아래 중부지방 평년 날짜 목록
 - **변형 주장**: 아니오
 
@@ -807,7 +822,7 @@ Live Science는 JWST 추가 관측으로 소행성의 예상 궤도가 좁혀지
 
 **선정 주장과 관련된 짧은 원문 발췌**
 
-> At the same time, the chances of the meaty space rock striking the moon have steadily climbed.
+> The new predictions suggest there's a 4.3% chance that asteroid 2024 YR4 will collide with the moon on Dec. 22, 2032 — up from the 3.8% odds of a lunar impact reported after JWST initially imaged the space rock in March.
 
 **근거 자료**
 
@@ -940,7 +955,7 @@ NASA 행성방위 담당 부서의 4월·6월 발표에서 관측 대상과 날�
 - **선정 주장**: IEA는 전 세계 모든 데이터센터를 합친 전력 수요가 2030년에 2024년의 네 배를 넘을 것으로 전망했다.
 - **참조 판정**: 반박
 - **판정 이유**: IEA의 전체 데이터센터 수치는 2024년 약 415TWh, 2030년 약 945TWh다. 945 ÷ 415 ≈ 2.28배이고, 네 배의 기준값은 1,660TWh다. 네 배 초과 전망은 AI에 최적화된 데이터센터 집단에 붙은 설명이다.
-- **주장 위치**: 재가공 게시물의 해당 문장. 원 보도의 대응 위치는 전체 전력 수요와 전용 AI 데이터센터 전망을 연이어 적은 본문 첫 부분
+- **주장 위치**: 재가공 게시물의 둘째 문장. 원 보도의 대응 위치는 전체 전력 수요와 전용 AI 데이터센터 전망을 연이어 적은 본문 첫 부분
 - **변형 주장**: 예, 전체 데이터센터의 수요 전망 ‘두 배 초과’ → ‘네 배 초과’
 
 **글의 맥락 — 요약**
@@ -949,7 +964,7 @@ NASA 행성방위 담당 부서의 4월·6월 발표에서 관측 대상과 날�
 
 **입력 본문 — 게시물 전사**
 
-> Global electricity demand from all datacentres combined will more than quadruple by 2030, according to the IEA report.
+> Processing data, mainly for AI, will consume more electricity in the US alone by 2030 than manufacturing steel, cement, chemicals and all other energy-intensive goods combined, according to a report from the International Energy Agency (IEA). Global electricity demand from datacentres will more than quadruple by 2030, according to the report.
 
 **근거 자료**
 
@@ -991,11 +1006,11 @@ NASA 행성방위 담당 부서의 4월·6월 발표에서 관측 대상과 날�
 - **입력 글**: 재가공 게시물 (연구자 작성, 원 보도 URL은 에이전트에 주지 않음)
 - **게시 시점**: 2025-07-07T19:15:28+09:00
 - **검증 대상 기간·버전**: 2025년 6~7월 성간혜성 3I/ATLAS 발견과 사전 관측 기록
-- **선정 주장**: 칠레 ATLAS 망원경의 3I/ATLAS 최초 발견 보고일은 2025년 6월 14일이다.
+- **선정 주장**: 칠레의 ATLAS 망원경이 3I/ATLAS를 처음 포착(first spotted)해 발견한 날은 2025년 6월 14일이다.
 - **참조 판정**: 반박
-- **판정 이유**: NASA 기록에서 칠레 리오우르타도 망원경의 첫 보고는 7월 1일이다. 발견 뒤 재분석한 자료는 6월 14일까지 거슬러 간다. 6월 14일과 7월 1일 사이 17일은 기록 영상의 선행 기간이다.
+- **판정 이유**: NASA 기록에서 3I/ATLAS의 발견일은 7월 1일이며, 칠레 리오우르타도의 ATLAS 망원경이 이날 처음 보고했다. 6월 14일은 발견 뒤 여러 ATLAS 망원경과 ZTF의 기록 자료를 다시 뒤져 찾은 사전 관측(pre-discovery)의 시작일이다. 6월 14일과 7월 1일 사이 17일은 기록 영상의 선행 기간이다.
 - **주장 위치**: 재가공 게시물의 해당 문장. 원 보도의 대응 위치는 ‘third interstellar’ 이름을 풀이한 뒤 칠레 망원경과 7월 1일을 함께 밝힌 문장
-- **변형 주장**: 예, 최초 발견 보고 7월 1일 → 6월 14일
+- **변형 주장**: 예, 최초 포착일 7월 1일 → 6월 14일
 
 **글의 맥락 — 요약**
 
@@ -1003,7 +1018,7 @@ Space.com은 새로 발견된 성간 천체의 이름과 관측 상황을 설명
 
 **입력 본문 — 게시물 전사**
 
-> The interstellar object 3I/ATLAS was first reported on June 14, 2025, by the ATLAS survey telescope in Chile.
+> Named 3I/ATLAS, where 3I stands for "third interstellar", and designated C/2025 N1 (ATLAS), the object was first spotted on June 14, 2025, by the Deep Random Survey remote telescope in Chile, part of the ATLAS (Asteroid Terrestrial-impact Last Alert System) project.
 
 **근거 자료**
 
@@ -1022,7 +1037,7 @@ Space.com은 새로 발견된 성간 천체의 이름과 관측 상황을 설명
 
 **판정 범위와 주의사항**
 
-- 주장에 ‘보고’가 없고 가장 이른 촬영 날짜만 묻는다면 달라질 수 있다. 이 사례는 최초 보고일을 명시한다.
+- ‘first spotted’는 천체를 처음 알아보고 발견한 시점으로 읽는다. 6월 14일 자료는 발견 뒤 기록 영상에서 찾은 것으로, 그날 포착된 것이 아니다. 가장 이른 촬영 날짜만 묻는 주장이라면 판정이 달라질 수 있다.
 
 **입력 본문 확보**: 입력 본문은 위 재가공 게시물 전사이며 다른 글을 수집하지 않는다. 원 보도 URL은 근거 자료로만 쓰고 에이전트 입력에 넣지 않는다.
 
@@ -1049,7 +1064,11 @@ Space.com은 새로 발견된 성간 천체의 이름과 관측 상황을 설명
 
 **입력 본문 — 게시물 전사**
 
-> The new Raspberry Pi 500+ has a quad-core CPU, 16 GB of RAM, a 128 GB SSD (built-in NVMe), and an RGB backlit mechanical keyboard.
+> Raspberry Pi just announced the Pi 500+
+>
+> It has a quad-core CPU, 16 GB of RAM, 128 GB SSD (built-in NVMe), and an RGB backlit mechanical keyboard (Gateron KS-33 blue switches).
+>
+> Cost: $200 - and in this thread I’ll go through some testing notes 🧵
 
 **근거 자료**
 
@@ -1192,7 +1211,13 @@ Supergiant Games는 정식 출시 예고와 함께 콘솔별 프레임률을 소
 
 **입력 본문 — 게시물 전사**
 
-> Hades II v1.0 is coming. Play at 60fps in TV Mode on Nintendo Switch 2, or 60fps on Nintendo Switch (w/ free upgrade to Switch 2).
+> HADES II v1.0 is coming September 25!🌒
+>
+> Battle beyond the Underworld in our launch trailer.🏔️
+>
+> Play in blazing-fast 60fps in TV Mode on Nintendo Switch 2, or 60fps on Nintendo Switch (w/ free upgrade to Switch 2). Transfer PC progress from Steam/Epic w/ Cross Saves.
+>
+> https://www.youtube.com/watch?v=U8lJRcUeEMs
 
 **근거 자료**
 
@@ -1377,8 +1402,8 @@ ABC는 첫 공개 영상에 담긴 여러 날의 시험 관측을 소개한다. 
   - 확인 위치: 도입부 ‘just over 10 hours’, 소행성 영상 설명의 ‘2104 never-before-seen asteroids’
   - 자료 확인 상태: 본문 확인 (2,104는 페이지 원본 HTML에서 확인)
 - [GeekWire / 루빈 첫 공개와 소행성 발견](https://www.geekwire.com/2025/rubin-observatory-first-look/)
-  - 내용: 루빈 팀원 Mario Jurić의 설명으로 2,104개 소천체의 발견 자료를 소행성센터에 보고했고, 10시간 관측이었다고 전한다.
-  - 확인 위치: ‘2,104 previously undetected small bodies’와 ‘just 10 hours of observing’
+  - 내용: 루빈 팀원 Mario Jurić의 설명으로 2,104개 소천체의 발견 자료를 소행성센터에 보고했다고 전하고, 소행성 영상 설명에서 약 10시간 관측으로 2,104개를 발견했다고 적는다.
+  - 확인 위치: ‘2,104 previously undetected small bodies’와 소행성 영상 설명 ‘In about 10 hours of observations, the Rubin Observatory discovered 2,104 never-before-seen asteroids’
   - 자료 확인 상태: 본문 확인
 
 **평가 포인트**
@@ -1437,21 +1462,27 @@ Space.com은 유클리드가 관측한 전체 은하와 나선팔 등 형태를 
 
 ## 3. 예비 후보 5개
 
-R01~R05는 팀이 교체 후보를 탈락시킬 때 쓸 대안이다. 목표 비율을 유지하려면 같은 판정의 후보끼리 바꾼다. 각 주제는 입력 글로, 근거 표시는 확인한 근거 페이지로 연결된다.
+R01~R05는 팀이 교체 후보를 탈락시킬 때 쓸 대안이다. 목표 비율을 유지하려면 같은 판정의 후보끼리 바꾼다. R04·R05의 주제는 입력 글로 연결된다. R01~R03은 재가공 게시물이 입력이어서 주제에 링크를 달지 않았고, 전사와 원 보도는 아래 목록에 적었다. 근거 표시는 확인한 근거 페이지로 연결된다.
 
-| 교체 ID | 새 주제 | 출처 유형 | 게시 시점 | 정답 | 오류 유형 | 변형 주장 여부 | 1차 출처 확인 | 확신도(상/중/하) |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| R01 | [7월 1일 일반 규격우편 요금](https://www.yna.co.kr/view/AKR20260701066300017) | 한국어 기사 | 2026-07-01T10:18:28+09:00 | 반박 | 요금 인상분 중복 가산 | 예, 500원 → 570원 | [확인](https://www.koreapost.go.kr/user/extra/kpost/99/1205/bbs/pressRelease/pressReleaseView/jsp/ExtraUser.do?bbsDataIdx=100099371) | 상 |
-| R02 | [여섯 행성 정렬 중 맨눈 관측 대상 수](https://www.ytn.co.kr/_ln/0105_202501260327120564) | 한국어 기사 | 2025-01-26T03:27:00+09:00 | 반박 | 관측 장비 조건 | 예, 4개 → 6개 | [확인](https://www.korea.kr/news/policyNewsView.do?newsId=148938723) | 상 |
-| R03 | [5월 금융통화위원회 기준금리 인하 폭](https://www.yna.co.kr/view/AKR20250529054700002) | 한국어 기사 | 2025-05-29T09:53:14+09:00 | 반박 | 비율과 퍼센트포인트 | 예, 0.25%p → 0.50%p | [확인](https://www.bok.or.kr/portal/singl/baseRate/list.do?menuNo=200643) | 상 |
-| R04 | [차세대 AirPods Pro의 적외선 카메라 탑재 전망](https://zdnet.co.kr/view/?no=20260210081101) | 한국어 기사 | 2026-02-10T08:22:24+09:00 | 근거 부족 | 미발표 하드웨어 사양 | 아니오 | [관련 공식 발표 확인](https://www.apple.com/kr/newsroom/2025/09/introducing-airpods-pro-3-the-ultimate-audio-experience/) | 중 |
-| R05 | [플레이스테이션 6의 2027년 출시 전망](https://m.kbench.com/?q=node%2F281195) | 한국어 기사 | 2026-08-18T10:10:27+09:00 | 근거 부족 | 예상 연도와 공식 일정 | 아니오 | [직접 미확인 · CEO 발언 재인용](https://www.videogameschronicle.com/news/playstation-6-release-date-still-hasnt-been-decided-sony-ceo-hiroki-totoki-says/?pubDate=20260817) | 중 |
-| **합계** | **5개** | 한국어 5 |  | **지지 0 · 반박 3 · 근거 부족 2** |  | 예 3 · 아니오 2 |  |  |
+| 교체 ID        | 새 주제                                                                                    | 출처 유형                    | 게시 시점                 | 정답                                      | 오류 유형             | 변형 주장 여부                           | 1차 출처 확인                                                                                                                                                                  | 확신도(상/중/하) |
+| -------------- | ------------------------------------------------------------------------------------------ | ---------------------------- | ------------------------- | ----------------------------------------- | --------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------- |
+| R01            | 7월 1일 일반 규격우편 요금 (재가공 게시물)                                                 | 한국어 기사 · 재가공 게시물 | 2026-07-01T10:18:28+09:00 | 반박                                      | 요금 인상분 중복 가산 | 예, 500원 → 570원                       | [확인](https://www.koreapost.go.kr/user/extra/kpost/99/1205/bbs/pressRelease/pressReleaseView/jsp/ExtraUser.do?bbsDataIdx=100099371)                                            | 상               |
+| R02            | 여섯 행성 정렬 중 맨눈 관측 대상 수 (재가공 게시물)                                        | 한국어 기사 · 재가공 게시물 | 2025-01-26T03:27:00+09:00 | 반박                                      | 관측 장비 조건        | 예, 망원경 → 맨눈(맨눈 대상 4개 → 6개) | [확인](https://www.korea.kr/news/policyNewsView.do?newsId=148938723)                                                                                                            | 상               |
+| R03            | 5월 금융통화위원회 기준금리 인하 폭 (재가공 게시물)                                        | 한국어 기사 · 재가공 게시물 | 2025-05-29T09:53:14+09:00 | 반박                                      | 비율과 퍼센트포인트   | 예, 0.25%p → 0.50%p                     | [확인](https://www.bok.or.kr/portal/singl/baseRate/list.do?menuNo=200643)                                                                                                       | 상               |
+| R04            | [차세대 AirPods Pro의 적외선 카메라 탑재 전망](https://zdnet.co.kr/view/?no=20260210081101) | 한국어 기사                  | 2026-02-10T08:22:24+09:00 | 근거 부족                                 | 미발표 하드웨어 사양  | 아니오                                   | [관련 공식 발표 확인](https://www.apple.com/kr/newsroom/2025/09/introducing-airpods-pro-3-the-ultimate-audio-experience/)                                                       | 중               |
+| R05            | [플레이스테이션 6의 2027년 출시 전망](https://m.kbench.com/?q=node%2F281195)                | 한국어 기사                  | 2026-08-18T10:10:27+09:00 | 근거 부족                                 | 예상 연도와 공식 일정 | 아니오                                   | [관련 발표 확인 · CEO 발언 재인용](https://www.videogameschronicle.com/news/playstation-6-release-date-still-hasnt-been-decided-sony-ceo-hiroki-totoki-says/?pubDate=20260817) | 중               |
+| **합계** | **5개**                                                                              | 한국어 5 (재가공 게시물 3)   |                           | **지지 0 · 반박 3 · 근거 부족 2** |                       | 예 3 · 아니오 2                         |                                                                                                                                                                                |                  |
 
 **예비 후보의 선정 주장과 확인 결과**
 
 - **R01**　2026년 7월 1일 시행된 국내 규격 25g 통상우편 요금은 570원이다. — 기존 430원에 70원을 더한 500원이 새 요금이다. 두 번 더한 570원을 새 요금으로 쓰면 오류다. [우정사업본부](https://www.koreapost.go.kr/user/extra/kpost/99/1205/bbs/pressRelease/pressReleaseView/jsp/ExtraUser.do?bbsDataIdx=100099371)
+  - 입력 본문 — 게시물 전사: 「국내 우편요금이 5년 만에 인상돼 1일부터 규격 25g 기준 편지 한 통 요금이 430원에서 570원으로 오른다.」
+  - 원 보도: [연합뉴스 / 우편요금 5년 만에 인상…7월부터 편지 한 통 500원](https://www.yna.co.kr/view/AKR20260701066300017) — 첫 문장의 원문 값 ‘430원에서 500원으로’. 원 보도 URL은 에이전트에 주지 않고 근거 자료로만 쓴다.
 - **R02**　2025년 1월의 여섯 행성 정렬 때 기사에서 안내한 맨눈 관측 대상은 여섯 개다. — 금성·목성·화성·토성 4개에는 맨눈, 천왕성·해왕성 2개에는 망원경을 안내했다. 관측 가능한 총수 6과 맨눈 수 4를 구분한다. [국립과천과학관 행사 안내 · 정책브리핑](https://www.korea.kr/news/policyNewsView.do?newsId=148938723)
+  - 입력 본문 — 게시물 전사: 「만약 하늘이 맑다면 금성과 목성, 화성과 토성은 맨눈으로 볼 수 있습니다. 천왕성과 해왕성도 맨눈으로 관측할 수 있습니다.」
+  - 원 보도: [YTN / 다음 달까지 밤 하늘에 6개 행성 정렬...진귀한 우주쇼 열린다](https://www.ytn.co.kr/_ln/0105_202501260327120564) — 둘째 문장의 원문 값 ‘망원경을 통해’. 원 보도 URL은 에이전트에 주지 않고 근거 자료로만 쓴다.
 - **R03**　한국은행은 2025년 5월 29일 기준금리를 직전보다 0.50%p 낮췄다. — 직전 변경 이후 2.75%, 5월 29일 2.50%다. 차이는 0.25%p(25bp)다. [한국은행 기준금리 추이](https://www.bok.or.kr/portal/singl/baseRate/list.do?menuNo=200643)
+  - 입력 본문 — 게시물 전사: 「한국은행 금융통화위원회(이하 금통위)가 대선을 닷새 앞두고 기준금리를 0.50%포인트(p) 인하했다.」
+  - 원 보도: [연합뉴스 / 한은, 기준금리 2.50%로 0.25%p 인하…소비·투자 살린다(종합)](https://www.yna.co.kr/view/AKR20250529054700002) — 본문 첫 문장의 원문 값 ‘0.25%포인트(p)’. 원 보도 URL은 에이전트에 주지 않고 근거 자료로만 쓴다.
 - **R04**　애플의 차세대 AirPods Pro에는 주변 환경 인식용 적외선 카메라가 탑재될 것이다. — 2026년 2월 10일 기사는 분석가·유출자의 주장을 전한다. 당시 공개된 Pro 3의 공식 센서·기능 설명에서는 후속 제품의 적외선 카메라 채택을 확인할 수 없었다. [Apple의 당시 AirPods Pro 3 발표](https://www.apple.com/kr/newsroom/2025/09/introducing-airpods-pro-3-the-ultimate-audio-experience/)
 - **R05**　소니의 차세대 플레이스테이션은 2027년에 출시될 것이다. — 2026년 8월 18일 국내 보도와 같은 시기 영문 인터뷰 보도에서 분석가 전망과 CEO의 시점 미정 발언을 확인했다. 공개 HTML로 읽은 자료 중 소니가 2027년을 확정한 공지는 없었다. [VGC의 소니 CEO 인터뷰 인용](https://www.videogameschronicle.com/news/playstation-6-release-date-still-hasnt-been-decided-sony-ceo-hiroki-totoki-says/?pubDate=20260817)
