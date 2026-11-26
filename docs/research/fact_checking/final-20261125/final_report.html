@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Task A 팩트체크 에이전트: 최종 분석과 개선</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+  body { font-family: "Noto Sans CJK KR", "Noto Sans KR", sans-serif; font-size: 10pt; line-height: 1.55; color: #1f2328; }
+  h1 { font-size: 19pt; margin: 0 0 4pt 0; color: #0b3d91; }
+  h2 { font-size: 13.5pt; margin: 16pt 0 5pt 0; padding-bottom: 2pt; border-bottom: 1.5pt solid #0b3d91; color: #0b3d91; }
+  h3 { font-size: 11pt; margin: 10pt 0 3pt 0; color: #24292f; }
+  p { margin: 3pt 0 5pt 0; }
+  ul { margin: 2pt 0 6pt 0; padding-left: 16pt; }
+  li { margin: 1pt 0; }
+  table { border-collapse: collapse; width: 100%; margin: 5pt 0 8pt 0; font-size: 9pt; }
+  th { background: #e8eef9; font-weight: bold; }
+  th, td { border: 0.6pt solid #9aa5b5; padding: 3pt 5pt; vertical-align: top; }
+  td.n, th.n { text-align: right; }
+  .meta { color: #57606a; font-size: 9pt; margin-bottom: 8pt; }
+  .box { border: 1pt solid #0b3d91; background: #f3f6fc; padding: 6pt 9pt; margin: 6pt 0 8pt 0; }
+  .warn { border: 1pt solid #b35900; background: #fff6ec; padding: 6pt 9pt; margin: 6pt 0 8pt 0; }
+  b.hi { color: #0b3d91; }
+  code { font-family: "Noto Sans Mono CJK KR", monospace; font-size: 8.5pt; }
+</style>
+</head>
+<body style="font-family: 'Noto Sans CJK KR', sans-serif;">
+
+<h1 style="font-family: 'Noto Sans CJK KR', sans-serif;">Task A 팩트체크 에이전트: 최종 분석과 개선</h1>
+<div class="meta">UOS NLP 2026 Team 5 · 실험 기간 2026-11-25 ~ 2026-11-26 · 실험 exp-005 ~ exp-014 · 브랜치 <code>feat/agent-skill-mcp</code><br>
+원문 보고서: <code>docs/research/fact_checking/final-20261125/README.md</code> · 평가데이터: <code>data/task_a/evaluation_cases.md</code></div>
+
+<table width="100%" border="1" bordercolor="#0b3d91" cellspacing="0" cellpadding="8"><tr><td bgcolor="#f3f6fc">
+<b>핵심 결론</b>
+<ul>
+<li>같은 모델(DeepSeek V4.1 Flash)에 같은 예산(외부 호출 25회)을 주고 웹만 쓰게 했을 때, <b class="hi">독립 출처로 맞힌 비율은 하네스 없이 76%, 하네스로 94%</b>예요(+18%p).</li>
+<li>하네스 없이 예산만 8회에서 25회로 늘리면 76% 그대로예요. 예산은 하네스가 있을 때만 정답으로 바뀌었어요.</li>
+<li>효과는 <b class="hi">서버가 강제하는 검증 규칙</b>에서 나왔어요. 읽은 문서만 인용, 인용문 대조, 예측 주장 게이트, 원래 글 인용 금지예요. Skill(긴 지침)을 빼도 정확도는 94%로 같았고, 비용만 2.4배 줄었어요.</li>
+<li>하네스는 사실을 찾고 대조하는 능력을 올려 주지 않았어요. 지지·반박은 하네스 없이도 거의 다 맞혔어요. 하네스는 <b class="hi">모르면 모른다고 하게 하고, 근거 없는 정답을 없앴어요</b>.</li>
+</ul>
+</td></tr></table>
+
+<h2 style="font-family: 'Noto Sans CJK KR', sans-serif;">1. 과제와 실험 설계</h2>
+<p>에이전트는 기사·SNS 글의 주장 하나를 받아 근거를 찾고 <b>지지 · 반박 · 근거 부족</b> 중 하나로 판정해요. 인용 근거와 (반박이면) 정정문도 함께 내요.</p>
+<table width="100%" border="1" bordercolor="#9aa5b5" cellspacing="0" cellpadding="4">
+<tr><th bgcolor="#e8eef9" style="width:18%">항목</th><th bgcolor="#e8eef9">내용</th></tr>
+<tr><td>평가데이터</td><td>직접 작성·사람 검수한 50개. 지지 30 · 반박 14 · 근거 부족 6. 범위는 "공식 1차 자료로 확인할 수 있는 수치·날짜·조건 주장". 반박 중 8개는 실제 글을 일부러 틀리게 고친 변형 주장. 주장마다 근거 허용 시점(evidence cutoff)을 둠</td></tr>
+<tr><td>모델</td><td>DeepSeek V4.1 Flash(<code>deepseek-v4-1-flash-1017</code>, Mistral API, temperature 0). 교차 확인용 Claude Haiku 5.5, Sonnet 5.5</td></tr>
+<tr><td>하네스</td><td>직접 만든 factcheck-mission MCP 서버(도구, 검증 게이트, 실행 기록)와 factcheck-mission-agent Skill. Claude Code는 MCP로, API 모델은 같은 서버를 직접 호출</td></tr>
+<tr><td>공통 보호 장치</td><td>근거 허용 시점 이후 문서 차단, 정답이 든 공개 저장소 차단, 에피소드당 외부 호출 한도, 재시도 없음</td></tr>
+<tr><td>지표</td><td>정확도(실패는 오답), Macro-F1, 라벨별 재현율, <b>독립 출처로 맞힘</b>(원래 글이 아닌 출처를 인용한 정답만, 근거 부족 정답은 판정만), 읽지 않은 출처 인용, 비용</td></tr>
+</table>
+<table width="100%" border="1" bordercolor="#9aa5b5" cellspacing="0" cellpadding="4">
+<tr><th bgcolor="#e8eef9" style="width:10%">조건</th><th bgcolor="#e8eef9" style="width:38%">에이전트가 받은 것</th><th bgcolor="#e8eef9">측정하는 것</th></tr>
+<tr><td>C0</td><td>주장만 (도구 없음)</td><td>모델이 아는 지식</td></tr>
+<tr><td>C1</td><td>주장 + 고정 자료집(평가데이터의 근거 URL 본문 모음, 50개 주장 문서가 섞여 있음)</td><td>근거가 주어졌을 때 판단력 (오픈북 시험. 정답 라벨은 주지 않음)</td></tr>
+<tr><td>C2</td><td>C1 + 웹 검색</td><td>자료집에 웹이 더해질 때</td></tr>
+<tr><td><b>C2W</b></td><td>웹 검색·페이지 열기만, 하네스 있음</td><td><b>스스로 근거를 찾는 능력</b></td></tr>
+<tr><td><b>C2P</b></td><td>웹 검색·페이지 열기만, 하네스 없음 (라벨 정의만 안내)</td><td>하네스 효과의 비교 기준</td></tr>
+</table>
+
+<h2 style="font-family: 'Noto Sans CJK KR', sans-serif;">2. 1차: 기준 실험과 오류 분석 (exp-005 → exp-006)</h2>
+<table width="100%" border="1" bordercolor="#9aa5b5" cellspacing="0" cellpadding="4">
+<tr><th bgcolor="#e8eef9">조건</th><th bgcolor="#e8eef9" class="n" align="right">정확도 (기준 exp-005)</th><th bgcolor="#e8eef9" class="n" align="right">근거 부족 재현율</th><th bgcolor="#e8eef9" class="n" align="right">정확도 (개선 exp-006)</th><th bgcolor="#e8eef9" class="n" align="right">근거 부족 재현율</th></tr>
+<tr><td>C0</td><td class="n" align="right" nowrap>22%</td><td class="n" align="right" nowrap>6/6</td><td class="n" align="right" nowrap>24%</td><td class="n" align="right" nowrap>6/6</td></tr>
+<tr><td>C1</td><td class="n" align="right" nowrap>86%</td><td class="n" align="right" nowrap>1/6</td><td class="n" align="right" nowrap><b>98%</b></td><td class="n" align="right" nowrap><b>6/6</b></td></tr>
+<tr><td>C2</td><td class="n" align="right" nowrap>88%</td><td class="n" align="right" nowrap>0/6</td><td class="n" align="right" nowrap><b>96%</b></td><td class="n" align="right" nowrap><b>5/6</b></td></tr>
+</table>
+<h3 style="font-family: 'Noto Sans CJK KR', sans-serif;">오류 분석 (C1·C2 오답 13개를 대화 기록으로 확인)</h3>
+<ul>
+<li><b>예측 주장을 반박(9개):</b> 근거를 읽고도 "전망을 사실처럼 썼다"며 반박. 판정 기준이 없었음</li>
+<li><b>예측 주장을 지지(2개):</b> 애널리스트·언론의 전망 보도를 근거로 인용</li>
+<li><b>본문 누락(2개):</b> Next.js 페이지 데이터에만 있는 본문, 메뉴만 추출되는 GitHub 파일 페이지</li>
+</ul>
+<h3 style="font-family: 'Noto Sans CJK KR', sans-serif;">Action Item 1차</h3>
+<table width="100%" border="1" bordercolor="#9aa5b5" cellspacing="0" cellpadding="4">
+<tr><th bgcolor="#e8eef9" width="11%">ID</th><th bgcolor="#e8eef9" style="width:32%">개선</th><th bgcolor="#e8eef9">내용</th></tr>
+<tr><td>AI-1</td><td>Skill에 예측 주장 판정 규칙</td><td>기준 시점까지 확정 발표가 없으면 근거 부족. 전망 보도는 근거가 아님. 단정했다는 이유만으로 반박하지 않음. "X가 전망했다"는 귀속 주장은 예외</td></tr>
+<tr><td>AI-2</td><td>본문 추출 보강, 자료집 재수집</td><td>GitHub 파일은 raw로, Next.js 페이지 데이터 복원, 본문 상한 50만 자</td></tr>
+<tr><td>AI-3</td><td>조건별 도구 목록</td><td>쓸 수 없는 도구는 보여 주지 않음(막힌 호출 10회 제거)</td></tr>
+</table>
+<p>고쳐진 11개는 모두 노린 오류 유형이었고, 대상 8개를 다시 돌린 반복 실행에서도 유지됐어요. 개선한 하네스로 Claude를 돌리자 Haiku 5.5는 C1·C2 94%, Sonnet 5.5는 98%였어요. 모델이 바뀌어도 개선은 유지됐어요. 오답 방향은 달랐어요. DeepSeek은 과하게 단정했고, Claude는 지지할 것을 근거 부족으로 냈어요.</p>
+
+<h2 style="font-family: 'Noto Sans CJK KR', sans-serif;">3. 2차: 스스로 찾게 하자 드러난 문제 (exp-008 → exp-011)</h2>
+<p>C1·C2는 정답 근거가 든 자료집을 주므로, 근거를 찾는 능력은 재지 못해요. 그래서 웹만 쓰는 C2W와 하네스 없는 C2P를 추가했어요.</p>
+<table width="100%" border="1" bordercolor="#9aa5b5" cellspacing="0" cellpadding="4">
+<tr><th bgcolor="#e8eef9">조건 (DeepSeek, 웹만)</th><th bgcolor="#e8eef9" class="n" align="right">외부 호출 한도</th><th bgcolor="#e8eef9" class="n" align="right">정확도</th><th bgcolor="#e8eef9" class="n" align="right">독립 출처로 맞힘</th><th bgcolor="#e8eef9" class="n" align="right">근거 부족</th><th bgcolor="#e8eef9" class="n" align="right">원래 글만 인용</th><th bgcolor="#e8eef9" class="n" align="right">비용(장부)</th></tr>
+<tr><td>C2P 하네스 없음 (exp-009)</td><td class="n" align="right" nowrap>8</td><td class="n" align="right" nowrap>84%</td><td class="n" align="right" nowrap>76%</td><td class="n" align="right" nowrap>0/6</td><td class="n" align="right" nowrap>5</td><td class="n" align="right" nowrap>$0.53</td></tr>
+<tr><td>C2W 하네스 (exp-008)</td><td class="n" align="right" nowrap>8</td><td class="n" align="right" nowrap>94%</td><td class="n" align="right" nowrap>82%</td><td class="n" align="right" nowrap>6/6</td><td class="n" align="right" nowrap>7</td><td class="n" align="right" nowrap>$1.10</td></tr>
+<tr><td>C2W + 원래 글 인용 금지 (exp-010)</td><td class="n" align="right" nowrap>8</td><td class="n" align="right" nowrap>82%</td><td class="n" align="right" nowrap>82%</td><td class="n" align="right" nowrap>6/6</td><td class="n" align="right" nowrap>0</td><td class="n" align="right" nowrap>$1.30</td></tr>
+<tr><td>C2W + 원래 글 인용 금지 (exp-011)</td><td class="n" align="right" nowrap>25</td><td class="n" align="right" nowrap>90%</td><td class="n" align="right" nowrap>90%</td><td class="n" align="right" nowrap>4/6</td><td class="n" align="right" nowrap>0</td><td class="n" align="right" nowrap>$2.63</td></tr>
+</table>
+<ul>
+<li><b>순환 검증 발견:</b> 웹만 94%에는 주장이 나온 원래 글로 그 주장을 "확인"한 정답 7개가 섞여 있었어요. 독립 출처만 인정하면 실력은 82%였어요.</li>
+<li><b>Action Item 2차:</b> 서버가 원래 글 인용을 거부하게 했어요(읽기는 허용). "독립 출처로 맞힘" 지표를 추가했어요.</li>
+<li>한도 8에서는 독립 출처를 찾다 예산이 떨어져 82%로 내려갔어요. 한도 25에서는 90%로 회복했어요. 근거 기준을 엄격하게 할수록 비용이 드는 트레이드오프예요.</li>
+<li>하네스 없는 에이전트는 근거 부족을 하나도 못 맞혔고, 50개 중 32개에서 열어 보지 않은 출처(검색 결과 URL)를 인용했어요.</li>
+</ul>
+
+<h2 style="font-family: 'Noto Sans CJK KR', sans-serif;">4. 3차: 하네스 v3 (exp-011 오답 → exp-012)</h2>
+<table width="100%" border="1" bordercolor="#9aa5b5" cellspacing="0" cellpadding="4">
+<tr><th bgcolor="#e8eef9" style="width:17%">exp-011 오답</th><th bgcolor="#e8eef9" style="width:28%">원인</th><th bgcolor="#e8eef9">넣은 것 (<code>--harness-v3</code>)</th></tr>
+<tr><td>FC017, FC026</td><td>예측 주장을 전망 보도로 지지·반박</td><td><b>판정 게이트</b>: 지지·반박은 인용 문서 문장을 그대로 옮긴 인용문이 읽은 본문과 맞아야 접수. 미래 일에 관한 주장은 보도·전망·확률 표현이 든 인용으로 판정 불가, "전망을 사실처럼 썼다"는 이유로 반박 불가. 주장 유형은 서버가 문구로 먼저 정함</td></tr>
+<tr><td>FC007</td><td>발언 주장을 다른 지표로 재계산해 반박</td><td>Skill: 발언 주장은 "그 주체가 그 말을 했는가"로 판정</td></tr>
+<tr><td>FC040</td><td>42만 자 문서에서 값을 못 찾음</td><td><b>find_in_page</b>: 연 문서 안에서 검색어 위치와 문맥을 찾음(외부 호출 없음)</td></tr>
+<tr><td>(비용)</td><td>10개 에피소드가 외부 호출 22~25회</td><td><b>재사용</b>: 같은 검색어·이미 연 페이지는 외부 호출 없이 이전 결과. Skill에 탐색 멈춤 기준</td></tr>
+</table>
+<table width="100%" border="1" bordercolor="#9aa5b5" cellspacing="0" cellpadding="4">
+<tr><th bgcolor="#e8eef9">웹만 · 원래 글 인용 금지 · 한도 25</th><th bgcolor="#e8eef9" class="n" align="right">정확도</th><th bgcolor="#e8eef9" class="n" align="right">독립 출처로 맞힘</th><th bgcolor="#e8eef9" class="n" align="right">근거 부족</th><th bgcolor="#e8eef9" class="n" align="right">Tavily</th><th bgcolor="#e8eef9" class="n" align="right">비용(장부)</th></tr>
+<tr><td>exp-011 (v2)</td><td class="n" align="right" nowrap>90%</td><td class="n" align="right" nowrap>90%</td><td class="n" align="right" nowrap>4/6</td><td class="n" align="right" nowrap>341</td><td class="n" align="right" nowrap>$2.63</td></tr>
+<tr><td>exp-012 (v3)</td><td class="n" align="right" nowrap><b>94%</b></td><td class="n" align="right" nowrap><b>94%</b></td><td class="n" align="right" nowrap><b>6/6</b></td><td class="n" align="right" nowrap>419</td><td class="n" align="right" nowrap>$3.26</td></tr>
+</table>
+<ul>
+<li>새로 맞힘 4개(FC007, FC017, FC026, FC040), 새로 틀림 2개(FC011, FC049). 50개에서 1개가 2%p라 정확도 상승은 잡음과 구분하기 어려워요.</li>
+<li>이 실행에서 예측 게이트는 한 번도 작동하지 않았어요. 모델이 처음부터 근거 부족으로 냈어요.</li>
+<li>지지·반박 판정 43개가 모두 본문과 글자 그대로 맞는 근거 문장을 남겼어요. 비용은 줄지 않고 약 1.2배로 늘었어요.</li>
+<li>FC040은 발행일 없는 현재 GitHub 소스 파일로 맞혀 운이 섞였어요. FC026은 첫 실행에서 API가 HTTP 502를 돌려 기록을 보관하고 한 번 다시 돌렸어요.</li>
+</ul>
+
+<h2 style="font-family: 'Noto Sans CJK KR', sans-serif;">5. 하네스 효과: 같은 예산 비교와 Skill 제거 (exp-013, exp-014)</h2>
+<p>하네스 없음(C2P)은 한도 8, 하네스 v3는 한도 25여서 예산 차이가 섞여 있었어요. C2P를 한도 25로 다시 돌리고(exp-013), 하네스 v3에서 Skill만 뺀 조건(exp-014)도 돌렸어요. 아래 넷은 모델, 웹만, 한도 25가 모두 같아요.</p>
+<table width="100%" border="1" bordercolor="#9aa5b5" cellspacing="0" cellpadding="4">
+<tr><th bgcolor="#e8eef9" width="24%">조건</th><th bgcolor="#e8eef9" class="n" align="right" width="8.4%">정확도</th><th bgcolor="#e8eef9" class="n" align="right" width="8.4%">독립 출처</th><th bgcolor="#e8eef9" class="n" align="right" width="8.4%">지지</th><th bgcolor="#e8eef9" class="n" align="right" width="8.4%">반박</th><th bgcolor="#e8eef9" class="n" align="right" width="8.4%">근거 부족</th><th bgcolor="#e8eef9" class="n" align="right" width="8.4%">미열람 인용</th><th bgcolor="#e8eef9" class="n" align="right" width="8.4%">원글만 인용</th><th bgcolor="#e8eef9" class="n" align="right" width="8.4%">도구</th><th bgcolor="#e8eef9" class="n" align="right" width="8.4%">비용</th></tr>
+<tr><td>하네스 없음 (exp-013)</td><td class="n" align="right" nowrap>84%</td><td class="n" align="right" nowrap>76%</td><td class="n" align="right" nowrap>27/30</td><td class="n" align="right" nowrap>14/14</td><td class="n" align="right" nowrap>1/6</td><td class="n" align="right" nowrap>33</td><td class="n" align="right" nowrap>5</td><td class="n" align="right" nowrap>9.7</td><td class="n" align="right" nowrap>$1.51</td></tr>
+<tr><td>도구+게이트, Skill 없음 (exp-014)</td><td class="n" align="right" nowrap><b>94%</b></td><td class="n" align="right" nowrap><b>94%</b></td><td class="n" align="right" nowrap>28/30</td><td class="n" align="right" nowrap>14/14</td><td class="n" align="right" nowrap>5/6</td><td class="n" align="right" nowrap>1</td><td class="n" align="right" nowrap>0</td><td class="n" align="right" nowrap>9.4</td><td class="n" align="right" nowrap><b>$1.38</b></td></tr>
+<tr><td>도구+게이트+Skill (exp-012)</td><td class="n" align="right" nowrap>94%</td><td class="n" align="right" nowrap>94%</td><td class="n" align="right" nowrap>27/30</td><td class="n" align="right" nowrap>14/14</td><td class="n" align="right" nowrap>6/6</td><td class="n" align="right" nowrap>0</td><td class="n" align="right" nowrap>0</td><td class="n" align="right" nowrap>14.1</td><td class="n" align="right" nowrap>$3.26</td></tr>
+</table>
+<h3 style="font-family: 'Noto Sans CJK KR', sans-serif;">18%p(9개)는 어디서 왔나</h3>
+<ul>
+<li><b>근거 부족을 알아챔: +5개.</b> 하네스 없는 에이전트는 근거 부족 6개 중 5개를 지지·반박으로 단정했어요.</li>
+<li><b>독립 출처 없이 맞힌 답 제거: +4개.</b> 하네스 없음은 정답 42개 중 4개가 원래 글이나 읽지 않은 출처에만 기대 있었어요.</li>
+<li><b>지지·반박 능력: 0.</b> 반박은 셋 모두 14/14, 지지는 27~28/30으로 같았어요.</li>
+</ul>
+<h3 style="font-family: 'Noto Sans CJK KR', sans-serif;">무엇이 효과가 있었나</h3>
+<ul>
+<li><b>서버 게이트가 핵심이에요.</b> Skill이 없자 모델은 예측 주장 3개(FC017, FC026, FC041)를 지지·반박으로 냈어요. 서버가 세 번 모두 돌려보냈고, 모델이 근거 부족으로 다시 내 셋 다 정답이 됐어요. Skill이 있을 때는 모델이 처음부터 근거 부족으로 내서 게이트가 작동할 일이 없었어요. 같은 규칙을 Skill로 안내하든 서버가 강제하든 결과는 같았지만, 서버 강제는 모델이 따르지 않아도 막아 줘요.</li>
+<li><b>인용 규칙도 서버가 강제했어요.</b> 읽지 않은 인용은 33개에서 0~1개로, 순환 검증은 5개에서 0개로 줄었어요.</li>
+<li><b>Skill은 정답률 대신 탐색량을 바꿨어요.</b> Skill이 있으면 도구 호출 1.5배, Tavily 1.9배, 비용 2.4배예요. 이번 50개에서는 추가 탐색이 정답을 늘리지 않았어요.</li>
+<li><b>앞선 추론을 바로잡았어요.</b> 실험을 이어 보고 "Skill의 판정 규칙이 핵심"이라 추론했는데, Skill 제거 실험으로 틀렸음을 확인했어요.</li>
+</ul>
+<h3 style="font-family: 'Noto Sans CJK KR', sans-serif;">서버 게이트가 하는 일</h3>
+<table width="100%" border="1" bordercolor="#9aa5b5" cellspacing="0" cellpadding="4">
+<tr><th bgcolor="#e8eef9" style="width:22%">검사</th><th bgcolor="#e8eef9" style="width:38%">막는 경우</th><th bgcolor="#e8eef9">돌려주는 말 (요약)</th></tr>
+<tr><td>원래 글 인용 금지</td><td>주장이 나온 글을 근거로 인용</td><td>검증 대상은 근거가 될 수 없음. 다른 출처를 찾거나 근거 부족</td></tr>
+<tr><td>인용문 대조</td><td>지지·반박인데 근거 문장이 없거나, 읽은 본문에 그 문장이 없음</td><td>인용 문서의 문장을 그대로 옮길 것. 읽지 않은 문서는 인용 불가</td></tr>
+<tr><td>예측 주장 ①</td><td>미래 일을 주장하는데 인용문이 "전해졌다", "전망", "확률" 같은 보도·추측 표현</td><td>보도·전망은 미래 사실의 근거가 아님. 확정 발표를 인용하거나 근거 부족</td></tr>
+<tr><td>예측 주장 ②</td><td>"전망을 사실처럼 썼다"는 이유로 반박</td><td>그 이유만으로는 반박 불가. 근거 부족으로 제출</td></tr>
+</table>
+<p>판정이 막혀도 에피소드는 끝나지 않아요. 에이전트가 이유를 보고 고쳐 다시 내고, 거절 기록은 실행 기록에 남아요.</p>
+
+<h2 style="font-family: 'Noto Sans CJK KR', sans-serif;">6. 결론</h2>
+<table width="100%" border="1" bordercolor="#0b3d91" cellspacing="0" cellpadding="8"><tr><td bgcolor="#f3f6fc">
+<ul>
+<li><b>근거를 주면 판단은 거의 다 맞혀요</b>(C1 98%). 다만 이건 근거를 골라 준 조건이에요.</li>
+<li><b>근거를 주지 않아도 스스로 찾아 94%를 맞혀요</b>(C2W, 독립 출처 기준). 도구 없음은 22%예요.</li>
+<li><b>같은 모델, 같은 예산에서 하네스만 바꾸면 독립 출처로 맞힌 비율이 76%에서 94%가 돼요.</b> 효과는 프롬프트가 아니라 서버가 강제하는 검증 규칙에서 나와요.</li>
+<li>개선 과정 자체가 결과예요. 높은 점수(94%)를 의심해 순환 검증을 찾았고, 규칙으로 막은 뒤 진짜 실력(82%)을 확인했어요. 이어 예산과 게이트로 94%까지 올렸어요.</li>
+</ul>
+</td></tr></table>
+
+<h2 style="font-family: 'Noto Sans CJK KR', sans-serif;">7. 한계와 유의사항</h2>
+<ul>
+<li><b>실행 횟수:</b> 조건마다 한 번씩 돌렸어요. temperature 0이어도 결과가 조금씩 달라요(v3 재실행에서 4개 맞힘, 2개 틀림). 1~2개 차이는 잡음으로 봐야 해요. 하네스 유무의 9개 차이는 이보다 커요.</li>
+<li><b>개발·평가 분리:</b> 모든 Action Item을 같은 50개의 오답에서 찾았어요. 따로 떼어 둔 개발용 데이터가 없어서, 개선이 이 50개에 맞춰졌을 수 있어요. 규칙은 일반 규칙과 가상 예시로만 썼어요.</li>
+<li><b>게이트는 형식만 봐요:</b> 인용문이 본문에 있는지, 보도 표현이 있는지만 검사하고 그 문장이 판정을 뒷받침하는지는 판단하지 않아요. FC010은 "a new report … set to debut"라는 인용으로 지지가 접수됐어요. 표현 목록에 "report"와 "set to"가 없었기 때문이에요. 평가데이터에 맞추는 일이 되므로 고치지 않았어요. 주장 유형도 문구("~할 것이다")로만 분류해요.</li>
+<li><b>장치별 분리:</b> Skill은 따로 뺐지만, 도구(find_in_page, 계산기)와 게이트는 따로 떼어 보지 않았어요.</li>
+<li><b>웹 근거의 시점:</b> 웹 페이지는 지금 내용을 가져와요. 발행일 없는 페이지(GitHub 파일 등)는 기준 시점 필터를 통과해, 시점 이후 바뀐 내용이 근거가 될 수 있어요. 반대로 시점 이후 지워진 근거는 웹에서 찾을 수 없어요.</li>
+<li><b>근거 동반 정답(자동)</b>은 참조 근거와의 URL 겹침으로 계산한 근사치이고, 사람 채점은 하지 않았어요.</li>
+<li><b>라벨 경계:</b> 근거 부족 6개가 모두 예측 주장이라 판정 규칙의 효과가 크게 보여요. FC026(확률 전망) 같은 사례는 정답 기준이 논쟁적일 수 있어요.</li>
+<li><b>남은 공통 약점:</b> FC034는 비교 값이 그래프 데이터에만 있어 여러 모델이 공통으로 틀렸어요.</li>
+</ul>
+
+<h2 style="font-family: 'Noto Sans CJK KR', sans-serif;">8. 비용</h2>
+<table width="100%" border="1" bordercolor="#9aa5b5" cellspacing="0" cellpadding="4">
+<tr><th bgcolor="#e8eef9">실행</th><th bgcolor="#e8eef9" class="n" align="right">에피소드</th><th bgcolor="#e8eef9" class="n" align="right">모델 비용(장부 추정)</th><th bgcolor="#e8eef9" class="n" align="right">Tavily</th></tr>
+<tr><td>exp-005 ~ exp-006 (C0·C1·C2, 시험·반복 포함)</td><td class="n" align="right" nowrap>325</td><td class="n" align="right" nowrap>$3.80</td><td class="n" align="right" nowrap>22</td></tr>
+<tr><td>exp-008 웹만</td><td class="n" align="right" nowrap>50</td><td class="n" align="right" nowrap>$1.10</td><td class="n" align="right" nowrap>155</td></tr>
+<tr><td>exp-009 하네스 없음, 한도 8</td><td class="n" align="right" nowrap>50</td><td class="n" align="right" nowrap>$0.53</td><td class="n" align="right" nowrap>165</td></tr>
+<tr><td>exp-010 원래 글 인용 금지, 한도 8</td><td class="n" align="right" nowrap>50</td><td class="n" align="right" nowrap>$1.30</td><td class="n" align="right" nowrap>213</td></tr>
+<tr><td>exp-011 원래 글 인용 금지, 한도 25 (재실행 포함)</td><td class="n" align="right" nowrap>51</td><td class="n" align="right" nowrap>$2.63</td><td class="n" align="right" nowrap>341</td></tr>
+<tr><td>exp-012 하네스 v3 (재실행 포함)</td><td class="n" align="right" nowrap>51</td><td class="n" align="right" nowrap>$3.26</td><td class="n" align="right" nowrap>419</td></tr>
+<tr><td>exp-013 하네스 없음, 한도 25</td><td class="n" align="right" nowrap>50</td><td class="n" align="right" nowrap>$1.51</td><td class="n" align="right" nowrap>321</td></tr>
+<tr><td>exp-014 하네스 v3, Skill 없음</td><td class="n" align="right" nowrap>50</td><td class="n" align="right" nowrap>$1.38</td><td class="n" align="right" nowrap>224</td></tr>
+<tr><td><b>DeepSeek 합계</b></td><td class="n" align="right" nowrap><b>677</b></td><td class="n" align="right" nowrap><b>$15.51</b></td><td class="n" align="right" nowrap><b>1,860</b></td></tr>
+<tr><td>Claude Haiku·Sonnet 5.5 (exp-007)</td><td class="n" align="right" nowrap>298</td><td class="n" align="right" nowrap>$13.32 (Claude Code 정가 기준)</td><td class="n" align="right" nowrap>17</td></tr>
+</table>
+<ul>
+<li>장부의 모델 비용은 Mistral 가격표(입력 $0.3, 출력 $1.2 / 100만 토큰)로 계산했고 캐시 할인을 넣지 않았어요. exp-005~006 구간에서 Mistral 콘솔의 실제 사용액은 $0.92로, 장부보다 약 4배 적었어요.</li>
+<li>Claude 비용은 구독 계정이라 실제 청구가 아니라 사용 한도에서 빠졌어요.</li>
+<li>Tavily 검색 수는 서버 기록의 검색 호출 수예요. 장부 기준 모든 실행 합계는 1,913회예요(실패·보관 기록 포함).</li>
+</ul>
+
+<h2 style="font-family: 'Noto Sans CJK KR', sans-serif;">부록. 재현 명령</h2>
+<p><code>.env</code>에 <code>MISTRAL_API_KEY</code>와 <code>TAVILY_API_KEY</code>가 필요해요.</p>
+<table width="100%" border="1" bordercolor="#9aa5b5" cellspacing="0" cellpadding="4">
+<tr><th bgcolor="#e8eef9" style="width:24%">실행</th><th bgcolor="#e8eef9">명령 (<code>uv run python scripts/run_task_a.py run ...</code>)</th></tr>
+<tr><td>하네스 v3 (exp-012)</td><td><code>--exp-id exp-012-harness-v3 --arms C2W --max-external-calls 25 --max-tool-calls 32 --max-turns 40 --block-self-citation --harness-v3</code></td></tr>
+<tr><td>하네스 없음 (exp-013)</td><td><code>--exp-id exp-013-plainweb-b25 --arms C2P --max-external-calls 25 --max-tool-calls 32 --max-turns 40</code></td></tr>
+<tr><td>Skill 없음 (exp-014)</td><td><code>--exp-id exp-014-v3-no-skill --arms C2W --max-external-calls 25 --max-tool-calls 32 --max-turns 40 --block-self-citation --harness-v3 --no-skill</code></td></tr>
+<tr><td>채점</td><td><code>uv run python scripts/run_task_a.py score --exp-id &lt;실험 ID&gt;</code></td></tr>
+</table>
+
+</body>
+</html>

@@ -1,101 +1,109 @@
-# 실험 설정과 재현
+# 실험 실행 안내
 
-이 브랜치(`feat/agent-skill-mcp`)에서는 외부 AI 에이전트(Claude Code 등)에 MCP 서버([scripts/mcp_stdio.py](../scripts/mcp_stdio.py))와
-[skills/factcheck-mission-agent/SKILL.md](../skills/factcheck-mission-agent/SKILL.md)를 연결해 실험합니다.
-실험마다 `exp-001`처럼 고유 ID를 붙입니다. 실제 모델 실행은 팀이 승인한 호출 예산 안에서만 합니다.
+평가데이터 50개를 조건별로 돌리고 채점하는 방법이에요. 모든 실험은 [scripts/run_task_a.py](../scripts/run_task_a.py) 하나로 해요. 결과 해석은 [기말 보고서](../docs/research/fact_checking/final-20261125/README.md)에 있어요.
 
-## 실행 순서
+> **이 실행기는 모델과 Tavily를 호출해 비용이 들어요.** 팀이 승인한 예산 안에서만 돌려요. 실패는 재시도하지 않고 실패로 기록해요.
+
+## 준비
 
 ```bash
 uv sync --python 3.12
 uv run pytest -q
-
-# 0) 에이전트용 코퍼스 수집 (C1·C2 필수, 원문 사이트에 접속, 결과는 data/README.md)
-uv run python scripts/build_corpus.py
-
-# 1) 격리 작업공간 생성 — 저장소 밖, gold 없음, 내장 파일·셸·웹 도구 차단
-uv run python scripts/make_agent_workspace.py \
-    --workspace ~/agent-runs/exp-001-c1 --run-id exp-001-c1 --arm C1 \
-    --model-id claude-code-<버전>+<모델ID>
-
-# 2) 작업공간의 RUN.md에 적힌 명령으로 주장마다 새 세션을 실행
-#    로그는 results/exp-001-c1/run.jsonl에 쌓입니다
-
-# 3) 채점 — gold.jsonl을 읽는 유일한 명령
-uv run python scripts/score_run.py --run results/exp-001-c1/run.jsonl
-uv run python scripts/score_run.py --run results/exp-001-c1/run.jsonl --c2 results/exp-001-c2/run.jsonl
+cp .env.example .env          # MISTRAL_API_KEY(또는 쓸 모델의 키), TAVILY_API_KEY
 ```
 
-저장소 루트의 `.mcp.json`은 개발 중에 도구를 눌러 보는 용도입니다(`run_id=dev-interactive`, 로그는 Git 제외 위치).
-저장소 안에서 실행한 에이전트는 gold 파일을 직접 읽을 수 있으므로, 이 설정으로 만든 로그는 실험 결과로 쓰지 않습니다.
-
-## 비교 축
-
-- `--arm`: 도달 가능한 정보 범위. `C0`는 코퍼스·웹 없음, `C1`은 코퍼스만, `C2`는 코퍼스와 외부 웹(`--live-web`).
-- Skill 유무: `make_agent_workspace.py --no-skill`은 도구만 연결합니다(`prompt_version=tools-only-v2`).
-- 에이전트·모델: `--model-id`로 기록합니다. 비교할 때는 이 값만 바꾸고 나머지는 고정합니다.
-- `--condition`: 지금은 `sufficient`만 구현되어 있습니다. 아래 "범위와 남은 한계"를 봅니다.
-
-## 조건 비교 실험
-
-`scripts/run_action_safety.py`는 합성 사례 6건으로 Skill·출처 정보 표시·서버 게이트(`--gate off|verdict|provenance`)를 바꿔 가며 잘못된 일정 등록을 셉니다([exp-002](../results/exp-002-action-safety/summary.md)).
-같은 실행기의 `--suite real`은 실제 웹 사례([data/task_a/real_cases/](../data/task_a/real_cases/README.md))로 같은 설계를 돌립니다([exp-003](../results/exp-003-real-web/summary.md), 2026-11-20 Haiku·Sonnet 42세션 실행). 하네스를 고친 뒤 `skill_gate`(Skill + 기본 검증 게이트)를 더해 다시 돌린 것이 [exp-004](../results/exp-004-real-web-fixed/summary.md)입니다(56세션).
-- 서버는 C2 웹 전용(`--web-only`)입니다. 고정 코퍼스 없이 Tavily 검색과 페이지 열람만 쓰고, 사례의 `evidence_cutoff`를 검색과 열람에 모두 적용합니다.
-- 조건은 `base`(Skill 없음, 게이트 없음), `skill`(Skill만), `skill_prov_gate`(Skill + 출처 분석 표시 + 출처 독립성 게이트)입니다. exp-004는 `skill_gate`(Skill + 기본 검증 게이트)를 더했습니다(`--conditions base,skill,skill_gate,skill_prov_gate`). exp-002에서 남은 질문인 "Skill 위에 게이트가 더하는 것이 있나"를 실제 웹에서 봅니다.
-- 출처군은 사람이 붙인 표시 없이 서버가 본문 겹침으로 정합니다(`--provenance-mode auto`). 웹 문서는 공식 여부를 판단하지 않으므로, 게이트는 서로 다른 출처군 2개 이상을 요구합니다.
-- 사례 7건 × 조건 3개 × 모델 3개 = 63세션입니다. 세션마다 도구 호출 16회, 외부 호출(검색+열람) 8회가 상한입니다.
-- gold는 제가 공식 문서와 대조해 제안한 것이라 `status: proposed`입니다. 실행기는 모든 사례가 `confirmed`가 되기 전에는 실제 실행을 거부합니다(`--dry-run`만 가능).
+C1·C2 조건은 근거 자료집이 필요해요. 평가데이터의 근거 URL에서 본문을 받아 만들어요(원문 저작권 때문에 Git 제외). 수집 날짜에 따라 페이지가 바뀔 수 있어요. 자세한 내용은 [data/README.md](../data/README.md)에 있어요.
 
 ```bash
-uv run python scripts/run_action_safety.py run --suite real --dry-run     # 세션 수, 명령, 미확정 gold 확인
-uv run python scripts/run_action_safety.py run --suite real --workers 3   # gold 확정 후 실행
-uv run python scripts/run_action_safety.py score --suite real             # results/exp-003-real-web/
+uv run python scripts/build_corpus.py     # data/raw/task_a/corpus_c1.jsonl
 ```
 
-`scripts/run_comparison.py`는 같은 주장을 세 조건(도구 없음, 그냥 Claude Code+웹, 하네스)과 여러 모델로 실행하고 채점합니다. 모델을 호출하므로 승인된 예산 안에서만 실행합니다.
+웹만 쓰는 조건(C2W, C2P)은 자료집 없이 돌아요.
+
+## 조건
+
+| `--arms` 값 | 에이전트가 받는 것 | 재는 것 | 자료집 | Tavily |
+| --- | --- | --- | :---: | :---: |
+| `C0` | 주장만(제출 도구만) | 모델이 아는 지식 | | |
+| `C1` | 주장 + 고정 자료집 검색·열람 | 근거가 주어졌을 때 판단력 | 필요 | |
+| `C2` | C1 + 웹 검색·열기 | 자료집에 웹이 더해질 때 | 필요 | 사용 |
+| `C2W` | 웹 검색·열기만, 하네스 있음 | 스스로 근거를 찾는 능력 | | 사용 |
+| `C2P` | 웹 검색·열기·제출만, 하네스 없음(라벨 정의만 안내) | 하네스 효과의 비교 기준 | | 사용 |
+
+여러 조건은 쉼표로 이어요(`--arms C0,C1,C2`).
+
+## 명령
 
 ```bash
-uv run python scripts/run_comparison.py run --dry-run      # 세션 수와 명령 확인
-uv run python scripts/run_comparison.py run --workers 6    # 실행 (실패는 재시도하지 않음)
-uv run python scripts/run_comparison.py score              # results/<exp-id>/summary.json, episodes.jsonl
+# 계획만 보기(호출 없음)
+uv run python scripts/run_task_a.py run --exp-id exp-100-test --arms C2W --claims FC001,FC002 --dry-run
+
+# 실행 → 채점 → 누적 사용량
+uv run python scripts/run_task_a.py run   --exp-id exp-100-test --arms C2W
+uv run python scripts/run_task_a.py score --exp-id exp-100-test
+uv run python scripts/run_task_a.py ledger
 ```
 
-## 실험 기록
+- **`--exp-id`는 항상 새 이름으로 적어요.** 기본값이 `exp-005-baseline`이라, 빼면 기존 실험 기록에 이어 쓰게 돼요.
+- 같은 `--exp-id`로 다시 실행하면 **이미 기록이 있는 주장은 건너뛰어요.** 중간에 멈춘 실행은 같은 명령으로 이어서 돌아요. 실패한 주장을 다시 돌리려면 그 기록을 `results/raw/<exp-id>/<조건>/`에서 다른 폴더로 옮겨 두고 실행해요(보고서에 사유를 적어요).
 
-`finish_verification`이 호출될 때마다 결과 로그의 `config`에 `run_id`, `arm`, `condition`, `model_id`, `prompt_version`,
-`code_commit`(작업 트리가 바뀌었으면 `+dirty`)이 기록됩니다. `result`에는 판정, 인용 근거, 도구 호출 궤적(`events`),
-왜곡 정보, 미션 결과(`mission_output`, 서버가 생성)가 기록됩니다.
+## 자주 쓰는 옵션
 
-채점 결과에는 다음 항목이 함께 나옵니다.
-- `reference_baselines`: 한 라벨만 답했을 때의 점수. 지금 gold로는 항상 `supported`라고 답해도 정확도가 37/49 = 75.5%이고
-  Macro-F1은 0.287입니다. 정확도는 이 값과 함께 읽어야 합니다.
-- `mission_safety`: 미션 요청 수, 게이트 차단 수, gold와 다른 판정으로 실행된 실행형 미션의 비율.
+| 옵션 | 기본값 | 뜻 |
+| --- | --- | --- |
+| `--claims` | `all` | `FC001,FC002`처럼 일부만 |
+| `--harness-v3` | 꺼짐 | 문서 안 찾기(`find_in_page`), 같은 검색·열기 재사용, 인용문 대조·예측 주장 게이트. C2P에는 적용 안 됨 |
+| `--block-self-citation` | 꺼짐 | 주장이 나온 글을 근거로 인용 금지(읽기는 허용). C2P에는 적용 안 됨 |
+| `--no-skill` | 꺼짐 | Skill 대신 C2P와 같은 최소 안내만(도구·게이트 유지). openai 방식만 |
+| `--max-external-calls` | 4 | 에피소드당 웹 검색·열기 상한. 웹만 쓰는 조건은 25를 써 왔어요 |
+| `--max-tool-calls` · `--max-turns` | 12 · 20 | 에피소드당 도구 호출·대화 턴 상한. 한도 25와 함께 32 · 40 |
+| `--workers` | 4 | 동시에 돌릴 주장 수 |
+| `--backend` | `openai` | `claude`면 주장마다 `claude -p` 세션(Claude Code 설치 필요) |
+| `--model` · `--base-url` · `--api-key-env` | DeepSeek V4.1 Flash · Mistral API · `MISTRAL_API_KEY` | 다른 OpenAI 호환 API로 바꿀 때. 키 값이 아니라 환경변수 이름을 적어요 |
+| `--price-input` · `--price-output` | 0.3 · 1.2 | 100만 토큰당 USD. 다른 모델이면 그 모델 가격으로 바꿔요 |
+| `--max-cost-usd` · `--tavily-cap` | 5 · 600 | **누적 상한**(아래 참고) |
+| `--ledger` | `results/raw/task_a_budget_ledger.jsonl` | 비용 장부. 따로 셀 실행(예: Claude)은 다른 파일 |
 
-## 범위와 남은 한계
+### 예산 상한은 누적이에요
 
-이 장에 모아 둡니다. 2026-11-19 검토에서 확인한 내용입니다.
-팀이 정할 항목과 선택지는 [결정 기록 003](../docs/decisions/003-task-a-agent-harness-open-decisions.md)에 정리했습니다.
+`--max-cost-usd`는 **장부에 기록된 모든 실행을 합친** 모델 비용 상한이에요. `--tavily-cap`은 **모든 장부를 합친** Tavily 검색 상한이에요. 이번 실행만의 한도가 아니에요.
 
-**아직 없는 것**
-- 코퍼스에는 참조 근거의 원문 54개만 있고 방해 문서가 없습니다. 어떤 문서를 몇 개 넣을지는 팀이 정해야 합니다. FC021·FC036·FC038·FC045는 원문을 받지 못해 C1에서 근거가 없습니다.
-- 코퍼스는 수집한 날의 페이지입니다. 같은 결과를 재현하려면 팀이 한 번 만든 파일을 Git 밖에서 공유해야 합니다(`content_hash`로 같은 파일인지 확인).
-- 페이지 본문은 Trafilatura로 추출합니다(2026-11-20부터). 본문이 200자 미만으로 나오면 태그 제거 방식으로 대신하므로, 그런 문서에는 메뉴 문구가 남을 수 있습니다.
-- `missing`·`conflict`·`misleading` 조건은 코퍼스 변형이 없어서 구현되지 않았습니다. 서버가 실행을 거부합니다. 성능 하락·오도 근거 노출·채택 지표는 아직 만들 수 없습니다.
-- [exp-003-real-web](../results/exp-003-real-web/summary.md)에서도 Skill만으로 잘못된 등록이 0/4였고, 게이트를 더하면 맞는 등록이 7/10에서 2/10으로 줄었습니다. 같은 실험에서 계산기가 유럽 시간대를 몰라 시간대 변환의 45/64가 실패했고, 웹 검색의 43/86이 기준 시점 필터 뒤 빈 결과였습니다. 두 문제와 네이버 블로그 본문 문제를 고치고 다시 실행한 [exp-004-real-web-fixed](../results/exp-004-real-web-fixed/summary.md)에서는 시간대 변환 실패가 0/44, 빈 검색이 16/104로 줄었습니다. 맞는 등록은 skill 9/10, skill_prov_gate 8/10이었습니다. 잘못된 등록은 skill 0/4였고, skill_gate와 skill_prov_gate는 각각 1/4였습니다. 두 건은 지금 게이트가 검사하지 않는 유형입니다. 하나는 인용한 문서에 등록 시각이 없었고(시각은 발행일 없는 검색 스니펫에서 옴), 다른 하나는 주장과 다른 행사로 바꿔 등록했습니다.
-- [exp-002-action-safety](../results/exp-002-action-safety/summary.md)에서는 Skill만으로 합성 사례의 잘못된 등록이 0/12가 되어, Skill 위에 얹은 게이트의 추가 효과는 보이지 않았습니다. Skill 없이 게이트만 두면 잘못된 실행은 막지만 정상 등록도 2/6으로 줄었습니다.
-- 실제 모델 실행은 [exp-001-compare](../results/exp-001-compare/summary.md) 하나입니다(주장 20건, sufficient 조건, C1만). 하네스는 웹을 쓰는 Claude Code보다 정확도가 낫지 않았고, 틀린 답은 주로 코퍼스 공백과 `read_evidence`의 4,000자 제한 때문이었습니다.
-  그 뒤 본문 추출과 이어 읽기(`offset`)를 넣었지만, 같은 주장으로 다시 실행하지는 않았습니다.
+- 실행 전에 `ledger`로 지금까지의 사용량을 보고, 그 값에 이번 실행 예산을 더해 상한을 정해요.
+- 남은 Tavily가 `--max-external-calls`보다 적으면 새 주장을 시작하지 않아요.
+- 장부는 Git에 올라가지 않아요. 새로 받은 저장소는 0부터 시작해요.
+- 비용은 가격표로 계산한 추정이고 캐시 할인을 넣지 않아요. 실제 청구는 보통 더 적어요.
 
-**평가 설계의 한계**
-- 자동 채점은 판정 라벨(정확도, Macro-F1, 커버리지)과 미션 안전성까지입니다. gold에 `distortion_type` 필드가 없어서 왜곡 유형·구간·정정문은 채점하지 않습니다. 근거 충분성(E)과 시점·범위(T)는 사람 채점이 필요합니다.
-- 표본이 작습니다. 채점 대상 49건에서 1건은 2%p이고, 반박 11건에서 1건은 재현율 9%p입니다. 근거 부족 정답은 1건뿐이라 Macro-F1이 그 1건에 크게 흔들립니다.
-- gold는 독립 검수 전 초안이고, FC038은 판정 보류입니다.
-- Skill은 같은 50건을 보며 다듬어졌습니다. FC002의 정답 예시와 평가 사례에 나오는 기관명은 지웠지만, 개발용과 평가용 사례가 나뉘어 있지 않아서 Skill 효과는 낙관적으로 추정될 수 있습니다. 나누는 방법은 팀이 정해야 합니다.
-- 2010~2025년의 유명한 사실은 모델이 이미 알고 있을 수 있습니다. 도구 효과는 C0와 비교해서 따로 확인해야 합니다.
+## 기말 실험에 쓴 명령
 
-**격리의 한계**
-- 격리 작업공간은 Claude Code의 내장 파일·셸·웹 도구를 끄고(`permissions.deny`, `--disallowedTools`), `--strict-mcp-config`로 다른 MCP 서버를 막습니다. 사용자 전역 Skill·플러그인은 끄지 않으므로 실행 환경 기록에 남깁니다.
-- CLI 모드(`scripts/agent_cli.py`)는 셸로 구동하므로 에이전트가 저장소를 읽거나 상태 파일을 고칠 수 있습니다. 격리 경계로 쓰지 않습니다.
-- C2의 `evidence_cutoff`는 발행일이 있는 문서에만 적용됩니다. 검색은 Tavily `end_date`와 발행일로 거르고, `fetch_url`은 발행일이 cutoff 이후인 페이지를 열지 않습니다.
-  발행일이 없는 검색 결과는 남기 때문에, 그 스니펫으로 사후 정보가 보일 수 있습니다. 2026-11-20 점검에서 cutoff를 2026-03-20으로 둔 검색에 WWDC 2026이 "진행되었다"는 위키백과 스니펫이 나왔습니다.
-- Codex·Cursor용 설정은 생성하지 않습니다. 같은 격리를 각 도구의 설정 형식으로 따로 맞춰야 합니다.
+| 실험 | 명령(`uv run python scripts/run_task_a.py run` 뒤에) |
+| --- | --- |
+| 하네스 개선 후 C0·C1·C2 (exp-006) | `--exp-id exp-006-improved --arms C0,C1,C2 --prompt-version skill-v3-forecast-rule` |
+| Claude 확인 (exp-007) | `--backend claude --model claude-sonnet-5-5 --exp-id exp-007-claude-sonnet --ledger results/raw/task_a_budget_ledger_claude.jsonl` |
+| 원래 글 인용 금지, 웹만, 한도 25 (exp-011) | `--exp-id exp-011-webonly-noself-b25 --arms C2W --max-external-calls 25 --max-tool-calls 32 --max-turns 40 --block-self-citation` |
+| 하네스 v3 (exp-012) | `--exp-id exp-012-harness-v3 --arms C2W --max-external-calls 25 --max-tool-calls 32 --max-turns 40 --block-self-citation --harness-v3` |
+| 하네스 없음, 한도 25 (exp-013) | `--exp-id exp-013-plainweb-b25 --arms C2P --max-external-calls 25 --max-tool-calls 32 --max-turns 40` |
+| Skill 없음 (exp-014) | `--exp-id exp-014-v3-no-skill --arms C2W --max-external-calls 25 --max-tool-calls 32 --max-turns 40 --block-self-citation --harness-v3 --no-skill` |
+
+`--prompt-version`과 코드 커밋은 서버 기록(`results/raw/<exp-id>/`)의 `config`에 남아요. 누적 상한(`--max-cost-usd`, `--tavily-cap`)은 실행 당시 장부에 맞춰 정한 값이라 위 표에서 뺐어요.
+
+## 결과가 쌓이는 곳
+
+| 위치 | 내용 | Git |
+| --- | --- | :---: |
+| `results/<exp-id>/summary.md` · `summary.json` | 조건별 정확도, Macro-F1, 라벨별 재현율, 독립 출처로 맞힘, 비용 | 올림 |
+| `results/<exp-id>/episodes.jsonl` | 주장별 판정, 정답 여부, 인용 수, 도구 호출 수, 비용 | 올림 |
+| `results/raw/<exp-id>/<조건>/` | 서버 기록(도구 호출 궤적), 대화 기록, 웹 캐시, 미션 결과물 | 제외(원문 포함) |
+
+채점(`score`)만 정답 파일(`data/task_a/gold.jsonl`)을 읽어요. 지표 정의는 `summary.json`의 `notes`에 있어요.
+
+## 범위와 한계
+
+- 근거 조건은 "근거 충분"(`sufficient`)만 구현돼 있어요. 오도 문서·누락·충돌 조건은 자료집 변형이 없어 서버가 실행을 거부해요.
+- 조건마다 한 번씩 돌린 결과예요. 50개에서 1개는 2%p라, 1~2개 차이는 잡음으로 봐요.
+- 개선은 같은 50개의 오답을 보고 했어요. 개발용 데이터는 따로 없어요.
+- 웹 페이지는 지금 내용을 가져와요. 발행일 없는 페이지는 기준 시점 필터를 통과할 수 있어요.
+- 자세한 내용은 [보고서 §11](../docs/research/fact_checking/final-20261125/README.md)에 있어요.
+
+## 이전 실험(exp-001~004)
+
+중간 단계 실험은 지금 실행기 이전의 스크립트로 돌렸어요(`run_comparison.py`, `run_action_safety.py`). 결과와 설정은 [results/](../results/README.md)의 각 `summary.md`에 남아 있고, 그 기록을 재현할 때만 써요. 새 실험에는 쓰지 않아요.

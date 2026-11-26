@@ -2,9 +2,7 @@
 
 2026년 서울시립대학교 NLP 수업 5조의 과제 작업 공간입니다.
 
-> **이 브랜치(`feat/agent-skill-mcp`)는 상용/오픈소스 AI 에이전트(Claude Code, Antigravity, Cursor, Codex 등)에 우리 팀의 MCP 도구 서버와 `SKILL.md`를 장착하여 태스크를 수행하는 전용 브랜치입니다.**
-> 논문 PDF·해설·발표 자료·이전 후보 탐색 기록은 삭제하지 않았으며
-> [main 브랜치](https://github.com/CJI0718/uos-nlp-2026-team5/tree/main)에 그대로 있습니다.
+> **처음이면 [빠른 시작](#빠른-시작)부터 보세요.** 기말 실험 결과는 [최종 보고서](docs/research/fact_checking/final-20261125/README.md)([PDF](docs/research/fact_checking/final-20261125/final_report.pdf))에 있어요.
 
 ## 과제
 
@@ -28,54 +26,58 @@
 
 태스크 정의의 전체 문안은 [팀 논의·연구 방향·Task](docs/research/fact_checking/midterm-20261103/팀논의_연구방향과_Task.md)에 있습니다.
 
-## 아키텍처 (MCP 서버 + Agent Skill)
+## 구조
 
-자체 제작 LLM 루프를 두지 않고, **기존 AI 에이전트에 MCP(Model Context Protocol) 서버와 `SKILL.md`를 연결**하여 구동합니다:
+| 구성 | 역할 |
+| --- | --- |
+| **하네스 서버** ([src/task_a/mcp_server.py](src/task_a/mcp_server.py)) | 에피소드마다 도구(근거 검색·열람, 문서 안 찾기, 계산기, 웹 검색·열기)를 주고, 판정 제출을 검사(검증 게이트)하고, 모든 호출을 기록해요 |
+| **Skill** ([skills/factcheck-mission-agent/SKILL.md](skills/factcheck-mission-agent/SKILL.md)) | 검증 절차와 판정 기준 지침. 평가 사례는 들어 있지 않아요(테스트로 확인) |
+| **실행기** ([scripts/run_task_a.py](scripts/run_task_a.py)) | 평가데이터 50개를 조건별로 돌리고 채점해요. 두 가지 방식으로 같은 서버를 써요 |
+| └ `--backend openai` (기본) | OpenAI 호환 API 모델(Mistral, DeepSeek, OpenRouter 등)이 서버 도구를 직접 호출([agent_loop.py](src/task_a/agent_loop.py)) |
+| └ `--backend claude` | 주장마다 새 `claude -p` 세션이 MCP로 서버에 붙음(저장소 밖 작업 폴더에서 실행) |
+| **MCP 서버** ([scripts/mcp_stdio.py](scripts/mcp_stdio.py)) | Claude Code 등 MCP를 쓰는 에이전트에 같은 하네스를 붙여요. 등록되지 않은 주장도 바로 검증할 수 있어요 |
+| **채점기** ([src/task_a/score_run.py](src/task_a/score_run.py)) | 정답(`gold.jsonl`)을 여는 유일한 코드. 실행기의 `score`가 써요 |
 
-- **MCP 서버 ([scripts/mcp_stdio.py](scripts/mcp_stdio.py), [src/task_a/mcp_server.py](src/task_a/mcp_server.py))**: JSON-RPC 2.0 `stdio`로 `start_episode`, `submit_claim`(`--allow-user-claims`일 때, 등록되지 않은 주장을 바로 검증), `search_evidence`, `read_evidence`, `calculate_comparison`, `search_web`, `fetch_url`, `finish_verification` 도구를 노출하고 모든 궤적을 `RunLog` JSONL로 기록합니다. 후속 미션은 `finish_verification` 안에서 최종 판정으로 검증 게이트를 적용한 뒤 실행합니다.
-- **격리 작업공간 ([scripts/make_agent_workspace.py](scripts/make_agent_workspace.py))**: 저장소 밖에 gold가 없는 실행 디렉터리를 만들고, Claude Code의 내장 파일·셸·웹 도구를 막은 채 MCP 도구만 허용합니다. 실험은 이 작업공간에서만 실행합니다.
-- **Agent Skill ([skills/factcheck-mission-agent/SKILL.md](skills/factcheck-mission-agent/SKILL.md))**: 4단계 워크플로우(근거 탐색 → 결정론적 검산·왜곡 특정 → 검증 게이팅 미션 선택 → 구조화 판정 제출) 지침서입니다. 평가 사례는 들어 있지 않습니다(테스트로 확인).
-- **CLI 어댑터 ([scripts/agent_cli.py](scripts/agent_cli.py))**: 셸로 같은 도구를 호출하는 어댑터입니다. 셸을 쓰는 에이전트는 저장소를 읽을 수 있으므로 격리 경계가 아닙니다.
+## 빠른 시작
+
+```bash
+uv sync --python 3.12
+uv run pytest -q                       # 오프라인 테스트(모델·웹 호출 없음)
+cp .env.example .env                   # 키 두 개를 채워 넣기(커밋되지 않음)
+```
+
+`.env`에는 모델 API 키(기본 `MISTRAL_API_KEY`)와 웹 검색용 `TAVILY_API_KEY`를 넣어요.
+
+**1) 주장 3개로 시험하기.** 아래 명령은 모델과 Tavily를 호출해 비용이 들어요(DeepSeek 기준 몇 센트). `--dry-run`을 붙이면 호출 없이 계획만 보여 줘요.
+
+```bash
+uv run python scripts/run_task_a.py run --exp-id my-test --arms C2W --claims FC001,FC002,FC003 \
+    --harness-v3 --block-self-citation --max-external-calls 25 --max-tool-calls 32 --max-turns 40
+uv run python scripts/run_task_a.py score --exp-id my-test      # results/my-test/summary.md
+```
+
+**2) 50개 전체.** `--claims`를 빼면 돼요. 조건과 옵션은 [실험 안내](experiments/README.md)에 있어요.
+
+**3) 내 주장 하나 검증하기(Claude Code).** 저장소의 [.mcp.json](.mcp.json)이 하네스를 웹 검색 모드로 붙여요. Claude Code를 이 폴더에서 열고 "이 주장 검증해 줘: …"라고 하면, `submit_claim`으로 시작해 근거를 찾고 판정해요. 기록은 `results/raw/dev-interactive/`(Git 제외)에 쌓여요. 이 모드는 저장소의 정답 파일을 에이전트가 읽을 수 있으므로 실험에는 쓰지 않아요.
 
 ## 파일 안내
 
 | 위치 | 내용 |
 | --- | --- |
-| [.mcp.json](.mcp.json) | 개발용 MCP 서버 설정(`dev-interactive`). 실험에는 격리 작업공간을 씁니다 |
-| [src/](src/README.md) | MCP 서버, 도구, BM25/웹 검색, 수치·시간대 계산기, 후속 미션 게이팅, 채점기 |
-| [src/assistant/](src/assistant/README.md) | **일정 비서 앱**: 행사를 찾아 공식 출처로 검증하고 앱 안 달력에 넣는 로컬 웹 앱(`scripts/assistant_app.py serve --demo`) |
-| [skills/](skills/factcheck-mission-agent/SKILL.md) | 외부 AI 에이전트 장착용 4단계 팩트체크·왜곡특정·미션수행 Skill |
-| [missions/](missions/README.md) | 검증 게이팅 통과 후 생성되는 후속 미션 결과물(`.ics`, `.md`) 및 장기 추적 레지스트리 |
-| [tests/](tests/) | 오프라인 단위·통합 테스트 |
-| [scripts/](scripts/) | 데이터 추출(`extract_fc_data.py`), 원문 코퍼스 수집(`build_corpus.py`), MCP 서버(`mcp_stdio.py`), 격리 작업공간(`make_agent_workspace.py`), CLI 어댑터(`agent_cli.py`), 채점(`score_run.py`) |
-| [data/](data/README.md) | 주장 50개(에이전트 입력), 참조 판정·근거(채점기 전용), 원문 코퍼스 수집 방법과 결과 |
-| [experiments/](experiments/README.md) | 실행 방법과 실험 기록 양식 |
-| [results/](results/README.md) · [reports/](reports/README.md) | 결과 요약, 보고서 |
-| [docs/decisions/](docs/decisions/README.md) | 확정한 결정 |
-| [docs/research/](docs/research/README.md) | 태스크·평가·도구 설계 문서 |
-
-## 실행
-
-```bash
-uv sync --python 3.12
-uv run pytest -q
-
-# 0) C1·C2용 원문 코퍼스 수집 (원문 사이트 접속, Git 제외 위치에 저장)
-uv run python scripts/build_corpus.py
-
-# 1) 격리 작업공간 생성
-uv run python scripts/make_agent_workspace.py --workspace ~/agent-runs/exp-001-c0 \
-    --run-id exp-001-c0 --arm C0 --model-id claude-code-<버전>+<모델ID>
-
-# 2) 작업공간의 RUN.md에 적힌 명령으로 주장마다 새 세션 실행 (팀이 승인한 예산 안에서)
-
-# 3) 채점 (gold.jsonl을 읽는 유일한 명령)
-uv run python scripts/score_run.py --run results/exp-001-c0/run.jsonl
-```
+| [docs/research/fact_checking/final-20261125/](docs/research/fact_checking/final-20261125/README.md) | **기말 실험 보고서**(분석·개선·한계)와 PDF |
+| [experiments/](experiments/README.md) | 실행 방법, 조건, 옵션, 예산 |
+| [results/](results/README.md) | 실험별 결과 요약(exp-001~014) |
+| [data/](data/README.md) | 평가데이터 50개(에이전트 입력과 채점 자료를 분리), 근거 자료집 수집 방법 |
+| [src/](src/README.md) | 하네스 서버, 도구, 게이트, 실행 루프, 채점기 |
+| [skills/](skills/factcheck-mission-agent/SKILL.md) | 에이전트에 주는 검증 지침(Skill) |
+| [missions/](missions/README.md) | 검증을 통과한 뒤 만드는 후속 결과물(`.ics`, `.md`) 규칙 |
+| [src/assistant/](src/assistant/README.md) | 일정 비서 앱(검증한 행사만 달력에 넣는 로컬 웹 앱, `scripts/assistant_app.py serve --demo`) |
+| [tests/](tests/) | 오프라인 테스트 |
+| [docs/decisions/](docs/decisions/README.md) · [docs/research/](docs/research/README.md) | 결정 기록, 태스크·평가·도구 설계 문서 |
 
 ## 원칙
 
-- 참조 판정(`data/task_a/gold.jsonl`, `evidence.jsonl`, `evaluation.md`)은 채점기에만 줍니다. MCP 서버는 이 파일들을 주장 입력이나 코퍼스로 받지 않고, 에이전트 자체 도구는 격리 작업공간에서 막습니다. 남은 한계는 [실험 안내](experiments/README.md#범위와-남은-한계)에 모아 둡니다.
+- 참조 판정(`data/task_a/gold.jsonl`, `evidence.jsonl`, `evaluation_cases.md`)은 채점기만 읽어요. 하네스 서버는 이 파일들을 주장 입력이나 자료집으로 받지 않아요. API 모델에는 파일 도구가 없고, Claude 실행은 저장소 밖 작업 폴더에서 MCP 도구만 허용해요. 남은 한계는 [실험 안내](experiments/README.md#범위와-한계)와 [보고서 §11](docs/research/fact_checking/final-20261125/README.md)에 있어요.
 - 논문 수치, 설계 제안, 우리가 관찰한 결과를 구분해서 씁니다. 결과를 지어내지 않습니다.
 - API 키, 개인정보, 권한 없는 원문·PDF, 원본 로그는 올리지 않습니다.
 - main 직접 수정 대신 branch → PR로 작업합니다. [협업 안내](CONTRIBUTING.md) · [Agent 지침](AGENTS.md)
