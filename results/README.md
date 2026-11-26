@@ -13,6 +13,7 @@
 | [exp-007-claude-haiku](exp-007-claude-haiku/summary.md) | 2026-11-26 | 개선 후 하네스를 Claude Haiku 5.5로: 50건 × C0/C1/C2, 150세션 |
 | [exp-007-claude-sonnet](exp-007-claude-sonnet/summary.md) | 2026-11-26 | 같은 설계를 Claude Sonnet 5.5로: 148세션(C2 2건은 비용 상한으로 미실행) |
 | [exp-008-webonly](exp-008-webonly/summary.md) | 2026-11-26 | 코퍼스 없이 웹 검색만(C2W): 50건, DeepSeek V4.1 Flash, 외부 호출 한도 8 |
+| [exp-009-plainweb](exp-009-plainweb/summary.md) | 2026-11-26 | 같은 모델·웹에서 하네스를 뺀 기본 웹 에이전트(C2P): 50건 |
 
 exp-005~006의 분석과 해석은 [docs/research/fact_checking/final-20261125/](../docs/research/fact_checking/final-20261125/README.md)에 있습니다.
 
