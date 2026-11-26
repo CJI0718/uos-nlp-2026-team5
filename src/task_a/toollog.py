@@ -64,11 +64,19 @@ class ToolCache:
         self.hits = 0
         self.misses = 0
         self._memory: dict[str, dict] = {}
+        #: Lines that were not valid JSON (a run killed mid-write). They are
+        #: skipped; the call they cached is simply made again.
+        self.skipped_lines = 0
         if self.enabled and self.path.exists():
             for line in self.path.read_text(encoding="utf-8").splitlines():
-                if line.strip():
+                if not line.strip():
+                    continue
+                try:
                     row = json.loads(line)
-                    self._memory[row["key"]] = row
+                except json.JSONDecodeError:
+                    self.skipped_lines += 1
+                    continue
+                self._memory[row["key"]] = row
 
     def get(self, key: str):
         """Return the cached raw response, or MISSING when not cached.

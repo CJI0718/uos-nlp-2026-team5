@@ -246,3 +246,14 @@ def test_backend_is_a_valid_tool_backend(tmp_path):
 
     assert result.status == ToolStatus.OK
     assert backend.lookup("EV1").evidence_id == "EV1"
+
+
+def test_cache_skips_a_line_cut_off_by_a_killed_run(tmp_path):
+    path = tmp_path / "cache.jsonl"
+    cache = ToolCache(path)
+    cache.put(cache_key("search_web", {"q": "a"}), "search_web", {"q": "a"}, [{"url": "u"}])
+    with path.open("a", encoding="utf-8") as fh:
+        fh.write('{"key": "x", "raw": "cut off\n')
+    again = ToolCache(path)
+    assert again.skipped_lines == 1
+    assert again.get(cache_key("search_web", {"q": "a"})) == [{"url": "u"}]
