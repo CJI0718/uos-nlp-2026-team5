@@ -63,3 +63,36 @@ def test_tool_list_matches_what_the_arm_allows(tmp_path):
     assert names["C0"] == control
     assert names["C1"] == control | {"search_evidence", "read_evidence", "calculate_comparison"}
     assert names["C2"] == names["C1"] | {"search_web", "fetch_url"}
+
+
+# --- web-only arm and the public answer key ------------------------------------
+
+def test_the_team_repository_is_never_served_to_the_agent():
+    from task_a.tools import check_url, is_leak_url
+    assert is_leak_url("https://github.com/CJI0718/uos-nlp-2026-team5/blob/main/data/task_a/gold.jsonl")
+    assert is_leak_url("https://raw.githubusercontent.com/cji0718/UOS-NLP-2026-TEAM5/main/x.md")
+    assert check_url("https://github.com/CJI0718/uos-nlp-2026-team5", None)
+    assert check_url("https://github.com/HKUDS/Vibe-Trading/blob/main/README.md", None) is None
+
+
+def test_search_results_from_the_repository_are_dropped(tmp_path):
+    class Web:
+        def search(self, query, top_k=5, end_date=None, start_date=None):
+            return [{"url": "https://github.com/CJI0718/uos-nlp-2026-team5/blob/main/gold.jsonl",
+                     "title": "gold", "snippet": "refuted"},
+                    {"url": "https://www.bok.or.kr/x", "title": "기준금리", "snippet": "2.50"}]
+
+        def fetch(self, url):
+            return {"text": "본문", "fetched_url": url}
+
+    claims = tmp_path / "claims.jsonl"
+    write_jsonl(claims, [Claim(claim_id="FC902", text="t").to_dict()])
+    env = AgentEnvironment(claims_path=claims, out_path=tmp_path / "run.jsonl", arm="C2",
+                           web_provider=Web(), web_only=True, tokenizer="bigram")
+    env.start_episode("FC902")
+    obs = env.call_tool("search_web", {"query": "기준금리"})["observation"]
+    assert "bok.or.kr" in obs and "uos-nlp-2026-team5" not in obs and "저장소 결과 1건" in obs
+    blocked = env.call_tool("fetch_url", {"url": "https://github.com/CJI0718/uos-nlp-2026-team5"})
+    assert blocked["status"] == "blocked"
+    names = {t["name"] for t in env.mcp_tools()}
+    assert "search_evidence" not in names and {"search_web", "fetch_url", "read_evidence"} <= names

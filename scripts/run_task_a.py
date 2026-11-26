@@ -56,7 +56,11 @@ from task_a.score_run import load_gold, to_graded  # noqa: E402
 from task_a.scorer import abstain_rate, accuracy, coverage, macro_f1, transitions  # noqa: E402
 from task_a.web import LiveWebProvider, load_env_file  # noqa: E402
 
-ARMS = ("C0", "C1", "C2")
+ARMS = ("C0", "C1", "C2", "C2W")
+# C2W: C2 without the fixed corpus. The agent has to find its evidence on the
+# web itself (search_web / fetch_url); C1 and C2 always contain the reference
+# documents, so they measure judgement given evidence, not finding it.
+SERVER_ARM = {"C0": "C0", "C1": "C1", "C2": "C2", "C2W": "C2"}
 LEDGER = ROOT / "results/raw/task_a_budget_ledger.jsonl"
 CORPUS = ROOT / "data/raw/task_a/corpus_c1.jsonl"
 GOLD_MAP = ROOT / "data/raw/task_a/corpus_c1.gold_map.jsonl"
@@ -187,17 +191,18 @@ def _now() -> str:
 
 def make_env(args, arm: str, worker: int, web, shared_cache) -> AgentEnvironment:
     base = arm_dir(args.exp_id, arm)
+    web_arm = arm in ("C2", "C2W")
     env = AgentEnvironment(
-        claims_path=CLAIMS, out_path=base / f"server.w{worker}.run.jsonl", arm=arm,
+        claims_path=CLAIMS, out_path=base / f"server.w{worker}.run.jsonl", arm=SERVER_ARM[arm],
         model_id=f"{args.backend}:{args.model}", run_id=f"{args.exp_id}-{arm}",
-        corpus_path=CORPUS if arm != "C0" else None,
-        cache_path=base / "tool_cache.jsonl" if arm == "C2" else None,
+        corpus_path=CORPUS if arm in ("C1", "C2") else None,
+        cache_path=base / "tool_cache.jsonl" if web_arm else None,
         missions_dir=base / "missions", tokenizer=args.tokenizer,
-        web_provider=web if arm == "C2" else None,
+        web_provider=web if web_arm else None, web_only=arm == "C2W",
         max_tool_calls=args.max_tool_calls, max_external_calls=args.max_external_calls,
         code_commit=current_commit(ROOT), prompt_version=args.prompt_version,
         gate=args.gate, data_version=args.data_version)
-    if arm == "C2" and shared_cache is not None:
+    if web_arm and shared_cache is not None:
         env.backend.cache = shared_cache
     return env
 
@@ -211,9 +216,10 @@ def run_openai(args, arm: str, claim_ids: list[str], budget: Budget, tavily: Tav
                                 max_tokens=args.max_tokens, temperature=args.temperature)
     price = Price(args.price_input, args.price_output, args.price_cached)
     system = system_prompt(args.skill)
-    web = CountingWeb(LiveWebProvider(provider="tavily"), tavily) if arm == "C2" else None
+    web_arm = arm in ("C2", "C2W")
+    web = CountingWeb(LiveWebProvider(provider="tavily"), tavily) if web_arm else None
     shared_cache = (LockedCache(ToolCache(arm_dir(args.exp_id, arm) / "tool_cache.jsonl"))
-                    if arm == "C2" else None)
+                    if web_arm else None)
     local = threading.local()
     stop = threading.Event()
     records: list[dict] = []
@@ -230,9 +236,9 @@ def run_openai(args, arm: str, claim_ids: list[str], budget: Budget, tavily: Tav
     def one(cid: str) -> dict | None:
         if stop.is_set():
             return None
-        if arm == "C2" and tavily.remaining() < args.max_external_calls:
+        if web_arm and tavily.remaining() < args.max_external_calls:
             stop.set()
-            print(f"  Tavily 잔여 {tavily.remaining()}회: 새 C2 에피소드를 시작하지 않습니다.", file=sys.stderr)
+            print(f"  Tavily 잔여 {tavily.remaining()}회: 새 웹 에피소드를 시작하지 않습니다.", file=sys.stderr)
             return None
         if budget.remaining() < args.min_episode_budget:
             stop.set()
@@ -258,8 +264,8 @@ def run_openai(args, arm: str, claim_ids: list[str], budget: Budget, tavily: Tav
         searches = (web.searches - before) if web else 0
         if out is None:
             return None
-        rec = {"exp_id": args.exp_id, "backend": args.backend, "model": args.model, "arm": arm,
-               **out.to_dict(), "tavily_searches": searches, "finished_at": _now()}
+        rec = {"exp_id": args.exp_id, "backend": args.backend, "model": args.model,
+               **out.to_dict(), "arm": arm, "tavily_searches": searches, "finished_at": _now()}
         append_record(args.exp_id, arm, rec)
         ledger_append({"ts": _now(), "exp_id": args.exp_id, "backend": args.backend,
                        "model": args.model, "arm": arm, "claim_id": cid,
@@ -293,7 +299,7 @@ def claude_command(args, arm: str, claim_id: str, base: Path, cli_version: str) 
 
     server_args = [
         "run", "--project", str(ROOT), "python", str(ROOT / "scripts/mcp_stdio.py"),
-        "--arm", arm, "--run-id", f"{args.exp_id}-{arm}",
+        "--arm", SERVER_ARM[arm], "--run-id", f"{args.exp_id}-{arm}",
         "--model-id", f"claude-code-{cli_version}+{args.model}",
         "--prompt-version", args.prompt_version, "--data-version", args.data_version,
         "--gate", args.gate,
@@ -302,11 +308,13 @@ def claude_command(args, arm: str, claim_id: str, base: Path, cli_version: str) 
         "--max-tool-calls", str(args.max_tool_calls),
         "--max-external-calls", str(args.max_external_calls),
     ]
-    if arm != "C0":
+    if arm in ("C1", "C2"):
         server_args += ["--corpus", str(CORPUS)]
-    if arm == "C2":
+    if arm in ("C2", "C2W"):
         server_args += ["--live-web", "--web-provider", "tavily",
                         "--cache", str(base / "tool_cache.jsonl")]
+    if arm == "C2W":
+        server_args += ["--web-only"]
     mcp = {"mcpServers": {SERVER: {"command": "uv", "args": server_args}}}
     skill = skill_body(args.skill) if args.skill else skill_body()
     cmd = ["claude", "-p", "--model", args.model, "--output-format", "stream-json", "--verbose",
@@ -336,7 +344,7 @@ def run_claude(args, arm: str, claim_ids: list[str], budget: Budget, tavily: Tav
     def one(cid: str) -> dict | None:
         if stop.is_set():
             return None
-        if arm == "C2" and tavily.remaining() < args.max_external_calls:
+        if arm in ("C2", "C2W") and tavily.remaining() < args.max_external_calls:
             stop.set()
             return None
         if budget.remaining() < args.min_episode_budget:
@@ -545,7 +553,7 @@ def score(exp_id: str) -> dict:
         })
 
     trans = {}
-    for a, b in (("C0", "C1"), ("C1", "C2"), ("C0", "C2")):
+    for a, b in (("C0", "C1"), ("C1", "C2"), ("C0", "C2"), ("C0", "C2W"), ("C2", "C2W")):
         if a in arms_rows and b in arms_rows:
             trans[f"{a}->{b}"] = transitions(to_graded(arms_rows[a], gold), to_graded(arms_rows[b], gold))
 
@@ -664,7 +672,7 @@ def main(argv=None) -> int:
     arms = args.arms.split(",")
     if any(a not in ARMS for a in arms):
         raise SystemExit(f"arm은 {ARMS} 중에서 고릅니다.")
-    if any(a != "C0" for a in arms) and not CORPUS.exists():
+    if any(a in ("C1", "C2") for a in arms) and not CORPUS.exists():
         raise SystemExit(f"C1·C2에는 코퍼스가 필요합니다: {CORPUS} (scripts/build_corpus.py)")
 
     spent = ledger_totals(args.ledger)

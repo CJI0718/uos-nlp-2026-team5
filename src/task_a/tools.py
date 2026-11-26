@@ -272,6 +272,18 @@ def _is_non_public_host(host: str) -> bool:
             or ip.is_multicast or ip.is_unspecified)
 
 
+#: URLs that would hand the agent the answer key. The team repository is
+#: public and holds the evaluation cases with their gold labels, so a live web
+#: search can surface it; any URL containing one of these (lower-cased) is
+#: dropped from search results and refused by fetch_url.
+LEAK_URL_PATTERNS = ("cji0718/uos-nlp-2026-team5",)
+
+
+def is_leak_url(url: str | None) -> bool:
+    low = (url or "").lower()
+    return any(p in low for p in LEAK_URL_PATTERNS)
+
+
 def check_url(url: str, allowed_hosts: frozenset[str] | None) -> str | None:
     """Return a rejection reason, or None when the URL may be fetched."""
     try:
@@ -283,6 +295,8 @@ def check_url(url: str, allowed_hosts: frozenset[str] | None) -> str | None:
     host = (parts.hostname or "").lower().strip("[]")
     if not host:
         return "host 없음"
+    if is_leak_url(url):
+        return "평가 자료 저장소라서 열 수 없다"
     if _is_non_public_host(host):
         return f"사설망·로컬·예약 주소 차단: {host}"
     if allowed_hosts and not any(host == h or host.endswith("." + h) for h in allowed_hosts):
@@ -501,12 +515,17 @@ class ToolRegistry:
         except Exception as exc:  # network/provider failure is not a fact verdict
             return ToolResult(ToolStatus.SOURCE_UNAVAILABLE, f"웹 검색 실패: {exc}")
         kept, dropped = [], []
+        leaked = [h for h in hits if is_leak_url(h.get("url"))]
         for h in hits:
+            if is_leak_url(h.get("url")):
+                continue
             published = (h.get("published_date") or "")[:10]
             (dropped if cutoff and published and published > cutoff else kept).append(h)
         kept = kept[:k]
         note = (f"\n\n(근거 허용 시점 {cutoff} 이후 발행된 결과 {len(dropped)}건은 제외했다.)"
                 if dropped else "")
+        if leaked:
+            note += f"\n(평가 자료 저장소 결과 {len(leaked)}건은 제외했다.)"
         if not kept:
             return ToolResult(ToolStatus.EMPTY, "웹 검색 결과가 없다. 근거 부족을 의미하지는 않는다." + note,
                               {"query": query, "dropped_after_cutoff": [h.get("url") for h in dropped]})
@@ -526,6 +545,8 @@ class ToolRegistry:
         except Exception as exc:
             return ToolResult(ToolStatus.SOURCE_UNAVAILABLE, f"조회 실패: {exc}")
         doc = raw if isinstance(raw, dict) else {"text": raw or ""}
+        if is_leak_url(doc.get("fetched_url")):   # a redirect onto the answer key
+            return ToolResult(ToolStatus.BLOCKED, "차단: 평가 자료 저장소라서 열 수 없다")
         text = (doc.get("text") or "").strip()
         if not text:
             return ToolResult(ToolStatus.EMPTY, "본문이 비어 있다.")
