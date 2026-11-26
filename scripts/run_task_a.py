@@ -316,6 +316,12 @@ def claude_command(args, arm: str, claim_id: str, base: Path, cli_version: str) 
     return cmd, PROMPT_TEMPLATE.format(claim_id=claim_id)
 
 
+def usage_limited(final: dict) -> bool:
+    """A Claude Code result that hit the account's usage or rate limit (HTTP 429)."""
+    return (final.get("api_error_status") == 429 or final.get("api_error_type") == "rate_limit_error"
+            or final.get("api_error") == "usage_limit_reached")
+
+
 def run_claude(args, arm: str, claim_ids: list[str], budget: Budget, tavily: TavilyCounter) -> list[dict]:
     from run_comparison import parse_stream
 
@@ -364,6 +370,18 @@ def run_claude(args, arm: str, claim_ids: list[str], budget: Budget, tavily: Tav
             except RuntimeError:
                 break
         verdict = result.get("verdict")
+        if usage_limited(final):
+            # The account's usage window is exhausted: this session never ran.
+            # Keep the spend in the ledger but leave the claim unrecorded so the
+            # same command resumes it once the limit resets, and stop starting more.
+            ledger_append({"ts": _now(), "exp_id": args.exp_id, "backend": "claude", "model": args.model,
+                           "arm": arm, "claim_id": cid, "cost_usd": round(cost, 6),
+                           "tavily_searches": searches, "note": "usage_limit_not_recorded"}, args.ledger)
+            (base / "server" / f"{cid}.run.jsonl").unlink(missing_ok=True)
+            if not stop.is_set():
+                print(f"  사용 한도에 걸려 멈춥니다: {final.get('result')}", file=sys.stderr, flush=True)
+            stop.set()
+            return None
         if status == "ok" and (rc not in (0, None) or final.get("is_error")):
             status = "provider_error"
         if status == "ok" and not server_rows:
@@ -674,6 +692,11 @@ def main(argv=None) -> int:
         if not plan[arm]:
             continue
         runner(args, arm, plan[arm], budget, tavily)
+        left = [c for c in plan[arm] if c not in done_claims(args.exp_id, arm)]
+        if left:
+            print(f"{arm}에 남은 사례 {len(left)}개가 있어 다음 조건으로 넘어가지 않습니다. "
+                  f"같은 명령을 다시 실행하면 이어서 돌아요.", file=sys.stderr)
+            break
         if budget.remaining() < args.min_episode_budget:
             print("예산 상한에 가까워 남은 조건을 실행하지 않습니다.", file=sys.stderr)
             break

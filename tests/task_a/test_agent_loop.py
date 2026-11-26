@@ -222,3 +222,10 @@ def test_ledger_totals_sum_every_run(tmp_path):
     mod.ledger_append({"cost_usd": 0.1, "tavily_searches": 3}, path)
     mod.ledger_append({"cost_usd": 0.25, "tavily_searches": 0}, path)
     assert mod.ledger_totals(path) == {"cost_usd": 0.35, "tavily_searches": 3, "episodes": 2}
+
+
+def test_claude_usage_limit_is_detected():
+    mod = _runner()
+    assert mod.usage_limited({"api_error_status": 429, "api_error": "usage_limit_reached"})
+    assert mod.usage_limited({"api_error_type": "rate_limit_error"})
+    assert not mod.usage_limited({"is_error": False, "total_cost_usd": 0.05})
