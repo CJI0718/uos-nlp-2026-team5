@@ -155,6 +155,26 @@
 <tr><td>exp-012가 만든 결과물 39개 다시 검사</td><td><b>12개 차단.</b> 9개는 인용 문서에 없는 값이었어요(원문에 없는 일정 시각 09:00, 3위 점수, 다른 기관 수치 등). 3개는 맞는 값이지만 추론·암산이라 원문에 그대로 없었어요</td></tr>
 <tr><td>통과한 결과물의 값을 일부러 틀리게 바꾸기</td><td>금액·수량 208회 중 189회(91%) 차단, 일정 날짜·시각 4회 모두 차단</td></tr>
 </table>
+<p><b>실제로 돌려 확인했어요 (exp-015).</b> 결과물을 만들었던 주장 10개를 같은 조건으로 실제 웹에서 다시 돌렸어요($0.86, Tavily 84회). 판정은 9/10을 맞혔어요.</p>
+<table width="100%" border="1" bordercolor="#9aa5b5" cellspacing="0" cellpadding="4">
+<tr><th bgcolor="#e8eef9" style="width:22%">결과</th><th bgcolor="#e8eef9" style="width:22%">주장</th><th bgcolor="#e8eef9">원문과 대조한 결과</th></tr>
+<tr><td>결과물 생성 3개</td><td>FC002(.ics), FC033, FC035</td><td>모두 인용 문서에 있는 값. FC002는 WWDC 기조연설을 6월 9일 02:00 KST로 맞게 정정</td></tr>
+<tr><td>맞게 막음 3개</td><td>FC014, FC013, FC004</td><td>원문에 날짜만 있는데 09:00을 넣음(FC014), 인용 문서에 없는 점수·인상 계획(FC013, FC004)</td></tr>
+<tr><td>잘못 막음 3개</td><td>FC047, FC001, FC022</td><td>숫자 읽기 버그: "52조1천억원", 만 원 단위로 계산한 차액, 식의 "×100". 고친 뒤 실제 제출을 다시 검사하니 통과했고, 맞게 막은 3개는 그대로 막힘</td></tr>
+<tr><td>추적 등록 1개</td><td>FC016</td><td>근거 부족으로 판정(유일한 오답)</td></tr>
+</table>
+
+<h3 style="font-family: 'Noto Sans CJK KR', sans-serif;">평가데이터 밖의 최근 주장 (exp-016)</h3>
+<p>최근 기사로 주장 5개를 새로 만들어 같은 조건으로 돌렸어요(3개는 맞게, 2개는 날짜·시각을 틀리게 씀, $0.22). 에이전트는 5개를 모두 맞혔어요.</p>
+<table width="100%" border="1" bordercolor="#9aa5b5" cellspacing="0" cellpadding="4">
+<tr><th bgcolor="#e8eef9" style="width:36%">주장</th><th bgcolor="#e8eef9" style="width:16%">판정</th><th bgcolor="#e8eef9">근거와 결과물</th></tr>
+<tr><td>GTA6 한국 가격 89,800원, 얼티밋보다 2만 3천 원 쌈</td><td>지지</td><td>국내 기사 2건. <code>.md</code> 생성, 값 모두 원문과 일치</td></tr>
+<tr><td>GTA6 사전 다운로드 11월 12일부터</td><td><b>반박</b></td><td>PlayStation 공식 블로그·전자신문: "11월 10일부터". <b>작업자가 맞는 주장으로 잘못 썼는데 에이전트가 바로잡음</b></td></tr>
+<tr><td>ExileCon 키노트 한국시간 11월 7일 오전 5시</td><td>반박</td><td>원문 "1PM PST"를 계산기로 변환해 06:00으로 정정, <code>.ics</code> 생성</td></tr>
+<tr><td>AWS re:Invent 2026 12월 1~5일</td><td>반박</td><td>AWS 공식 페이지: 11월 30일~12월 4일. 날짜 일정이라 일정 파일은 막힘</td></tr>
+<tr><td>GTA6 미국 가격 79.99·99.99달러</td><td>지지</td><td>기사·블로그 2건. <code>.md</code> 생성, 값 모두 원문과 일치</td></tr>
+</table>
+<p>5개뿐이고 주장과 예상 정답을 작업자 한 명이 만들었어요. 3개가 같은 게임이고, ExileCon은 2차 자료로 판정했어요.</p>
 
 <h2 style="font-family: 'Noto Sans CJK KR', sans-serif;">6. 결론</h2>
 <table width="100%" border="1" bordercolor="#0b3d91" cellspacing="0" cellpadding="8"><tr><td bgcolor="#f3f6fc">
@@ -171,7 +191,7 @@
 <li><b>실행 횟수:</b> 조건마다 한 번씩 돌렸어요. temperature 0이어도 결과가 조금씩 달라요(v3 재실행에서 4개 맞힘, 2개 틀림). 1~2개 차이는 잡음으로 봐야 해요. 하네스 유무의 9개 차이는 이보다 커요.</li>
 <li><b>개발·평가 분리:</b> 모든 Action Item을 같은 50개의 오답에서 찾았어요. 따로 떼어 둔 개발용 데이터가 없어서, 개선이 이 50개에 맞춰졌을 수 있어요. 규칙은 일반 규칙과 가상 예시로만 썼어요.</li>
 <li><b>게이트는 형식만 봐요:</b> 인용문이 본문에 있는지, 보도 표현이 있는지만 검사하고 그 문장이 판정을 뒷받침하는지는 판단하지 않아요. FC010은 "a new report … set to debut"라는 인용으로 지지가 접수됐어요. 표현 목록에 "report"와 "set to"가 없었기 때문이에요. 평가데이터에 맞추는 일이 되므로 고치지 않았어요. 주장 유형도 문구("~할 것이다")로만 분류해요.</li>
-<li><b>결과물 값 대조는 값을 대상과 묶지 않아요:</b> 문서 어딘가에 같은 값이 있으면 통과해요. FC001의 교육가를 85만에서 86만으로 바꿔도, 같은 기사에 "환산하면 약 86만 원"이 있어 통과했어요. 연도와 작은 수는 더 자주 놓쳐요(192회 중 107회 차단). 숫자 앞의 설명어를 원문과 비교하는 방식도 시험했지만, 정상 결과물 9개를 더 막고 금액 탐지율은 91%에서 92%로 거의 같아 넣지 않았어요. 다음 개선안은 에이전트가 값마다 근거 문장을 붙여 내게 하는 방식이에요. 제출 형식이 바뀌어 50개를 다시 실행해야 해서 이번에는 하지 않았어요. 새 규칙으로 다시 돌린 실험도 없어요.</li>
+<li><b>결과물 값 대조는 값을 대상과 묶지 않아요:</b> 문서 어딘가에 같은 값이 있으면 통과해요. FC001의 교육가를 85만에서 86만으로 바꿔도, 같은 기사에 "환산하면 약 86만 원"이 있어 통과했어요. 연도와 작은 수는 더 자주 놓쳐요(192회 중 107회 차단). 숫자 앞의 설명어를 원문과 비교하는 방식도 시험했지만, 정상 결과물 9개를 더 막고 금액 탐지율은 91%에서 92%로 거의 같아 넣지 않았어요. 다음 개선안은 에이전트가 값마다 근거 문장을 붙여 내게 하는 방식이에요. 제출 형식이 바뀌어 50개를 다시 실행해야 해서 이번에는 하지 않았어요. 실제 실행은 10개(exp-015)만 했고, 그때 찾은 버그 3개를 고친 뒤에는 다시 돌리지 않았어요.</li>
 <li><b>장치별 분리:</b> Skill은 따로 뺐지만, 도구(find_in_page, 계산기)와 게이트는 따로 떼어 보지 않았어요.</li>
 <li><b>웹 근거의 시점:</b> 웹 페이지는 지금 내용을 가져와요. 발행일 없는 페이지(GitHub 파일 등)는 기준 시점 필터를 통과해, 시점 이후 바뀐 내용이 근거가 될 수 있어요. 반대로 시점 이후 지워진 근거는 웹에서 찾을 수 없어요.</li>
 <li><b>근거 동반 정답(자동)</b>은 참조 근거와의 URL 겹침으로 계산한 근사치이고, 사람 채점은 하지 않았어요.</li>
@@ -190,13 +210,15 @@
 <tr><td>exp-012 하네스 v3 (재실행 포함)</td><td class="n" align="right" nowrap>51</td><td class="n" align="right" nowrap>$3.26</td><td class="n" align="right" nowrap>419</td></tr>
 <tr><td>exp-013 하네스 없음, 한도 25</td><td class="n" align="right" nowrap>50</td><td class="n" align="right" nowrap>$1.51</td><td class="n" align="right" nowrap>321</td></tr>
 <tr><td>exp-014 하네스 v3, Skill 없음</td><td class="n" align="right" nowrap>50</td><td class="n" align="right" nowrap>$1.38</td><td class="n" align="right" nowrap>224</td></tr>
-<tr><td><b>DeepSeek 합계</b></td><td class="n" align="right" nowrap><b>677</b></td><td class="n" align="right" nowrap><b>$15.51</b></td><td class="n" align="right" nowrap><b>1,860</b></td></tr>
+<tr><td>exp-015 결과물 값 대조 실제 확인</td><td class="n" align="right" nowrap>10</td><td class="n" align="right" nowrap>$0.86</td><td class="n" align="right" nowrap>84</td></tr>
+<tr><td>exp-016 평가데이터 밖 최근 주장</td><td class="n" align="right" nowrap>5</td><td class="n" align="right" nowrap>$0.22</td><td class="n" align="right" nowrap>30</td></tr>
+<tr><td><b>DeepSeek 합계</b></td><td class="n" align="right" nowrap><b>692</b></td><td class="n" align="right" nowrap><b>$16.59</b></td><td class="n" align="right" nowrap><b>1,974</b></td></tr>
 <tr><td>Claude Haiku·Sonnet 5.5 (exp-007)</td><td class="n" align="right" nowrap>298</td><td class="n" align="right" nowrap>$13.32 (Claude Code 정가 기준)</td><td class="n" align="right" nowrap>17</td></tr>
 </table>
 <ul>
 <li>장부의 모델 비용은 Mistral 가격표(입력 $0.3, 출력 $1.2 / 100만 토큰)로 계산했고 캐시 할인을 넣지 않았어요. exp-005~006 구간에서 Mistral 콘솔의 실제 사용액은 $0.92로, 장부보다 약 4배 적었어요.</li>
 <li>Claude 비용은 구독 계정이라 실제 청구가 아니라 사용 한도에서 빠졌어요.</li>
-<li>Tavily 검색 수는 서버 기록의 검색 호출 수예요. 장부 기준 모든 실행 합계는 1,913회예요(실패·보관 기록 포함).</li>
+<li>Tavily 검색 수는 서버 기록의 검색 호출 수예요. 장부 기준 모든 실행 합계는 2,036회예요(실패·보관 기록 포함).</li>
 </ul>
 
 <h2 style="font-family: 'Noto Sans CJK KR', sans-serif;">부록. 재현 명령</h2>

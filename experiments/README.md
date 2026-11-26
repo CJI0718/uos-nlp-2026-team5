@@ -52,6 +52,7 @@ uv run python scripts/run_task_a.py ledger
 | 옵션 | 기본값 | 뜻 |
 | --- | --- | --- |
 | `--claims` | `all` | `FC001,FC002`처럼 일부만 |
+| `--claims-file` | 평가데이터 | 다른 주장 파일(`claims.jsonl` 형식)로 실행. 정답이 없어 `score`는 쓰지 않아요 |
 | `--harness-v3` | 꺼짐 | 문서 안 찾기(`find_in_page`), 같은 검색·열기 재사용, 인용문 대조·예측 주장 게이트, 결과물 값 대조(수치·일시가 인용 문서나 그 값으로 한 계산에 있어야 결과물 생성). C2P에는 적용 안 됨 |
 | `--block-self-citation` | 꺼짐 | 주장이 나온 글을 근거로 인용 금지(읽기는 허용). C2P에는 적용 안 됨 |
 | `--no-skill` | 꺼짐 | Skill 대신 C2P와 같은 최소 안내만(도구·게이트 유지). openai 방식만 |
@@ -83,6 +84,8 @@ uv run python scripts/run_task_a.py ledger
 | 하네스 v3 (exp-012) | `--exp-id exp-012-harness-v3 --arms C2W --max-external-calls 25 --max-tool-calls 32 --max-turns 40 --block-self-citation --harness-v3` |
 | 하네스 없음, 한도 25 (exp-013) | `--exp-id exp-013-plainweb-b25 --arms C2P --max-external-calls 25 --max-tool-calls 32 --max-turns 40` |
 | Skill 없음 (exp-014) | `--exp-id exp-014-v3-no-skill --arms C2W --max-external-calls 25 --max-tool-calls 32 --max-turns 40 --block-self-citation --harness-v3 --no-skill` |
+| 평가데이터 밖 최근 주장 (exp-016) | `--exp-id exp-016-recent-claims --arms C2W --claims-file experiments/recent_claims_2026-11-27.jsonl --max-external-calls 25 --max-tool-calls 32 --max-turns 40 --block-self-citation --harness-v3` |
+| 결과물 값 대조 실제 확인 (exp-015) | `--exp-id exp-015-value-check --arms C2W --claims FC001,FC002,FC016,FC022,FC047,FC004,FC013,FC014,FC033,FC035 --max-external-calls 25 --max-tool-calls 32 --max-turns 40 --block-self-citation --harness-v3` |
 
 `--prompt-version`과 코드 커밋은 서버 기록(`results/raw/<exp-id>/`)의 `config`에 남아요. 누적 상한(`--max-cost-usd`, `--tavily-cap`)은 실행 당시 장부에 맞춰 정한 값이라 위 표에서 뺐어요.
 

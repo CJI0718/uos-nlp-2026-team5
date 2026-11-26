@@ -60,9 +60,11 @@ def _number(text: str, raw: float, step: float, scaled: float | None = None,
 
 
 def prepare(text: str) -> str:
-    """The text numbers are read from: links and claim ids blanked, '4천405억' joined."""
+    """The text numbers are read from: links and claim ids blanked, Korean
+    thousands written out ('4천405억' → '4405억', '1천억' → '1000억')."""
     text = _CLAIM_ID.sub(" ", _URL.sub(" ", text or ""))
-    return re.sub(r"(?<![\d.,])(\d)\s?천\s?(\d{3})(?=\s?(?:조|억|만|원|명|개|건|달러))", r"\1\2", text)
+    text = re.sub(r"(?<![\d.,])(\d)\s?천\s?(\d{3})(?=\s?(?:조|억|만|원|명|개|건|달러))", r"\1\2", text)
+    return re.sub(r"(?<![\d.,])(\d)\s?천\s?(?=억|조)", r"\g<1>000", text)
 
 
 def numbers(text: str) -> list[Number]:
@@ -137,9 +139,24 @@ def grounded_calculations(calls: list[dict], sources: list[str]) -> list[dict]:
         pool = Pool(pool_values)
         inputs = [v for k, v in args.items() if isinstance(v, (int, float, str)) and k not in ("from_unit", "to_unit")]
         if all(_number_grounded(v, pool) for v in inputs):
-            out.append(res.payload)
-            pool_values += _payload_values(res.payload)
+            payload = dict(res.payload)
+            # Inputs written in one unit ('99 - 85' for 99만, 85만) give a difference
+            # in that unit: 14 is also 14만.
+            payload["scaled"] = [res.payload[key] * k for k in _common_scales(inputs, pool)
+                                 for key in ("value", "absolute_change")
+                                 if res.payload.get("op") in ("diff", "pct_change")
+                                 and isinstance(res.payload.get(key), (int, float))]
+            out.append(payload)
+            pool_values += _payload_values(payload)
     return out
+
+
+def _common_scales(inputs: list, pool: Pool) -> list[float]:
+    try:
+        xs = [float(v) for v in inputs]
+    except (TypeError, ValueError):
+        return []
+    return [k for k in _SCALES[1:] if all(pool.near(x * k, 0.0) for x in xs)]
 
 
 def _number_grounded(value, pool: Pool) -> bool:
@@ -158,6 +175,7 @@ def _payload_values(payload: dict) -> list[float]:
         v = payload.get(key)
         if isinstance(v, (int, float)):
             out.append(float(v))
+    out += [float(v) for v in payload.get("scaled", [])]
     if isinstance(payload.get("value"), str):
         out += [v for n in numbers(payload["value"]) for v in n.values]
     return out
@@ -170,6 +188,8 @@ def ungrounded_numbers(text: str, sources: list[str], calcs: list[dict],
     for payload in calcs:
         values += _payload_values(payload)
     pool = Pool(values)
+    # '×100' turning a ratio into a percentage is part of a formula, not a value.
+    text = re.sub(r"[×*]\s*100(?![\d,.])", " ", text or "")
     return [n.text for n in numbers(text)
             if not (len(n.values) == 1 and n.check[0] < 10 and n.check[0] == int(n.check[0]))
             and not pool.has(n) and not _scaled_decimal(n, pool)]

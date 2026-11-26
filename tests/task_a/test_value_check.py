@@ -26,7 +26,7 @@ def _check(summary, *, sources=(PRICE_DOC,), calls=(), mission="news_to_artifact
 
 @pytest.mark.parametrize("text,value", [
     ("35만9000원", 359_000), ("107조4천405억원", 107_440_500_000_000), ("195조 2,532억원", 195_253_200_000_000),
-    ("23만 8300명", 238_300), ("2,600만 개", 26_000_000), ("26 million", 26_000_000), ("1 200 TWh", 1200),
+    ("23만 8300명", 238_300), ("52조1천억원", 52_100_000_000_000), ("8천억원", 800_000_000_000), ("2,600만 개", 26_000_000), ("26 million", 26_000_000), ("1 200 TWh", 1200),
 ])
 def test_numbers_read_korean_and_english_units(text, value):
     assert any(abs(v - value) < 1e-6 for n in numbers(text) for v in n.values)
@@ -51,6 +51,18 @@ def test_calculations_count_only_when_their_inputs_were_read():
     # A wrong input cannot launder a wrong output through the calculator.
     bad = [{"op": "diff", "a": 1990000, "b": 850000}]
     assert "1,140,000" in _check("차액 1,140,000원.", calls=bad)
+
+
+def test_a_difference_worked_out_in_the_source_unit():
+    # '99 - 85' for 99만원 and 85만원 is 14, written as 14만.
+    calls = [{"op": "diff", "a": 99, "b": 85}]
+    assert _check("차액은 99-85=14만원.", calls=calls) is None
+    assert "15만" in _check("차액은 15만원.", calls=calls)
+
+
+def test_a_percentage_formula_constant_is_not_a_value():
+    calls = [{"op": "pct_change", "old": 990000, "new": 850000}]
+    assert _check("(850,000-990,000)/990,000×100 = -14.14%", calls=calls) is None
 
 
 def test_a_refuted_claim_may_be_restated():

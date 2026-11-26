@@ -650,6 +650,8 @@ def parse_args(argv=None):
                    help="USD / 1M 캐시 입력 토큰. 기본은 입력 가격(보수적)")
     p.add_argument("--arms", default="C0,C1,C2")
     p.add_argument("--claims", default="all", help="all 또는 쉼표 구분 claim_id")
+    p.add_argument("--claims-file", type=Path, default=None,
+                   help="평가데이터 대신 쓸 주장 파일(claims.jsonl 형식). 정답이 없으니 score는 쓰지 않는다")
     p.add_argument("--limit", type=int, default=None, help="앞에서 N개만")
     p.add_argument("--max-cost-usd", type=float, default=5.0, help="이 장부에 기록된 모든 실행을 합친 모델 비용 상한")
     p.add_argument("--ledger", type=Path, default=LEDGER,
@@ -694,6 +696,9 @@ def main(argv=None) -> int:
         print(render_md(summary))
         return 0
 
+    if args.claims_file is not None:
+        global CLAIMS
+        CLAIMS = args.claims_file.resolve()
     load_env_file(ROOT / ".env", keys=("TAVILY_API_KEY", args.api_key_env))
     claims_all = [c["claim_id"] for c in read_jsonl(CLAIMS)]
     claim_ids = claims_all if args.claims == "all" else args.claims.split(",")

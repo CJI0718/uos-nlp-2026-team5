@@ -19,6 +19,8 @@
 | [exp-012-harness-v3](exp-012-harness-v3/summary.md) | 2026-11-26 | exp-011 조건 + 하네스 v3(인용문 대조, find_in_page, 재사용): 50건(FC026은 HTTP 502로 재실행) |
 | [exp-013-plainweb-b25](exp-013-plainweb-b25/summary.md) | 2026-11-26 | 하네스 없는 웹 에이전트(C2P), 외부 호출 한도 25: exp-012와 예산을 맞춘 비교, 50건 |
 | [exp-014-v3-no-skill](exp-014-v3-no-skill/summary.md) | 2026-11-26 | 하네스 v3에서 Skill만 뺀 ablation(도구·게이트 유지), 50건 |
+| [exp-016-recent-claims](exp-016-recent-claims/summary.md) | 2026-11-27 | 평가데이터 밖의 최근 주장 5건(작업자가 작성, 정답 파일 없음) |
+| [exp-015-value-check](exp-015-value-check/summary.md) | 2026-11-27 | 결과물 값 대조 실제 확인, 결과물을 만들었던 10건(하네스 v3, 웹만, 한도 25) |
 
 exp-005~006의 분석과 해석은 [docs/research/fact_checking/final-20261125/](../docs/research/fact_checking/final-20261125/README.md)에 있습니다.
 
