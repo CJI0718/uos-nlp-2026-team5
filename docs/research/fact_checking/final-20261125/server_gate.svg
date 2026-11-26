@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1560" viewBox="0 0 1200 1560" font-family="Noto Sans CJK KR, Noto Sans KR, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1680" viewBox="0 0 1200 1680" font-family="Noto Sans CJK KR, Noto Sans KR, sans-serif">
   <defs>
     <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <path d="M0,0 L10,5 L0,10 z" fill="#374151"/>
@@ -10,11 +10,11 @@
       <path d="M0,0 L10,5 L0,10 z" fill="#067647"/>
     </marker>
   </defs>
-  <rect width="1200" height="1560" fill="#ffffff"/>
+  <rect width="1200" height="1680" fill="#ffffff"/>
 
   <!-- Title -->
   <text x="40" y="52" font-size="30" font-weight="700" fill="#0b3d91">하네스 서버 게이트의 구조</text>
-  <text x="40" y="84" font-size="16" fill="#57606a">src/task_a/mcp_server.py · tools.py · claim_gate.py · missions.py — 검사가 실행되는 순서대로</text>
+  <text x="40" y="84" font-size="16" fill="#57606a">src/task_a/mcp_server.py · tools.py · claim_gate.py · missions.py · value_check.py — 검사가 실행되는 순서대로</text>
 
   <!-- Agent box -->
   <rect x="40" y="110" width="300" height="96" rx="12" fill="#eef2ff" stroke="#4338ca" stroke-width="2"/>
@@ -109,11 +109,11 @@
     <rect x="60" y="1062" width="700" height="72" rx="8" fill="#ecfdf3" stroke="#6ce9a6"/>
     <text x="76" y="1086" font-weight="700" fill="#0f172a">5. 인용문 대조 (evidence_quote) <tspan font-size="12" fill="#067647">[v3]</tspan></text>
     <text x="76" y="1108" font-size="13.5" fill="#334155">없음 · 400자 초과 → 거절. 인용한 문서 중 "읽은" 문서 본문에 글자 그대로 없으면 거절</text>
-    <text x="76" y="1126" font-size="13.5" fill="#334155">(공백·따옴표 무시, '…'로 생략 가능, 조각마다 8자 이상)</text>
+    <text x="76" y="1126" font-size="13.5" fill="#334155">(공백·따옴표·순서 무시, '…'로 생략 가능, 짧은 조각까지 모두 대조, 숫자 중간을 자른 인용 불가)</text>
 
     <!-- 6 -->
     <rect x="60" y="1144" width="700" height="72" rx="8" fill="#ecfdf3" stroke="#6ce9a6"/>
-    <text x="76" y="1168" font-weight="700" fill="#0f172a">6. 예측 주장의 인용문에 보도·추측 표현? <tspan font-size="12" fill="#067647">[v3]</tspan></text>
+    <text x="76" y="1168" font-weight="700" fill="#0f172a">6. 예측 주장의 인용문(생략한 부분 포함)에 보도·추측 표현? <tspan font-size="12" fill="#067647">[v3]</tspan></text>
     <text x="76" y="1190" font-size="13.5" fill="#334155">"전해졌", "알려졌", "전망", "예상", "확률", reportedly, expected, likely … → 거절</text>
     <text x="76" y="1208" font-size="13.5" fill="#334155">("공식 확정 발표를 인용하거나 근거 부족으로 내세요")</text>
   </g>
@@ -165,7 +165,7 @@
   <path d="M760 1196 L828 1150" stroke="#067647" stroke-width="2.2" fill="none" marker-end="url(#g)"/>
 
   <!-- ============ Stage 3: mission gate ============ -->
-  <rect x="40" y="1272" width="1120" height="200" rx="14" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+  <rect x="40" y="1272" width="1120" height="318" rx="14" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
   <text x="60" y="1306" font-size="21" font-weight="700" fill="#0f172a">③ 미션 단계 — mission_type을 요청했을 때만 (validate_mission_gate)</text>
   <text x="60" y="1330" font-size="14" fill="#475569">판정은 이미 기록됨. 막히면 미션만 실행하지 않고 차단 사유를 기록</text>
   <g font-size="14" fill="#334155">
@@ -178,19 +178,26 @@
     <rect x="420" y="1346" width="720" height="106" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
     <text x="436" y="1372">• 근거 부족이거나 판정 보류(abstain)면 차단</text>
     <text x="436" y="1396">• 인용이 하나 이상 있어야 하고, 모두 이번 에피소드에서 읽은 문서여야 함</text>
-    <text x="436" y="1420">• 반박이면 정정문 필수 (일정은 정정문에 같은 HH:MM)</text>
+    <text x="436" y="1420">• 반박이면 정정문 필수 (일정은 정정문에 같은 HH:MM, v3는 날짜까지)</text>
     <text x="436" y="1444" fill="#6941c6">• [--gate provenance] 1차 출처가 있거나 서로 다른 출처군 2개 이상</text>
+
+    <rect x="60" y="1466" width="1080" height="106" rx="8" fill="#ecfdf3" stroke="#6ce9a6"/>
+    <text x="76" y="1492" font-weight="700" fill="#0f172a" font-size="15">결과물 값 대조 (실행형 미션) <tspan font-size="12" fill="#067647">[v3]</tspan></text>
+    <text x="76" y="1516">• 결과물에 쓴 수치는 인용한 읽은 문서(본문·제목·날짜)에 있거나, 입력값이 모두 그 문서에 있는 계산기 결과여야 함</text>
+    <text x="76" y="1540">• 일정은 KST 날짜·시각이 문서에 있거나, 문서의 시각을 KST로 변환한 계산 결과여야 함 · 반박이면 정정문에 같은 날짜·시각</text>
+    <text x="76" y="1562" fill="#64748b">값은 크기로 대조(99만 원 = 990,000원, 26 million = 2,600만). 한 자리 정수는 검사하지 않음. 막혀도 판정은 기록됨</text>
   </g>
   <path d="M985 1216 L985 1270" stroke="#067647" stroke-width="2.2" fill="none" marker-end="url(#g)"/>
 
   <!-- legend -->
   <g font-size="13.5">
-    <rect x="40" y="1494" width="18" height="18" fill="#ffffff" stroke="#cbd5e1"/>
-    <text x="66" y="1508" fill="#334155">기본 하네스 (항상)</text>
-    <rect x="230" y="1494" width="18" height="18" fill="#ecfdf3" stroke="#6ce9a6"/>
-    <text x="256" y="1508" fill="#334155">하네스 v3 (--harness-v3)</text>
-    <text x="470" y="1508" fill="#6941c6">[옵션] 실행 옵션으로 켜는 검사</text>
-    <text x="720" y="1508" fill="#334155">─ ─ 빨간 점선: 거절되어 에이전트로 돌아감</text>
+    <rect x="40" y="1614" width="18" height="18" fill="#ffffff" stroke="#cbd5e1"/>
+    <text x="66" y="1628" fill="#334155">기본 하네스 (항상)</text>
+    <rect x="230" y="1614" width="18" height="18" fill="#ecfdf3" stroke="#6ce9a6"/>
+    <text x="256" y="1628" fill="#334155">하네스 v3 (--harness-v3)</text>
+    <text x="470" y="1628" fill="#6941c6">[옵션] 실행 옵션으로 켜는 검사</text>
+    <text x="720" y="1628" fill="#334155">─ ─ 빨간 점선: 거절되어 에이전트로 돌아감</text>
   </g>
-  <text x="40" y="1540" font-size="12.5" fill="#94a3b8">게이트는 형식(근거 문장이 본문에 있는가, 보도 표현이 있는가)만 검사하고, 그 문장이 판정을 실제로 뒷받침하는지는 판단하지 않음.</text>
+  <text x="40" y="1656" font-size="12.5" fill="#94a3b8">게이트는 형식(근거 문장이 본문에 있는가, 보도 표현이 있는가)만 검사하고, 그 문장이 판정을 실제로 뒷받침하는지는 판단하지 않음.</text>
+  <text x="40" y="1674" font-size="12.5" fill="#94a3b8">결과물 값 대조는 값이 문서에 있는지만 보고, 그 값이 무엇의 값인지(대상·구성)는 묶지 않음.</text>
 </svg>

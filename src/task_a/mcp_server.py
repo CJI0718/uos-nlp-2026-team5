@@ -49,6 +49,7 @@ from task_a.provenance import containment, group_documents, is_derivative, shing
 from task_a.provenance import THRESHOLD as PROVENANCE_THRESHOLD
 from task_a.toollog import CachingBackend, RunConfig, RunLog, ToolCache
 from task_a.claim_gate import CLAIM_KINDS, MAX_QUOTE_CHARS, check_verdict
+from task_a.value_check import check_action_values
 from task_a.tools import same_page, FINISH_SCHEMA, FINISH_TOOL, ToolRegistry
 
 
@@ -535,11 +536,31 @@ class AgentEnvironment:
             enforce_gate=self.gate != "off",
             evidence_meta=self._evidence_meta(ep, cited),
             require_independent=self.gate == "provenance",
+            value_check=(lambda: self._check_values(ep, args, verdict, cited)) if self.harness_v3 else None,
         )
         out = {"status": res.status.value, "observation": res.observation}
         if res.status == ToolStatus.OK:
             out.update(res.payload)
         return out
+
+    def _check_values(self, ep: ActiveEpisode, args: dict, verdict: Verdict,
+                      cited: list[str]) -> str | None:
+        """Harness v3: the artifact's numbers and event time must come from the
+        cited documents read in this episode or from calculations on them."""
+        sources = []
+        for evidence_id in cited:
+            if evidence_id in ep.read_texts:
+                doc = self.registry.fetched.get(evidence_id) or {}
+                sources.append("\n".join(str(x) for x in (doc.get("title"), doc.get("published_at"),
+                                                            ep.read_texts[evidence_id]) if x))
+        calls = [{"op": e.args.get("op"), **{k: v for k, v in e.args.items() if k != "op"}}
+                 for e in ep.events if e.tool == "calculate_comparison" and e.status == ToolStatus.OK]
+        return check_action_values(
+            mission_type=str(args.get("mission_type")), verdict=verdict.value,
+            title=str(args.get("mission_title") or ""),
+            summary=str(args.get("mission_summary") or args.get("justification") or ""),
+            correction=args.get("correction"), event_start_kst=args.get("event_start_kst"),
+            claim=ep.claim.text, sources=sources, calls=calls)
 
     def _unit(self, evidence_id: str):
         return self.backend.lookup(evidence_id) if hasattr(self.backend, "lookup") else None

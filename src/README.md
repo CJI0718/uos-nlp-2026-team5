@@ -8,6 +8,7 @@ task_a/
   mcp_server.py   AgentEnvironment(에피소드, 조건별 도구 목록, 예산, 제출 검사, 실행 기록) + MCP stdio 서버
   tools.py        도구: 자료집 검색·열람, find_in_page, 계산기(diff/pct_change/tz_convert 등), 웹 검색·열기, 차단 규칙
   claim_gate.py   하네스 v3 제출 검사: 인용문 대조, 주장 유형(사실·예측·발언), 예측 주장 규칙
+  value_check.py  하네스 v3 결과물 값 대조: 미션 결과물의 수치·일시가 인용 문서나 그 값으로 한 계산에 있는지
   agent_loop.py   OpenAI 호환 API용 실행 루프(하네스 조건)와 하네스 없는 비교 에이전트(C2P)
   skill.py        Skill 본문 읽기
   missions.py     검증 게이트와 후속 미션(.ics, .md, 추적 등록)
@@ -44,5 +45,5 @@ uv run python scripts/mcp_stdio.py --arm C2 --live-web --web-only --allow-user-c
 - **조건 강제**: C1·C2는 코퍼스가 없으면 시작하지 않습니다. 아직 구현되지 않은 `condition`(missing/conflict/misleading)도 거부합니다.
 - **실행 환경과 채점기의 분리**: `score_run.py`만 `gold.jsonl`을 읽어 채점합니다.
 - **검증 게이팅**: 미션은 `finish_verification` 안에서만 실행되고, 제출된 최종 판정으로 게이트를 적용합니다. 미확인·보류 판정이면 차단하고, 이번 에피소드에서 읽은 근거를 인용해야 하며, 반박이면 정정값이 필요합니다. 규칙은 [missions/README.md](../missions/README.md)에 있습니다.
-- **제출 검사(하네스 v3, `--harness-v3`)**: 지지·반박 판정은 인용 문서 문장을 그대로 옮긴 `evidence_quote`가 읽은 본문과 맞아야 접수해요. 예측 주장은 보도·전망·확률 표현이 든 인용으로 판정할 수 없어요. 거절하면 사유를 돌려주고 에피소드는 계속돼요(`claim_gate.py`).
+- **제출 검사(하네스 v3, `--harness-v3`)**: 지지·반박 판정은 인용 문서 문장을 그대로 옮긴 `evidence_quote`가 읽은 본문과 맞아야 접수해요. 예측 주장은 보도·전망·확률 표현이 든 인용으로 판정할 수 없어요. 거절하면 사유를 돌려주고 에피소드는 계속돼요(`claim_gate.py`). 실행형 미션은 결과물에 쓴 수치·일시가 인용한 읽은 문서나 그 값으로 한 계산기 결과에 있어야 만들어져요. 없으면 결과물만 막고 판정은 기록해요(`value_check.py`).
 - **결정론적 계산**: `calculate_comparison`은 whitelisted 연산(`diff`, `pct_change`, `percentage_point_gap`, `tz_convert`, `scale_unit`, `multiply`, `ratio`)만 허용하며 임의 수식 평가(`eval`)를 쓰지 않습니다.

@@ -62,22 +62,48 @@ def effective_kind(text: str, declared: str | None) -> str:
 
 
 def _norm(text: str) -> str:
+    """Case, width and quote marks folded; whitespace runs become one space."""
     text = unicodedata.normalize("NFKC", text or "").lower()
     text = re.sub(r"[\"'“”‘’`«»「」『』]", "", text)
-    return re.sub(r"\s+", "", text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _fragment_pattern(fragment: str) -> re.Pattern:
+    """Spacing may differ between quote and source; digits may not be cut.
+
+    '99만 원' does not match inside '199만 원', '999' not inside '1,999' or '9.999',
+    and '1,99' not as the start of '1,999'.
+    """
+    chars = fragment.replace(" ", "")
+    body = r"\s?".join(re.escape(c) for c in chars)
+    left = r"(?<!\d)(?<!\d[.,])" if chars[0].isdigit() else ""
+    right = r"(?!\d|[.,]\d)" if chars[-1].isdigit() else ""
+    return re.compile(left + body + right)
+
+
+def quote_span(quote: str, texts: list[str]) -> str | None:
+    """The source passage the quote was taken from, or None.
+
+    Every fragment of the quote (split at '…' or '...'), short ones included,
+    must appear in one text. Order is not required: quoting a table row after
+    the sentence below it is still quoting. The passage runs from the earliest
+    fragment to the latest, so it includes what the quote left out.
+    """
+    fragments = [_norm(s) for s in re.split(r"…|\.\.\.", quote or "")]
+    fragments = [s for s in fragments if s]
+    if not any(len(s.replace(" ", "")) >= MIN_SEGMENT_CHARS for s in fragments):
+        return None
+    patterns = [_fragment_pattern(s) for s in fragments]
+    for text in texts:
+        body = _norm(text)
+        matches = [pattern.search(body) for pattern in patterns]
+        if all(matches):
+            return body[min(m.start() for m in matches):max(m.end() for m in matches)]
+    return None
 
 
 def quote_found(quote: str, texts: list[str]) -> bool:
-    """Every segment of the quote (split at '…' or '...') appears in one text."""
-    segments = [_norm(s) for s in re.split(r"…|\.\.\.", quote or "")]
-    segments = [s for s in segments if s]
-    if not segments or all(len(s) < MIN_SEGMENT_CHARS for s in segments):
-        return False
-    for text in texts:
-        body = _norm(text)
-        if all(s in body for s in segments if len(s) >= MIN_SEGMENT_CHARS):
-            return True
-    return False
+    return quote_span(quote, texts) is not None
 
 
 def hedges_in(quote: str) -> list[str]:
@@ -101,11 +127,13 @@ def check_verdict(*, claim_text: str, verdict: str, declared_kind: str | None,
                       "뒷받침하는 문장을 그대로 옮겨 적으세요(최대 400자, 생략은 '…').")
     if len(quote) > MAX_QUOTE_CHARS:
         return kind, f"evidence_quote는 {MAX_QUOTE_CHARS}자 이하로 줄이세요(받은 길이 {len(quote)}자)."
-    if not quote_found(quote, cited_texts):
+    passage = quote_span(quote, cited_texts)
+    if passage is None:
         return kind, ("evidence_quote가 cited_evidence_ids의 문서 본문에 없습니다. 이번 에피소드에서 읽은 "
                       "인용 문서의 문장을 고치지 말고 그대로 옮기세요. 본문을 읽지 않은 문서는 인용할 수 없습니다.")
     if kind == "forecast":
-        found = hedges_in(quote)
+        # The whole passage, so leaving 'reportedly' out of the quote does not help.
+        found = hedges_in(passage)
         if found:
             return kind, ("이 주장은 미래 일에 관한 예측입니다. 인용문이 보도·전망·확률을 전하는 표현"
                           f"({', '.join(found[:3])})을 담고 있어 확정된 사실의 근거가 되지 못합니다. "

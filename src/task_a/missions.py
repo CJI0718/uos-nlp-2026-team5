@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -235,9 +236,14 @@ class MissionExecutor:
         enforce_gate: bool = True,
         evidence_meta: dict[str, dict] | None = None,
         require_independent: bool = False,
+        value_check: Callable[[], str | None] | None = None,
     ) -> ToolResult:
         """Run a mission. `enforce_gate=False` exists only for the ungated
-        baseline conditions of action-safety experiments."""
+        baseline conditions of action-safety experiments.
+
+        `value_check` runs after the gate passes, for an actionable mission
+        only, and blocks it when it returns a reason (harness v3 checks the
+        artifact's numbers and event time against the read documents)."""
         if enforce_gate:
             gate_error = validate_mission_gate(
                 mission_type, verdict, abstain=abstain, correction=correction,
@@ -251,6 +257,8 @@ class MissionExecutor:
             gate_error = f"알 수 없는 mission_type: {mission_type!r} (허용: {sorted(ALL_MISSIONS)})"
         else:
             gate_error = None
+        if not gate_error and value_check is not None and mission_type in ACTIONABLE_MISSIONS:
+            gate_error = value_check()
         if gate_error:
             return ToolResult(ToolStatus.INVALID_INPUT, gate_error)
 

@@ -82,6 +82,26 @@ def test_quote_matches_across_spacing_and_ellipsis():
     assert not quote_found("Acme", [body])                 # too short to prove anything
 
 
+@pytest.mark.parametrize("quote,ok", [
+    ("국내 제품의 판매 가격은 … 99만 원", True),
+    ("국내 제품의 판매 가격은 … 89만 원", False),     # a short fragment that is not there
+    ("국내 제품의 판매 가격은 … 9만 원", False),      # cut out of '99만 원'
+    ("국내 제품의 판매 가격은 … 1,99", False),        # cut out of '1,999원'
+    ("오늘 판매 가격을 공지했다 … 국내 제품의 판매 가격은", True),   # order is free
+    ("국내제품의 판매가격은 정가 기준", True),          # spacing is free
+])
+def test_every_fragment_is_checked_and_numbers_are_not_cut(quote, ok):
+    body = "국내 제품의 판매 가격은 정가 기준 99만 원이다. 교육용은 1,999원. 오늘 판매 가격을 공지했다."
+    assert quote_found(quote, [body]) is ok
+
+
+def test_forecast_quote_cannot_leave_out_the_hedge():
+    _, refusal = check_verdict(claim_text="Acme will cost $999.", verdict="supported", declared_kind=None,
+                               quote="The new phone will … cost $999.", distortion_type=None,
+                               cited_texts=["The new phone will reportedly cost $999."])
+    assert refusal and "reportedly" in refusal
+
+
 def test_declaring_attribution_cannot_bypass_forecast_rule():
     kind, refusal = check_verdict(
         claim_text=FORECAST["text"], verdict="supported", declared_kind="attribution",
