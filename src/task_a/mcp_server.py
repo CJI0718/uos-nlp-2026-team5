@@ -48,6 +48,7 @@ from task_a.schema import (
 from task_a.provenance import containment, group_documents, is_derivative, shingles
 from task_a.provenance import THRESHOLD as PROVENANCE_THRESHOLD
 from task_a.toollog import CachingBackend, RunConfig, RunLog, ToolCache
+from task_a.claim_gate import CLAIM_KINDS, MAX_QUOTE_CHARS, check_verdict
 from task_a.tools import same_page, FINISH_SCHEMA, FINISH_TOOL, ToolRegistry
 
 
@@ -61,6 +62,10 @@ class ActiveEpisode:
     events: list[ToolEvent] = field(default_factory=list)
     #: Full text of each document read in this episode, for provenance grouping.
     read_texts: dict[str, str] = field(default_factory=dict)
+    #: Finish attempts the v3 checks sent back, first words of each reason.
+    gate_refusals: list[str] = field(default_factory=list)
+    #: Normalised web query → earlier observation (harness v3 reuses it).
+    searches: dict[str, str] = field(default_factory=dict)
 
     @property
     def read_evidence_ids(self) -> frozenset[str]:
@@ -73,7 +78,7 @@ class ActiveEpisode:
         )
 
 
-READ_TOOLS = ("read_evidence", "fetch_url")
+READ_TOOLS = ("read_evidence", "fetch_url", "find_in_page")
 
 KST = timezone(timedelta(hours=9))
 #: Limits for a claim a user submits directly (submit_claim).
@@ -171,6 +176,7 @@ class AgentEnvironment:
         web_only: bool = False,
         allow_user_claims: bool = False,
         block_self_citation: bool = False,
+        harness_v3: bool = False,
     ) -> None:
         """`gate` selects how missions are controlled:
         verdict    the default gate (final verdict, read citations, correction)
@@ -184,6 +190,11 @@ class AgentEnvironment:
         `allow_user_claims` offers `submit_claim`, so a user can verify any
         claim text instead of one from `claims_path` (which may then be None).
         Off by default so experiment tool lists stay unchanged.
+
+        `harness_v3` adds three changes from the exp-011 analysis: find_in_page
+        for long documents, reuse of a repeated search or an already opened page
+        without spending an external call, and the claim_gate checks at finish
+        (a verbatim evidence_quote; forecast claims need a settled-fact quote).
         """
         if gate not in GATE_MODES:
             raise ValueError(f"알 수 없는 gate: {gate!r} (허용: {GATE_MODES})")
@@ -229,9 +240,11 @@ class AgentEnvironment:
             extra={"gate": gate, "show_provenance": show_provenance,
                    "provenance_mode": provenance_mode, "web_only": web_only,
                    "allow_user_claims": allow_user_claims,
-                   "block_self_citation": block_self_citation},
+                   "block_self_citation": block_self_citation,
+                   "harness_v3": harness_v3},
         )
         self.gate = gate
+        self.harness_v3 = harness_v3
         self.log = RunLog(out_path)
         self.max_tool_calls = max_tool_calls
         self.max_external_calls = max_external_calls
@@ -247,7 +260,8 @@ class AgentEnvironment:
         else:
             self.backend = base_backend
 
-        self.registry = ToolRegistry(self.backend, show_provenance=show_provenance)
+        self.registry = ToolRegistry(self.backend, show_provenance=show_provenance,
+                                     page_search=harness_v3)
         if web_only:
             # No corpus to search; read_evidence stays for paging through fetched pages.
             self.registry.specs.pop("search_evidence")
@@ -376,6 +390,20 @@ class AgentEnvironment:
                 ),
             }
 
+        reused = ""
+        if self.harness_v3:
+            if name == "search_web":
+                key = " ".join(str(args.get("query") or "").lower().split())
+                if key and key in ep.searches:
+                    # Same words again: show the earlier result instead of paying for it.
+                    return {"status": ToolStatus.OK.value,
+                            "observation": "(같은 검색어로 이미 검색했다. 외부 호출 없이 이전 결과를 다시 보여 준다. "
+                                           "새 정보가 필요하면 다른 검색어를 쓴다.)\n\n" + ep.searches[key],
+                            "step": ep.step, "remaining_tool_calls": self.max_tool_calls - ep.tool_calls}
+            elif name == "fetch_url" and str(args.get("url") or "") in self.registry.fetched:
+                name, args = "read_evidence", {"evidence_id": str(args["url"])}
+                reused = "(이미 연 페이지라 다시 내려받지 않았다. 외부 호출을 쓰지 않았다.)\n"
+
         spec = self.registry.specs.get(name)
         if spec and spec.external and ep.external_calls >= self.max_external_calls:
             return {
@@ -409,7 +437,9 @@ class AgentEnvironment:
             external=is_external,
         )
         ep.events.append(event)
-        observation = res.observation
+        observation = reused + res.observation
+        if self.harness_v3 and name == "search_web" and res.status in (ToolStatus.OK, ToolStatus.EMPTY):
+            ep.searches[" ".join(str(tool_args.get("query") or "").lower().split())] = res.observation
         if name in READ_TOOLS and res.status == ToolStatus.OK:
             observation += self._record_read(ep, name, res)
         return {
@@ -436,6 +466,16 @@ class AgentEnvironment:
             raise ValueError(
                 "주장이 나온 글은 그 주장의 근거로 인용할 수 없습니다(검증 대상이기 때문). "
                 "다른 독립 출처를 찾아 인용하거나, 찾지 못하면 not_enough_evidence로 판정하세요.")
+        claim_kind = None
+        if self.harness_v3:
+            claim_kind, refusal = check_verdict(
+                claim_text=ep.claim.text, verdict=verdict.value,
+                declared_kind=args.get("claim_kind"), quote=args.get("evidence_quote"),
+                distortion_type=args.get("distortion_type"),
+                cited_texts=[ep.read_texts[c] for c in cited if c in ep.read_texts])
+            if refusal:
+                ep.gate_refusals.append(refusal[:80])
+                raise ValueError(refusal)
 
         elapsed = int((time.monotonic() - ep.started_at) * 1000)
         usage = Usage(
@@ -462,6 +502,10 @@ class AgentEnvironment:
             problematic_span=args.get("problematic_span"),
             mission_type=mission_type,
             mission_output=mission_output,
+            claim_kind=claim_kind,
+            evidence_quote=(str(args.get("evidence_quote"))[:MAX_QUOTE_CHARS]
+                            if self.harness_v3 and args.get("evidence_quote") else None),
+            gate_refusals=list(ep.gate_refusals) if self.harness_v3 else None,
         )
         self.log.append(self.config, result)
         self.active = None
@@ -506,7 +550,7 @@ class AgentEnvironment:
         Returns text to append to the observation ('' when nothing to add).
         """
         for evidence_id in res.evidence_ids:
-            unit = self._unit(evidence_id) if tool == "read_evidence" else None
+            unit = self._unit(evidence_id) if tool != "fetch_url" else None
             # The whole document, not the window shown, so paging does not change groups.
             text = unit.text if unit is not None else res.payload.get("full_text", res.observation)
             if evidence_id in ep.read_texts:
@@ -571,10 +615,30 @@ class AgentEnvironment:
         text = (base + "mission_type을 주면 서버가 이 최종 판정으로 검증 게이트를 적용한 뒤 후속 미션을 실행합니다: "
                 "미확인(not_enough_evidence/abstain)이면 실행형 미션 차단, 실행형 미션은 이번 "
                 "에피소드에서 read_evidence/fetch_url로 읽은 근거만 인용 가능, 반박이면 correction 필수.")
+        if self.harness_v3:
+            text += (" supported/refuted 판정은 evidence_quote(인용 문서의 문장 그대로)가 본문과 맞아야 접수되고, "
+                     "예측 주장(forecast)은 보도·전망·확률이 아닌 확정 사실 인용으로만 판정할 수 있습니다. "
+                     "접수되지 않으면 사유가 돌아오니 고쳐서 다시 제출합니다.")
         if self.gate == "provenance":
             text += (" 또한 실행형 미션의 인용 근거에는 1차 출처(출처유형 official/primary)가 있거나, "
                      "서로 다른 출처군이 2개 이상이어야 합니다.")
         return text
+
+    def _finish_schema(self) -> dict:
+        if not self.harness_v3:
+            return FINISH_SCHEMA
+        schema = json.loads(json.dumps(FINISH_SCHEMA))
+        schema["properties"]["evidence_quote"] = {
+            "type": "string",
+            "description": (f"supported/refuted이면 필수. 인용 문서에서 판정을 뒷받침하는 문장을 고치지 말고 "
+                            f"그대로 옮긴다(최대 {MAX_QUOTE_CHARS}자, 생략은 '…'). 서버가 본문과 대조한다."),
+        }
+        schema["properties"]["claim_kind"] = {
+            "type": "string", "enum": list(CLAIM_KINDS),
+            "description": ("fact: 이미 정해진 사실, forecast: 아직 일어나지 않은 일(출시가·발생 여부 등), "
+                            "attribution: 'X가 ~라고 전망·발표했다'처럼 누가 말했는지에 관한 주장"),
+        }
+        return schema
 
     def mcp_tools(self) -> list[dict]:
         """Return MCP tool definitions for any MCP-compatible host agent."""
@@ -634,7 +698,7 @@ class AgentEnvironment:
         tools.append({
             "name": FINISH_TOOL,
             "description": self._finish_description(),
-            "inputSchema": FINISH_SCHEMA,
+            "inputSchema": self._finish_schema(),
         })
         return tools
 

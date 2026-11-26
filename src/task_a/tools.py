@@ -23,6 +23,9 @@ from task_a.schema import EvidenceUnit, ToolResult, ToolStatus
 
 MAX_SNIPPET_CHARS = 600
 MAX_FETCH_CHARS = 4000
+#: find_in_page: how many places it shows and how much text around each.
+MAX_PAGE_HITS = 5
+PAGE_HIT_WINDOW = 250
 #: Most results requested from the web provider in one search (Tavily allows 20).
 MAX_WEB_RESULTS = 20
 #: source_type values that describe provenance (shown to the agent when enabled).
@@ -335,8 +338,11 @@ class ToolRegistry:
         top_k: int = 5,
         allowed_hosts: frozenset[str] | None = None,
         show_provenance: bool = True,
+        page_search: bool = False,
     ) -> None:
         self.backend = backend
+        #: Offer find_in_page (harness v3). Off by default so older tool lists stay as run.
+        self.page_search = page_search
         self.show_provenance = show_provenance
         #: The active claim's evidence_cutoff; set by the environment per episode.
         self.evidence_cutoff: str | None = None
@@ -402,6 +408,18 @@ class ToolRegistry:
              "properties": {"url": {"type": "string"}},
              "required": ["url"]},
             self._fetch_url, external=True))
+        if self.page_search:
+            self._add(ToolSpec(
+                "find_in_page",
+                ("이미 연 문서(코퍼스 evidence_id 또는 fetch_url로 연 URL) 안에서 검색어가 나오는 곳을 찾아 "
+                 f"최대 {MAX_PAGE_HITS}곳의 앞뒤 문맥과 offset을 보여 준다. 외부 호출을 쓰지 않는다. "
+                 "긴 문서에서 수치·날짜·용어를 찾을 때 여러 쪽을 이어 읽는 대신 쓴다."),
+                {"type": "object",
+                 "properties": {"evidence_id": {"type": "string"},
+                                "query": {"type": "string",
+                                          "description": "찾을 문구. 정확히 없으면 단어별로 찾는다"}},
+                 "required": ["evidence_id", "query"]},
+                self._find_in_page))
 
     def reset_episode(self, evidence_cutoff: str | None = None) -> None:
         self.evidence_cutoff = evidence_cutoff
@@ -510,6 +528,36 @@ class ToolRegistry:
                            "full_text": text},
                           evidence_ids=[doc_id])
 
+    def _find_in_page(self, evidence_id: str, query: str) -> ToolResult:
+        if not query or not query.strip():
+            return ToolResult(ToolStatus.INVALID_INPUT, "빈 검색어")
+        if evidence_id in self.fetched:
+            doc = self.fetched[evidence_id]
+            title, published, text = doc["title"], doc.get("published_at"), doc["text"]
+        else:
+            unit = self.backend.lookup(evidence_id) if hasattr(self.backend, "lookup") else None
+            if unit is None:
+                return ToolResult(ToolStatus.INVALID_INPUT,
+                                  f"없는 evidence_id: {evidence_id!r}. 웹 문서는 fetch_url로 먼저 연다.")
+            title, published, text = unit.title, unit.published_at, unit.text
+        hits = find_passages(text, query)
+        total = text.lower().count(query.strip().lower())
+        head = f"{evidence_id} | {title}\n발행: {published or '미상'} | 전체 {len(text)}자\n\n"
+        if not hits:
+            return ToolResult(ToolStatus.EMPTY,
+                              head + f"'{query}'가 본문에 없다. 다른 표기(영문·숫자 형식·단위)로 다시 찾아본다.",
+                              {"evidence_id": evidence_id, "query": query})
+        lines = [f"[offset {start}] …{text[start:end]}…" for start, end in hits]
+        more = f"\n\n이어 읽기: read_evidence(evidence_id=\"{evidence_id}\", offset=…)"
+        if total > len(hits):
+            rest = [i for i in _all_positions(text, query) if not any(s <= i < e for s, e in hits)]
+            more = (f"\n\n문구 그대로 {total}곳에 나온다. 위에 없는 위치(offset): "
+                    + ", ".join(str(max(0, i - 200)) for i in rest[:30]) + more)
+        return ToolResult(ToolStatus.OK, head + "\n\n".join(lines) + more,
+                          {"evidence_id": evidence_id, "query": query, "hits": len(hits),
+                           "full_text": text},
+                          evidence_ids=[evidence_id])
+
     def _search_web(self, query: str, top_k: int | None = None) -> ToolResult:
         if not query or not query.strip():
             return ToolResult(ToolStatus.INVALID_INPUT, "빈 질의")
@@ -578,6 +626,51 @@ class ToolRegistry:
                            "fetched_url": raw.get("fetched_url") if isinstance(raw, dict) else None,
                            "content_hash": hashlib.sha256(text.encode()).hexdigest()[:16],
                            "truncated": len(text) > MAX_FETCH_CHARS})
+
+
+def _all_positions(text: str, query: str) -> list[int]:
+    low, phrase = text.lower(), query.strip().lower()
+    out, pos = [], low.find(phrase)
+    while pos >= 0:
+        out.append(pos)
+        pos = low.find(phrase, pos + 1)
+    return out
+
+
+def find_passages(text: str, query: str, window: int = PAGE_HIT_WINDOW,
+                  limit: int = MAX_PAGE_HITS) -> list[tuple[int, int]]:
+    """(start, end) windows around the query, best first: the exact phrase,
+    then the places where the most distinct query words occur close together."""
+    low = text.lower()
+    phrase = query.strip().lower()
+    centres: list[tuple[int, int]] = []        # (score, position)
+    pos = low.find(phrase)
+    while pos >= 0 and len(centres) < 400:
+        # Claims here are about values, so a phrase with a number beside it comes first.
+        near = text[max(0, pos - 15):pos + len(phrase) + 15]
+        centres.append((10_001 if re.search(r"\d", near) else 10_000, pos))
+        pos = low.find(phrase, pos + 1)
+    terms = [t for t in re.split(r"\s+", phrase) if len(t) >= 2]
+    if len(terms) > 1 or not centres:
+        for term in terms:
+            pos = low.find(term)
+            while pos >= 0 and len(centres) < 400:
+                near = low[max(0, pos - window):pos + window]
+                centres.append((sum(t in near for t in terms), pos))
+                pos = low.find(term, pos + 1)
+    # Scattered single words are noise: keep places with at least half the words.
+    need = max(1, -(-len(terms) // 2))
+    out: list[tuple[int, int]] = []
+    for score, pos in sorted(centres, key=lambda c: (-c[0], c[1])):
+        if score < need:
+            break
+        start, end = max(0, pos - window), min(len(text), pos + window)
+        if any(start < e and s < end for s, e in out):
+            continue
+        out.append((start, end))
+        if len(out) >= limit:
+            break
+    return out          # best match first
 
 
 # `finish_verification` is not a registry tool: it is the episode's exit signal.

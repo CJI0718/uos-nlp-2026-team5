@@ -186,6 +186,11 @@ class AgentResult:
     problematic_span: str | None = None
     mission_type: str | None = None
     mission_output: dict | None = None
+    #: Harness v3 only: the claim kind the checks used, the verbatim quote, and
+    #: the finish attempts the checks sent back before this one was accepted.
+    claim_kind: str | None = None
+    evidence_quote: str | None = None
+    gate_refusals: list[str] | None = None
 
     @property
     def searched_externally(self) -> bool:
@@ -219,6 +224,9 @@ class AgentResult:
             out["mission_type"] = self.mission_type
         if self.mission_output is not None:
             out["mission_output"] = self.mission_output
+        for key in ("claim_kind", "evidence_quote", "gate_refusals"):
+            if getattr(self, key) is not None:
+                out[key] = getattr(self, key)
         return out
 
 

@@ -207,7 +207,8 @@ def make_env(args, arm: str, worker: int, web, shared_cache) -> AgentEnvironment
         max_tool_calls=args.max_tool_calls, max_external_calls=args.max_external_calls,
         code_commit=current_commit(ROOT), prompt_version=args.prompt_version,
         gate=args.gate, data_version=args.data_version,
-        block_self_citation=args.block_self_citation and arm != "C2P")
+        block_self_citation=args.block_self_citation and arm != "C2P",
+        harness_v3=args.harness_v3 and arm != "C2P")
     if web_arm and shared_cache is not None:
         env.backend.cache = shared_cache
     return env
@@ -314,6 +315,7 @@ def claude_command(args, arm: str, claim_id: str, base: Path, cli_version: str) 
         "--prompt-version", args.prompt_version, "--data-version", args.data_version,
         "--gate", args.gate,
         *(["--block-self-citation"] if args.block_self_citation else []),
+        *(["--harness-v3"] if args.harness_v3 else []),
         "--out", str(base / "server" / f"{claim_id}.run.jsonl"),
         "--missions-dir", str(base / "missions" / claim_id),
         "--max-tool-calls", str(args.max_tool_calls),
@@ -670,6 +672,9 @@ def parse_args(argv=None):
     p.add_argument("--work-root", default=str(Path.home() / "agent-runs"))
     p.add_argument("--block-self-citation", action="store_true",
                    help="하네스 조건에서 주장이 나온 글을 근거로 인용하지 못하게 함(C2P에는 적용하지 않음)")
+    p.add_argument("--harness-v3", action="store_true",
+                   help="exp-011 분석으로 넣은 개선: find_in_page, 반복 검색·열람 재사용, "
+                        "인용문 대조·예측 주장 게이트(C2P에는 적용하지 않음)")
     p.add_argument("--dry-run", action="store_true")
     return p.parse_args(argv)
 

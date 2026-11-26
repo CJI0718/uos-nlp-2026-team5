@@ -22,11 +22,13 @@ description: Evidence-grounded fact verification, distortion localization, and v
 2. 주장을 **주체 · 관계 · 수치/조건 · 대상 시점**으로 분해합니다.
 3. `search_evidence`로 코퍼스를 찾고, 판단에 쓸 문서는 `read_evidence`로 본문을 읽습니다.
    - **긴 문서는 끝까지 확인**: 한 번에 4,000자까지만 보입니다. 응답 끝에 `(전체 N자 중 …자. 이어 읽기: …offset=…)`가 있고 찾는 내용이 아직 없으면, 그 `offset`으로 이어 읽거나 `section`에 찾는 문구를 넣습니다. 앞부분에 없다고 "근거 부족"으로 판단하지 않습니다.
+   - `find_in_page` 도구가 있으면, 긴 문서에서는 이어 읽기 전에 찾는 수치·용어로 먼저 찾습니다(외부 호출을 쓰지 않음). 같은 항목이 여러 번 나오면 문서의 최신 날짜·버전에 해당하는 값을 고릅니다.
    - **다수결 착시 주의**: 여러 문서가 같은 수치·시각을 반복해도 같은 보도자료의 전재일 수 있습니다. 검색 결과의 `출처군`이 같으면 독립 출처로 세지 않습니다.
    - **교차 언어 질의**: 원출처가 해외 기업·기관·논문이면, 한국어 질의로 1차 원문이 나오지 않을 때 영어 질의로 다시 검색합니다.
    - `evidence_cutoff` 이후에 발행된 문서는 근거로 쓰지 않습니다.
 4. C2 조건에서 코퍼스 근거가 없거나, 서로 충돌하거나, 1차 출처가 아니라면 `search_web`과 `fetch_url`로 독립된 1차 출처를 확보합니다.
    - `fetch_url`로 연 페이지는 `read_evidence(evidence_id=URL, offset=…)`로 이어 읽습니다. 다시 `fetch_url`을 부르면 외부 호출 예산만 씁니다.
+5. **탐색을 멈출 때**: 기준 시점까지의 1차 출처 하나가 주장의 값·날짜·조건을 직접 확인(또는 다른 값으로 확정)했거나, 서로 다른 출처군 둘이 같은 내용을 확인했으면 더 찾지 않고 제출합니다. 같은 검색어를 되풀이하지 말고, 새 정보가 필요하면 검색어를 바꿉니다(언어·공식 명칭·기관 이름).
 
 ### Step 1.5. 판정 기준: 세 라벨의 경계
 
@@ -40,6 +42,8 @@ description: Evidence-grounded fact verification, distortion localization, and v
    - 애널리스트·유출자·언론의 전망을 전한 기사는 "그런 전망이 있다"는 근거일 뿐, 주장한 미래 사실의 근거가 아닙니다. 전망 보도만으로 `supported`를 내지 않습니다.
    - 주장이 전망을 사실처럼 단정했다는 이유만으로 `refuted`를 내지 않습니다. 이때는 `not_enough_evidence`로 판정하고, 해당하면 `distortion_type`에 `forecast_as_fact`를 적습니다.
 3. 예외: 주장이 "X가 그렇게 전망했다/발표했다"는 **귀속 주장**이면, 그 전망·발표 자료로 `supported`/`refuted`를 판정합니다.
+   - 판정 대상은 "X가 그 말을 했는가"입니다. X의 자료(또는 X의 문구를 그대로 전한 보도)에 주장한 값이 있으면 `supported`입니다.
+   - 다른 기관의 수치나 X의 다른 지표로 다시 계산한 값은 반박 근거가 아닙니다. X가 **다른 값을 말했다**는 자료가 있을 때만 `refuted`입니다.
 
 예(가상): "Acme Phone 2는 999달러에 출시될 것이다" — 출시 전 공식 가격 발표가 없고 증권사 예상가 보도만 있으면 `not_enough_evidence`. "Acme 증권은 Acme Phone 2의 가격을 999달러로 예상했다"는 그 보고서로 `supported`.
 
@@ -79,6 +83,11 @@ description: Evidence-grounded fact verification, distortion localization, and v
 
 ### Step 4. 최종 제출 (`finish_verification`)
 `verdict`, `abstain`, `cited_evidence_ids`, `justification`, `stop_reason`을 반드시 제출합니다. 해당하면 `correction`, `distortion_type`, `problematic_span`, `mission_type`, `mission_title`, `mission_summary`, `event_start_kst`, `tracking_condition`, `tracking_queries`를 함께 제출합니다. `finish_verification`은 에피소드마다 한 번만 호출합니다.
+
+서버가 `evidence_quote`·`claim_kind` 필드를 제공하면(하네스 v3):
+- `supported`/`refuted`일 때 `evidence_quote`에 인용 문서의 판정 근거 문장을 **고치지 않고 그대로** 옮깁니다(최대 400자, 생략은 `…`). 서버가 읽은 본문과 대조하고, 없으면 접수하지 않습니다.
+- `claim_kind`는 `fact`(이미 정해진 사실) · `forecast`(아직 일어나지 않은 일) · `attribution`(누가 그렇게 말했는지)입니다. `forecast`인데 인용문이 보도·전망·확률 표현이면 서버가 접수하지 않습니다. Step 1.5에 따라 `not_enough_evidence`로 다시 제출합니다.
+- 접수되지 않으면 사유가 돌아옵니다. 사유에 맞게 고쳐 다시 제출합니다.
 
 ## 3. 예시 (가상 사례, 평가 데이터와 무관)
 
