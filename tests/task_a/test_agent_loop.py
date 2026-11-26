@@ -229,3 +229,41 @@ def test_claude_usage_limit_is_detected():
     assert mod.usage_limited({"api_error_status": 429, "api_error": "usage_limit_reached"})
     assert mod.usage_limited({"api_error_type": "rate_limit_error"})
     assert not mod.usage_limited({"is_error": False, "total_cost_usd": 0.05})
+
+
+def test_plain_episode_has_no_harness_but_keeps_the_protocol(tmp_path):
+    from task_a.agent_loop import PLAIN_TOOLS, run_plain_episode
+
+    class Web:
+        def search(self, query, top_k=5, end_date=None, start_date=None):
+            return [{"url": "https://www.bok.or.kr/x", "title": "기준금리", "snippet": "2.50"},
+                    {"url": "https://github.com/CJI0718/uos-nlp-2026-team5/blob/main/gold.jsonl",
+                     "title": "gold", "snippet": "refuted"}]
+
+        def fetch(self, url):
+            return {"text": "2025 05월 29일 2.50 2025 02월 25일 2.75", "title": "추이", "fetched_url": url}
+
+    claims = tmp_path / "claims.jsonl"
+    write_jsonl(claims, [CLAIM.to_dict()])
+    env = AgentEnvironment(claims_path=claims, out_path=tmp_path / "run.jsonl", arm="C2",
+                           web_provider=Web(), web_only=True, tokenizer="bigram")
+    client, seen = _scripted([
+        _reply(("web_search", {"query": "기준금리 2025"})),
+        _reply(("fetch_page", {"url": "https://www.bok.or.kr/x"})),
+        _reply(("submit_answer", {"verdict": "refuted", "justification": "0.25%p 인하",
+                                  "cited_sources": ["https://www.bok.or.kr/x"]})),
+    ])
+    out = run_plain_episode(env, client, "FC900", price=PRICE, budget=Budget(1.0))
+
+    assert out.finished and out.verdict == "refuted"
+    first_messages, tools = seen[0]
+    assert "Fact-Check" not in first_messages[0]["content"]          # no Skill
+    assert {t["function"]["name"] for t in tools} == {"web_search", "fetch_page", "submit_answer"}
+    search_obs = [m for m in seen[1][0] if m["role"] == "tool"][0]["content"]
+    assert "uos-nlp-2026-team5" not in search_obs                    # answer key still blocked
+    page = [m for m in seen[2][0] if m["role"] == "tool"][-1]["content"]
+    assert "2.75" in page
+    row = json.loads((tmp_path / "run.jsonl").read_text(encoding="utf-8").splitlines()[-1])
+    assert row["result"]["cited_evidence_ids"] == ["https://www.bok.or.kr/x"]
+    assert [e["tool"] for e in row["result"]["events"]] == ["search_web", "fetch_url"]
+    assert len(PLAIN_TOOLS) == 3

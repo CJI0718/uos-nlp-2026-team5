@@ -273,3 +273,137 @@ def _fail(env, out: EpisodeOutcome, started: float, status: str, error: str,
     if transcript:
         transcript(messages)
     return out
+
+
+# --------------------------------------------------------------------------
+# Plain baseline: the same model and web, without the harness
+# --------------------------------------------------------------------------
+# What is removed: the Skill, the decision rules, calculate_comparison, paged
+# reading, provenance labels, distortion analysis and missions. What stays,
+# because it is the evaluation protocol rather than the harness: the same
+# Tavily search, the evidence-cutoff filter, the block on the public answer
+# key, the external-call budget and the run log the scorer reads.
+
+PLAIN_PAGE_CHARS = 12_000
+
+PLAIN_SYSTEM = """당신은 사실 검증을 돕는 조수입니다. 도구로 웹을 검색하고 페이지를 읽은 뒤 submit_answer로 답을 한 번 제출하세요."""
+
+PLAIN_USER = """다음 주장을 사실 검증하세요.
+
+판정은 셋 중 하나입니다.
+- supported: 신뢰할 수 있는 근거가 주장을 지지한다
+- refuted: 근거가 주장의 일부라도 틀렸음을 보여 준다 (수치·날짜·시간대·주체·범위 포함)
+- not_enough_evidence: 판정할 근거가 부족하다
+
+evidence_cutoff 이후에 나온 정보는 판정 근거로 쓰지 마세요.
+판정 근거(justification)와 참고한 출처 URL(cited_sources)을 함께 내세요. 주장이 틀렸다면 correction에 정정 문장을 쓰세요.
+
+주장 정보(JSON):
+{claim}
+"""
+
+PLAIN_TOOLS = [
+    {"type": "function", "function": {
+        "name": "web_search", "description": "웹을 검색해 제목·URL·발행일·요약을 받는다.",
+        "parameters": {"type": "object", "properties": {"query": {"type": "string"}}, "required": ["query"]}}},
+    {"type": "function", "function": {
+        "name": "fetch_page", "description": f"웹 페이지 본문을 앞 {PLAIN_PAGE_CHARS:,}자까지 읽는다.",
+        "parameters": {"type": "object", "properties": {"url": {"type": "string"}}, "required": ["url"]}}},
+    {"type": "function", "function": {
+        "name": "submit_answer", "description": "최종 판정을 제출하고 끝낸다.",
+        "parameters": {"type": "object", "properties": {
+            "verdict": {"type": "string", "enum": ["supported", "refuted", "not_enough_evidence"]},
+            "justification": {"type": "string"},
+            "cited_sources": {"type": "array", "items": {"type": "string"}},
+            "correction": {"type": ["string", "null"]}},
+            "required": ["verdict", "justification", "cited_sources"]}}},
+]
+
+
+def _plain_call(env, call, out: EpisodeOutcome) -> dict:
+    args = call.arguments
+    if "__invalid_json__" in args:
+        out.invalid_tool_calls += 1
+        return {"status": "invalid_input", "observation": "도구 인자가 올바른 JSON이 아닙니다."}
+    try:
+        if call.name == "web_search":
+            res = env.call_tool("search_web", {"query": str(args.get("query") or "")})
+            return {"status": res.get("status"), "results": res.get("observation")}
+        if call.name == "fetch_page":
+            url = str(args.get("url") or "")
+            res = env.call_tool("fetch_url", {"url": url})
+            doc = env.registry.fetched.get(url)
+            if res.get("status") == "ok" and doc:
+                return {"status": "ok", "url": url, "published_at": doc.get("published_at"),
+                        "text": doc["text"][:PLAIN_PAGE_CHARS]}
+            return {"status": res.get("status"), "observation": res.get("observation")}
+        if call.name == "submit_answer":
+            return env.call_tool("finish_verification", {
+                "verdict": args.get("verdict"), "justification": args.get("justification"),
+                "cited_evidence_ids": [str(u) for u in args.get("cited_sources") or []],
+                "correction": args.get("correction"), "abstain": False,
+                "stop_reason": "submitted"})
+    except (ValueError, TypeError, KeyError) as exc:
+        out.invalid_tool_calls += 1
+        return {"status": "invalid_input", "observation": str(exc)}
+    out.invalid_tool_calls += 1
+    return {"status": "invalid_input", "observation": f"없는 도구: {call.name}"}
+
+
+def run_plain_episode(env, client: ChatClient, claim_id: str, *, price: Price, budget: Budget,
+                      max_turns: int = 20,
+                      transcript: Callable[[list[dict]], None] | None = None) -> EpisodeOutcome:
+    """One claim with a plain web agent; logged in the server's run log like the harness."""
+    started = time.monotonic()
+    payload = env.start_episode(claim_id)
+    messages: list[dict] = [
+        {"role": "system", "content": PLAIN_SYSTEM},
+        {"role": "user", "content": PLAIN_USER.format(
+            claim=json.dumps(payload["claim"], ensure_ascii=False, indent=2))},
+    ]
+    out = EpisodeOutcome(claim_id=claim_id, arm="C2P", execution_status=ExecutionStatus.OK.value)
+    try:
+        while out.turns < max_turns:
+            budget.check()
+            try:
+                reply = client.complete(messages, PLAIN_TOOLS)
+            except Exception as exc:
+                return _fail(env, out, started, _status_for(exc), f"{type(exc).__name__}: {exc}",
+                             messages, transcript)
+            out.turns += 1
+            usage = reply.usage or {}
+            p, c, k = (int(usage.get("prompt_tokens", 0)), int(usage.get("completion_tokens", 0)),
+                       int(usage.get("cached_tokens", 0)))
+            usd = price.cost(p, c, k)
+            out.prompt_tokens, out.completion_tokens, out.cached_tokens = (
+                out.prompt_tokens + p, out.completion_tokens + c, out.cached_tokens + k)
+            out.cost_usd += usd
+            budget.add(usd)
+            messages.append(_history_message(reply))
+            if not reply.tool_calls:
+                out.nudges += 1
+                if out.nudges > MAX_NUDGES:
+                    return _fail(env, out, started, ExecutionStatus.PARSE_ERROR.value,
+                                 "모델이 도구를 호출하지 않고 답을 끝냈습니다.", messages, transcript)
+                messages.append({"role": "user", "content": "submit_answer 도구로 답을 제출하세요."})
+                continue
+            for call in reply.tool_calls:
+                name = {"web_search": "search_web", "fetch_page": "fetch_url"}.get(call.name, call.name)
+                out.tool_counts[name] = out.tool_counts.get(name, 0) + 1
+                result = _plain_call(env, call, out)
+                messages.append({"role": "tool", "tool_call_id": call.id, "name": call.name,
+                                 "content": json.dumps(result, ensure_ascii=False)[:MAX_TOOL_RESULT_CHARS + 2000]})
+                if result.get("status") == "finished":
+                    out.finished = True
+                    out.verdict = (result.get("result") or {}).get("verdict")
+                    break
+            if out.finished:
+                out.duration_ms = int((time.monotonic() - started) * 1000)
+                if transcript:
+                    transcript(messages)
+                return out
+        return _fail(env, out, started, ExecutionStatus.BUDGET_EXCEEDED.value,
+                     f"턴 한도({max_turns})에 도달했습니다.", messages, transcript)
+    except BudgetExceeded as exc:
+        _fail(env, out, started, ExecutionStatus.BUDGET_EXCEEDED.value, str(exc), messages, transcript)
+        raise

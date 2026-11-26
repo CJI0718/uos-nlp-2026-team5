@@ -49,18 +49,22 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from task_a.agent_loop import Budget, BudgetExceeded, Price, run_episode, system_prompt  # noqa: E402
+from task_a.agent_loop import (  # noqa: E402
+    Budget, BudgetExceeded, Price, run_episode, run_plain_episode, system_prompt,
+)
 from task_a.mcp_server import AgentEnvironment, current_commit  # noqa: E402
 from task_a.schema import Verdict, read_jsonl  # noqa: E402
 from task_a.score_run import load_gold, to_graded  # noqa: E402
 from task_a.scorer import abstain_rate, accuracy, coverage, macro_f1, transitions  # noqa: E402
 from task_a.web import LiveWebProvider, load_env_file  # noqa: E402
 
-ARMS = ("C0", "C1", "C2", "C2W")
+ARMS = ("C0", "C1", "C2", "C2W", "C2P")
 # C2W: C2 without the fixed corpus. The agent has to find its evidence on the
 # web itself (search_web / fetch_url); C1 and C2 always contain the reference
 # documents, so they measure judgement given evidence, not finding it.
-SERVER_ARM = {"C0": "C0", "C1": "C1", "C2": "C2", "C2W": "C2"}
+# C2P: the same model, web and protocol as C2W without the harness (no Skill,
+# no calculator, no paged reading, no distortion fields or missions).
+SERVER_ARM = {"C0": "C0", "C1": "C1", "C2": "C2", "C2W": "C2", "C2P": "C2"}
 LEDGER = ROOT / "results/raw/task_a_budget_ledger.jsonl"
 CORPUS = ROOT / "data/raw/task_a/corpus_c1.jsonl"
 GOLD_MAP = ROOT / "data/raw/task_a/corpus_c1.gold_map.jsonl"
@@ -191,14 +195,14 @@ def _now() -> str:
 
 def make_env(args, arm: str, worker: int, web, shared_cache) -> AgentEnvironment:
     base = arm_dir(args.exp_id, arm)
-    web_arm = arm in ("C2", "C2W")
+    web_arm = arm in ("C2", "C2W", "C2P")
     env = AgentEnvironment(
         claims_path=CLAIMS, out_path=base / f"server.w{worker}.run.jsonl", arm=SERVER_ARM[arm],
         model_id=f"{args.backend}:{args.model}", run_id=f"{args.exp_id}-{arm}",
         corpus_path=CORPUS if arm in ("C1", "C2") else None,
         cache_path=base / "tool_cache.jsonl" if web_arm else None,
         missions_dir=base / "missions", tokenizer=args.tokenizer,
-        web_provider=web if web_arm else None, web_only=arm == "C2W",
+        web_provider=web if web_arm else None, web_only=arm in ("C2W", "C2P"),
         max_tool_calls=args.max_tool_calls, max_external_calls=args.max_external_calls,
         code_commit=current_commit(ROOT), prompt_version=args.prompt_version,
         gate=args.gate, data_version=args.data_version)
@@ -216,7 +220,7 @@ def run_openai(args, arm: str, claim_ids: list[str], budget: Budget, tavily: Tav
                                 max_tokens=args.max_tokens, temperature=args.temperature)
     price = Price(args.price_input, args.price_output, args.price_cached)
     system = system_prompt(args.skill)
-    web_arm = arm in ("C2", "C2W")
+    web_arm = arm in ("C2", "C2W", "C2P")
     web = CountingWeb(LiveWebProvider(provider="tavily"), tavily) if web_arm else None
     shared_cache = (LockedCache(ToolCache(arm_dir(args.exp_id, arm) / "tool_cache.jsonl"))
                     if web_arm else None)
@@ -252,8 +256,12 @@ def run_openai(args, arm: str, claim_ids: list[str], budget: Budget, tavily: Tav
             (tdir / f"{cid}.json").write_text(json.dumps(messages, ensure_ascii=False, indent=1),
                                               encoding="utf-8")
         try:
-            out = run_episode(env, client, cid, price=price, budget=budget,
-                              max_turns=args.max_turns, system=system, transcript=save)
+            if arm == "C2P":
+                out = run_plain_episode(env, client, cid, price=price, budget=budget,
+                                        max_turns=args.max_turns, transcript=save)
+            else:
+                out = run_episode(env, client, cid, price=price, budget=budget,
+                                  max_turns=args.max_turns, system=system, transcript=save)
         except BudgetExceeded as exc:
             stop.set()
             print(f"  {exc}", file=sys.stderr)
@@ -554,7 +562,7 @@ def score(exp_id: str) -> dict:
         })
 
     trans = {}
-    for a, b in (("C0", "C1"), ("C1", "C2"), ("C0", "C2"), ("C0", "C2W"), ("C2", "C2W")):
+    for a, b in (("C0", "C1"), ("C1", "C2"), ("C0", "C2"), ("C0", "C2W"), ("C2", "C2W"), ("C2P", "C2W")):
         if a in arms_rows and b in arms_rows:
             trans[f"{a}->{b}"] = transitions(to_graded(arms_rows[a], gold), to_graded(arms_rows[b], gold))
 
@@ -696,6 +704,8 @@ def main(argv=None) -> int:
                   f"TAVILY 설정됨: {bool(os.environ.get('TAVILY_API_KEY'))}", file=sys.stderr)
         return 0
 
+    if "C2P" in arms and args.backend != "openai":
+        raise SystemExit("C2P(하네스 없는 기본 웹 에이전트)는 --backend openai에서만 돌립니다.")
     runner = run_openai if args.backend == "openai" else run_claude
     for arm in arms:
         if not plan[arm]:
