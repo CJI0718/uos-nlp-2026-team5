@@ -245,7 +245,6 @@ def run_openai(args, arm: str, claim_ids: list[str], budget: Budget, tavily: Tav
             print(f"  남은 예산 ${budget.remaining():.4f}: 새 에피소드를 시작하지 않습니다.", file=sys.stderr)
             return None
         env = env_for_thread()
-        before = web.searches if web else 0
         tdir = arm_dir(args.exp_id, arm) / "transcripts"
         tdir.mkdir(parents=True, exist_ok=True)
 
@@ -259,11 +258,12 @@ def run_openai(args, arm: str, claim_ids: list[str], budget: Budget, tavily: Tav
             stop.set()
             print(f"  {exc}", file=sys.stderr)
             out = None
-        # Searches are attributed per episode only approximately when workers
-        # overlap; the ledger total is exact.
-        searches = (web.searches - before) if web else 0
         if out is None:
             return None
+        # This episode's own search_web calls. A shared counter would also count
+        # other workers' searches (exp-008 logged 765 for 155 real searches).
+        # Cached repeats are included, so this can only overcount.
+        searches = out.tool_counts.get("search_web", 0) if web else 0
         rec = {"exp_id": args.exp_id, "backend": args.backend, "model": args.model,
                **out.to_dict(), "arm": arm, "tavily_searches": searches, "finished_at": _now()}
         append_record(args.exp_id, arm, rec)
@@ -514,7 +514,8 @@ def score(exp_id: str) -> dict:
                 "mission_type": res.get("mission_type"), "mission_status": mission.get("status"),
                 "turns": rec.get("turns"), "cost_usd": rec.get("cost_usd"),
                 "prompt_tokens": rec.get("prompt_tokens"), "completion_tokens": rec.get("completion_tokens"),
-                "tavily_searches": rec.get("tavily_searches"), "duration_ms": rec.get("duration_ms"),
+                "tavily_searches": sum(1 for ev in res.get("events") or [] if ev.get("tool") == "search_web"),
+                "duration_ms": rec.get("duration_ms"),
             })
 
         def acc_of(pred) -> dict | None:

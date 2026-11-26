@@ -1,6 +1,6 @@
 {
   "exp_id": "exp-006-repeat",
-  "scored_at": "2026-11-25T14:16:02+00:00",
+  "scored_at": "2026-11-26T04:27:12+00:00",
   "data_version": "claims-2026-11-25",
   "gold_distribution": {
     "supported": 30,
@@ -190,7 +190,7 @@
         "refuted": 1
       },
       "mean_tool_calls": 5.62,
-      "tavily_searches": 12,
+      "tavily_searches": 3,
       "mean_turns": 6.62,
       "cost_usd_total": 0.1757,
       "prompt_tokens_total": 537227,

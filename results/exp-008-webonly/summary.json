@@ -1,0 +1,160 @@
+{
+  "exp_id": "exp-008-webonly",
+  "scored_at": "2026-11-26T04:27:12+00:00",
+  "data_version": "claims-2026-11-25",
+  "gold_distribution": {
+    "supported": 30,
+    "refuted": 14,
+    "not_enough_evidence": 6
+  },
+  "always_supported_accuracy": 0.6,
+  "notes": {
+    "accuracy": "분모는 시도한 에피소드 전체다. 실행 실패와 보류는 오답으로 센다.",
+    "grounded_auto": "자동 근사치. 지지·반박은 판정이 맞고 인용 근거에 참조 근거(코퍼스 문서 또는 같은 URL)가 있어야 하고, 근거 부족은 판정만 본다. 시점·범위(T)는 사람이 채점해야 한다.",
+    "refuted_altered": "변형 주장 8개(재가공 게시물)와 실제 반박 사례 6개를 나눈 정확도."
+  },
+  "table": [
+    {
+      "arm": "C2W",
+      "episodes": 50,
+      "execution_status": {
+        "ok": 50
+      },
+      "accuracy": {
+        "numerator": 47,
+        "denominator": 50,
+        "value": 0.94
+      },
+      "macro_f1": {
+        "macro_f1": 0.923343,
+        "per_class": {
+          "supported": {
+            "precision": 1.0,
+            "recall": 0.9,
+            "f1": 0.947368,
+            "support": 30
+          },
+          "refuted": {
+            "precision": 0.933333,
+            "recall": 1.0,
+            "f1": 0.965517,
+            "support": 14
+          },
+          "not_enough_evidence": {
+            "precision": 0.75,
+            "recall": 1.0,
+            "f1": 0.857143,
+            "support": 6
+          }
+        },
+        "graded": 50,
+        "labels_included": [
+          "supported",
+          "refuted",
+          "not_enough_evidence"
+        ]
+      },
+      "coverage": {
+        "numerator": 50,
+        "denominator": 50,
+        "value": 1.0
+      },
+      "abstain_rate": {
+        "numerator": 0,
+        "denominator": 50,
+        "value": 0.0
+      },
+      "recall_supported": {
+        "numerator": 27,
+        "denominator": 30,
+        "value": 0.9
+      },
+      "recall_refuted": {
+        "numerator": 14,
+        "denominator": 14,
+        "value": 1.0
+      },
+      "recall_nee": {
+        "numerator": 6,
+        "denominator": 6,
+        "value": 1.0
+      },
+      "refuted_altered": {
+        "numerator": 8,
+        "denominator": 8,
+        "value": 1.0
+      },
+      "refuted_real": {
+        "numerator": 6,
+        "denominator": 6,
+        "value": 1.0
+      },
+      "grounded_auto": {
+        "numerator": 12,
+        "denominator": 50,
+        "value": 0.24
+      },
+      "cites_reference": 6,
+      "episodes_with_unread_citations": 1,
+      "verdicts": {
+        "supported": 27,
+        "not_enough_evidence": 8,
+        "refuted": 15
+      },
+      "mean_tool_calls": 6.74,
+      "tavily_searches": 155,
+      "mean_turns": 8.0,
+      "cost_usd_total": 1.1039,
+      "prompt_tokens_total": 3396234,
+      "completion_tokens_total": 70851,
+      "missions": {
+        "news_to_artifact:ok": 33,
+        "continuous_tracking:ok": 8,
+        "event_manager:ok": 2,
+        "no_op:ok": 5,
+        "app_safe_trial:ok": 1,
+        "news_to_artifact:invalid_input": 1
+      },
+      "accuracy_by_claim_type": {
+        "가격·금액": {
+          "numerator": 10,
+          "denominator": 10,
+          "value": 1.0
+        },
+        "날짜·시각·시간대": {
+          "numerator": 11,
+          "denominator": 11,
+          "value": 1.0
+        },
+        "비율·배수·차이 계산": {
+          "numerator": 12,
+          "denominator": 13,
+          "value": 0.923077
+        },
+        "수량·측정값·단위": {
+          "numerator": 8,
+          "denominator": 8,
+          "value": 1.0
+        },
+        "제품 사양": {
+          "numerator": 4,
+          "denominator": 4,
+          "value": 1.0
+        },
+        "조건·상태": {
+          "numerator": 2,
+          "denominator": 4,
+          "value": 0.5
+        }
+      },
+      "confusion": {
+        "supported->supported": 27,
+        "not_enough_evidence->not_enough_evidence": 6,
+        "refuted->refuted": 14,
+        "supported->refuted": 1,
+        "supported->not_enough_evidence": 2
+      }
+    }
+  ],
+  "transitions": {}
+}

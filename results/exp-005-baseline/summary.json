@@ -1,6 +1,6 @@
 {
   "exp_id": "exp-005-baseline",
-  "scored_at": "2026-11-25T13:57:04+00:00",
+  "scored_at": "2026-11-26T04:27:11+00:00",
   "data_version": "claims-2026-11-25",
   "gold_distribution": {
     "supported": 30,
@@ -239,7 +239,7 @@
         "not_enough_evidence": 3
       },
       "mean_tool_calls": 4.78,
-      "tavily_searches": 0,
+      "tavily_searches": 1,
       "mean_turns": 5.78,
       "cost_usd_total": 0.7514,
       "prompt_tokens_total": 2275155,
@@ -380,7 +380,7 @@
         "refuted": 18
       },
       "mean_tool_calls": 5.04,
-      "tavily_searches": 35,
+      "tavily_searches": 7,
       "mean_turns": 6.08,
       "cost_usd_total": 0.8072,
       "prompt_tokens_total": 2450437,

@@ -1,6 +1,6 @@
 {
   "exp_id": "exp-005-pilot",
-  "scored_at": "2026-11-25T13:52:09+00:00",
+  "scored_at": "2026-11-26T04:27:11+00:00",
   "data_version": "claims-2026-11-25",
   "gold_distribution": {
     "supported": 30,
@@ -329,7 +329,7 @@
         "refuted": 2
       },
       "mean_tool_calls": 4.33,
-      "tavily_searches": 2,
+      "tavily_searches": 1,
       "mean_turns": 5.33,
       "cost_usd_total": 0.0412,
       "prompt_tokens_total": 123446,

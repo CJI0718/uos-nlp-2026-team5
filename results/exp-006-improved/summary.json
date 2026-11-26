@@ -1,6 +1,6 @@
 {
   "exp_id": "exp-006-improved",
-  "scored_at": "2026-11-25T14:13:25+00:00",
+  "scored_at": "2026-11-26T04:27:12+00:00",
   "data_version": "claims-2026-11-25",
   "gold_distribution": {
     "supported": 30,
@@ -378,7 +378,7 @@
         "not_enough_evidence": 5
       },
       "mean_tool_calls": 4.64,
-      "tavily_searches": 55,
+      "tavily_searches": 11,
       "mean_turns": 5.64,
       "cost_usd_total": 0.8008,
       "prompt_tokens_total": 2425982,
