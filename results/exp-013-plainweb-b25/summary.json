@@ -1,0 +1,161 @@
+{
+  "exp_id": "exp-013-plainweb-b25",
+  "scored_at": "2026-11-26T10:01:27+00:00",
+  "data_version": "claims-2026-11-25",
+  "gold_distribution": {
+    "supported": 30,
+    "refuted": 14,
+    "not_enough_evidence": 6
+  },
+  "always_supported_accuracy": 0.6,
+  "notes": {
+    "accuracy": "분모는 시도한 에피소드 전체다. 실행 실패와 보류는 오답으로 센다.",
+    "grounded_auto": "자동 근사치. 지지·반박은 판정이 맞고 인용 근거에 참조 근거(코퍼스 문서 또는 같은 URL)가 있어야 하고, 근거 부족은 판정만 본다. 시점·범위(T)는 사람이 채점해야 한다.",
+    "refuted_altered": "변형 주장 8개(재가공 게시물)와 실제 반박 사례 6개를 나눈 정확도."
+  },
+  "table": [
+    {
+      "arm": "C2P",
+      "episodes": 50,
+      "execution_status": {
+        "ok": 50
+      },
+      "accuracy": {
+        "numerator": 42,
+        "denominator": 50,
+        "value": 0.84
+      },
+      "macro_f1": {
+        "macro_f1": 0.679491,
+        "per_class": {
+          "supported": {
+            "precision": 0.870968,
+            "recall": 0.9,
+            "f1": 0.885246,
+            "support": 30
+          },
+          "refuted": {
+            "precision": 0.823529,
+            "recall": 1.0,
+            "f1": 0.903226,
+            "support": 14
+          },
+          "not_enough_evidence": {
+            "precision": 0.5,
+            "recall": 0.166667,
+            "f1": 0.25,
+            "support": 6
+          }
+        },
+        "graded": 50,
+        "labels_included": [
+          "supported",
+          "refuted",
+          "not_enough_evidence"
+        ]
+      },
+      "coverage": {
+        "numerator": 50,
+        "denominator": 50,
+        "value": 1.0
+      },
+      "abstain_rate": {
+        "numerator": 0,
+        "denominator": 50,
+        "value": 0.0
+      },
+      "recall_supported": {
+        "numerator": 27,
+        "denominator": 30,
+        "value": 0.9
+      },
+      "recall_refuted": {
+        "numerator": 14,
+        "denominator": 14,
+        "value": 1.0
+      },
+      "recall_nee": {
+        "numerator": 1,
+        "denominator": 6,
+        "value": 0.166667
+      },
+      "refuted_altered": {
+        "numerator": 8,
+        "denominator": 8,
+        "value": 1.0
+      },
+      "refuted_real": {
+        "numerator": 6,
+        "denominator": 6,
+        "value": 1.0
+      },
+      "grounded_auto": {
+        "numerator": 3,
+        "denominator": 50,
+        "value": 0.06
+      },
+      "cites_reference": 2,
+      "correct_with_independent_source": {
+        "numerator": 38,
+        "denominator": 50,
+        "value": 0.76
+      },
+      "episodes_citing_only_own_post": 5,
+      "episodes_with_unread_citations": 33,
+      "verdicts": {
+        "supported": 31,
+        "refuted": 17,
+        "not_enough_evidence": 2
+      },
+      "mean_tool_calls": 9.68,
+      "tavily_searches": 321,
+      "mean_turns": 10.82,
+      "cost_usd_total": 1.5067,
+      "prompt_tokens_total": 4790316,
+      "completion_tokens_total": 57967,
+      "missions": {},
+      "accuracy_by_claim_type": {
+        "가격·금액": {
+          "numerator": 8,
+          "denominator": 10,
+          "value": 0.8
+        },
+        "날짜·시각·시간대": {
+          "numerator": 9,
+          "denominator": 11,
+          "value": 0.818182
+        },
+        "비율·배수·차이 계산": {
+          "numerator": 12,
+          "denominator": 13,
+          "value": 0.923077
+        },
+        "수량·측정값·단위": {
+          "numerator": 7,
+          "denominator": 8,
+          "value": 0.875
+        },
+        "제품 사양": {
+          "numerator": 3,
+          "denominator": 4,
+          "value": 0.75
+        },
+        "조건·상태": {
+          "numerator": 3,
+          "denominator": 4,
+          "value": 0.75
+        }
+      },
+      "confusion": {
+        "supported->supported": 27,
+        "not_enough_evidence->supported": 4,
+        "refuted->refuted": 14,
+        "supported->not_enough_evidence": 1,
+        "not_enough_evidence->not_enough_evidence": 1,
+        "not_enough_evidence->refuted": 1,
+        "supported->refuted": 2
+      }
+    }
+  ],
+  "transitions": {}
+}

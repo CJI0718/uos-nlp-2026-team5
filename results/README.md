@@ -17,6 +17,7 @@
 | [exp-010-webonly-noself](exp-010-webonly-noself/summary.md) | 2026-11-26 | C2W + 주장이 나온 글 인용 금지, 외부 호출 한도 8: 50건 |
 | [exp-011-webonly-noself-b25](exp-011-webonly-noself-b25/summary.md) | 2026-11-26 | 같은 조건, 외부 호출 한도 25: 50건(FC025는 Tavily 432로 재실행) |
 | [exp-012-harness-v3](exp-012-harness-v3/summary.md) | 2026-11-26 | exp-011 조건 + 하네스 v3(인용문 대조, find_in_page, 재사용): 50건(FC026은 HTTP 502로 재실행) |
+| [exp-013-plainweb-b25](exp-013-plainweb-b25/summary.md) | 2026-11-26 | 하네스 없는 웹 에이전트(C2P), 외부 호출 한도 25: exp-012와 예산을 맞춘 비교, 50건 |
 
 exp-005~006의 분석과 해석은 [docs/research/fact_checking/final-20261125/](../docs/research/fact_checking/final-20261125/README.md)에 있습니다.
 
