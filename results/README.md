@@ -10,6 +10,8 @@
 | [exp-005-baseline](exp-005-baseline/summary.md) | 2026-11-25 | 기말 baseline: 평가데이터 50건 × C0/C1/C2, DeepSeek V4.1 Flash(Mistral API), 150세션 |
 | [exp-006-improved](exp-006-improved/summary.md) | 2026-11-25 | 오류 분석에서 나온 Action Item 3개(예측 주장 규칙, 본문 추출, 조건별 도구) 적용 후 재실행, 150세션 |
 | [exp-006-repeat](exp-006-repeat/summary.md) | 2026-11-25 | 개선 대상 8건 × C1/C2 반복 확인, 16세션 |
+| [exp-007-claude-haiku](exp-007-claude-haiku/summary.md) | 2026-11-26 | 개선 후 하네스를 Claude Haiku 5.5로: 50건 × C0/C1/C2, 150세션 |
+| [exp-007-claude-sonnet](exp-007-claude-sonnet/summary.md) | 2026-11-26 | 같은 설계를 Claude Sonnet 5.5로: 148세션(C2 2건은 비용 상한으로 미실행) |
 
 exp-005~006의 분석과 해석은 [docs/research/fact_checking/final-20261125/](../docs/research/fact_checking/final-20261125/README.md)에 있습니다.
 

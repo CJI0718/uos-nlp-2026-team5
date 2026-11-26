@@ -1,6 +1,6 @@
 # Task A 기말 실험: baseline → 오류 분석 → 하네스 개선 → 재실행
 
-2026-11-25 · 실험 [exp-005-baseline](../../../../results/exp-005-baseline/summary.md), [exp-006-improved](../../../../results/exp-006-improved/summary.md), [exp-006-repeat](../../../../results/exp-006-repeat/summary.md) · 평가데이터 [data/task_a/evaluation_cases.md](../../../../data/task_a/evaluation_cases.md)
+2026-11-25~26 · 실험 [exp-005-baseline](../../../../results/exp-005-baseline/summary.md), [exp-006-improved](../../../../results/exp-006-improved/summary.md), [exp-006-repeat](../../../../results/exp-006-repeat/summary.md), [exp-007-claude-haiku](../../../../results/exp-007-claude-haiku/summary.md), [exp-007-claude-sonnet](../../../../results/exp-007-claude-sonnet/summary.md) · 평가데이터 [data/task_a/evaluation_cases.md](../../../../data/task_a/evaluation_cases.md)
 
 ## 1. 한 사례로 보는 실험
 
@@ -91,7 +91,23 @@ C1·C2의 오답 13개를 대화 기록으로 하나씩 확인해 원인별로 �
 
 FC040의 잘못된 판정에는 결과물 생성(`news_to_artifact`)도 실행됐어요. 검증 게이트는 판정·인용·정정문의 형식이 맞는지만 보고 사실 여부는 보지 못해요.
 
-## 8. 비용과 효율
+## 8. 다른 모델에서도 통하나 (exp-007, 2026-11-26)
+
+개선한 하네스를 그대로 두고 Claude 두 모델로 같은 50개를 돌렸어요(`--backend claude`, Claude Code 2.1.332가 같은 MCP 서버에 붙음).
+
+| 모델 | C0 | C1 | C2 | 근거 부족 재현율 (C1/C2) | C1·C2 오답 |
+| --- | ---: | ---: | ---: | ---: | --- |
+| DeepSeek V4.1 Flash | 24% | 98% | 96% | 6/6 · 5/6 | FC040 반박(C1·C2), FC026 반박(C2) |
+| Claude Haiku 5.5 | 12% | 94% | 94% | 6/6 · 6/6 | FC034·040 근거 부족(C1·C2), FC049(C1)·FC031(C2) 근거 부족 |
+| Claude Sonnet 5.5 | 52% | 98% | 98% (48개) | 6/6 · 6/6 | FC034 근거 부족(C1·C2) |
+
+- **개선은 모델이 바뀌어도 유지됐어요.** 세 모델 모두 C1·C2에서 94~98%이고, 근거 부족 재현율은 Claude 두 모델 모두 6/6이에요. 같은 Skill 규칙이 다른 모델에서도 통했어요.
+- **오답의 방향이 모델마다 달라요.** DeepSeek는 근거가 부족한데 단정했고(→ 반박), Claude는 근거가 있는데 보수적으로 근거 부족이라고 했어요. Claude의 오답은 모두 "지지 → 근거 부족"이에요.
+- **FC034는 세 모델의 공통 약점이에요.** 비교 대상의 점수(19.3%)가 그래프 데이터에만 있고 본문에는 없어서, 차이(0.4%p)를 확인하지 못했어요. 본문 추출의 남은 문제예요.
+- **C0는 모델 지식 차이예요.** Sonnet은 2025~26년 사실 일부를 알아서 52%가 나왔어요. 하지만 도구를 쓰는 C1·C2에서는 세 모델이 비슷해요.
+- Sonnet C2는 비용 상한에 닿아 48개만 돌았어요(FC049·FC050 미실행). Claude 쪽 비용은 Claude Code가 보고한 정가 기준 $13.32이고, 구독 계정이라 실제 청구가 아니라 사용 한도에서 차감돼요. 5시간 사용 한도에 한 번 걸려 실패한 84세션은 기록에서 빼 보관하고 다시 돌렸어요.
+
+## 9. 비용과 효율
 
 | 실행 | 에피소드 | 모델 비용 | Tavily |
 | --- | ---: | ---: | ---: |
@@ -101,9 +117,9 @@ FC040의 잘못된 판정에는 결과물 생성(`news_to_artifact`)도 실행�
 | 반복 확인(exp-006-repeat) | 16 | $0.35 | 12 |
 | **합계** | **325** | **$3.80** | **104** |
 
-C1 에피소드 하나에 평균 도구 5회, 약 6턴, $0.017가 들었어요. 비용은 Mistral 가격표(입력 $0.3, 출력 $1.2 / 100만 토큰)로 계산했고, 캐시 할인은 넣지 않았어요(실제보다 크게 잡음).
+C1 에피소드 하나에 평균 도구 5회, 약 6턴이 들었어요. 위 표의 비용은 Mistral 가격표(입력 $0.3, 출력 $1.2 / 100만 토큰)로 계산한 추정이고 캐시 할인을 넣지 않았어요. **Mistral 콘솔의 실제 사용액은 $0.92**였어요(2026-11-25 확인). 장부는 실제보다 약 4배 크게 잡은 보수적 추정이에요.
 
-## 9. 재현 방법
+## 10. 재현 방법
 
 ```bash
 uv sync
@@ -117,7 +133,7 @@ uv run python scripts/run_task_a.py run --backend claude --model sonnet --exp-id
 
 `.env`에 `MISTRAL_API_KEY`(또는 `--api-key-env`로 지정한 키)와 `TAVILY_API_KEY`가 필요해요. baseline 코퍼스는 `data/raw/task_a/corpus_c1_2026-11-25_exp005-baseline.*`로 보관했어요(Git 제외, 원문 저작권).
 
-## 10. 범위·출처·유의사항
+## 11. 범위·출처·유의사항
 
 - **실행 횟수:** 조건마다 한 번씩 돌렸고, 개선 대상 8개만 한 번 더 돌렸어요. temperature 0이어도 추론 모델이라 결과가 조금씩 달라요. 하네스와 관계없는 C0에서도 3개가 바뀌었어요(2개 정답, 1개 오답). 1~2개 차이는 잡음으로 봐야 해요. C1·C2에서 고쳐진 11개는 모두 노린 오류 유형이라 잡음보다 커요.
 - **개발·평가 분리:** Action Item은 같은 50개의 오류에서 찾았어요. 따로 떼어 둔 개발용 사례가 없어서, 개선 효과가 이 50개에 맞춰진 것일 수 있어요. AI-1은 사례가 아닌 일반 규칙이고 가상 예시만 썼지만, 다른 사례로 확인하지는 않았어요.
@@ -125,5 +141,5 @@ uv run python scripts/run_task_a.py run --backend claude --model sonnet --exp-id
 - **근거 동반 정답(자동):** 인용 근거가 참조 근거(같은 코퍼스 문서 또는 같은 URL)와 겹치는지로 계산한 근사치예요. 다른 출처로 맞게 입증한 경우를 놓치고, 시점·범위(T)는 채점하지 않아요. 사람 채점(GSR의 E·T)은 하지 않았어요.
 - **라벨 경계:** FC026처럼 확률 전망을 다루는 주장은 정답 기준이 논쟁적일 수 있어요. 근거 부족 6개가 모두 예측 주장이라 AI-1의 효과가 크게 보여요.
 - **변형 주장:** 재가공 게시물 8개는 모두 반박이고 URL이 없어요. 에이전트가 이를 단서로 쓸 수 있는데, C0에서 변형 8개를 하나도 맞히지 못해 이번 결과에서는 그런 지름길이 보이지 않았어요.
-- **모델·가격:** 모델 ID와 도구 호출 지원은 Mistral API `/v1/models`로, 가격은 [Mistral 가격표](https://docs.mistral.ai/inference/pricing)(2026-11-25 확인)로 확인했어요. Claude 비교는 이번에 돌리지 않았어요.
+- **모델·가격:** 모델 ID와 도구 호출 지원은 Mistral API `/v1/models`로, 가격은 [Mistral 가격표](https://docs.mistral.ai/inference/pricing)(2026-11-25 확인)로 확인했어요. Claude 비교(§8)는 개선 후 하네스로만 돌렸어요. baseline 하네스로 Claude를 돌리지는 않아서, Claude에서의 개선 폭은 측정하지 않았어요.
 - **원자료:** 대화 기록과 서버 로그는 원문이 들어 있어 `results/raw/`(Git 제외)에만 있어요. 공개 결과에는 판정·개수·비용만 남겼어요.

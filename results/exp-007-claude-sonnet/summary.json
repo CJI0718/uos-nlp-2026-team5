@@ -1,0 +1,552 @@
+{
+  "exp_id": "exp-007-claude-sonnet",
+  "scored_at": "2026-11-26T02:34:46+00:00",
+  "data_version": "claims-2026-11-25",
+  "gold_distribution": {
+    "supported": 30,
+    "refuted": 14,
+    "not_enough_evidence": 6
+  },
+  "always_supported_accuracy": 0.6,
+  "notes": {
+    "accuracy": "분모는 시도한 에피소드 전체다. 실행 실패와 보류는 오답으로 센다.",
+    "grounded_auto": "자동 근사치. 지지·반박은 판정이 맞고 인용 근거에 참조 근거(코퍼스 문서 또는 같은 URL)가 있어야 하고, 근거 부족은 판정만 본다. 시점·범위(T)는 사람이 채점해야 한다.",
+    "refuted_altered": "변형 주장 8개(재가공 게시물)와 실제 반박 사례 6개를 나눈 정확도."
+  },
+  "table": [
+    {
+      "arm": "C0",
+      "episodes": 50,
+      "execution_status": {
+        "ok": 50
+      },
+      "accuracy": {
+        "numerator": 26,
+        "denominator": 50,
+        "value": 0.52
+      },
+      "macro_f1": {
+        "macro_f1": 0.542757,
+        "per_class": {
+          "supported": {
+            "precision": 0.923077,
+            "recall": 0.4,
+            "f1": 0.55814,
+            "support": 30
+          },
+          "refuted": {
+            "precision": 1.0,
+            "recall": 0.571429,
+            "f1": 0.727273,
+            "support": 14
+          },
+          "not_enough_evidence": {
+            "precision": 0.206897,
+            "recall": 1.0,
+            "f1": 0.342857,
+            "support": 6
+          }
+        },
+        "graded": 50,
+        "labels_included": [
+          "supported",
+          "refuted",
+          "not_enough_evidence"
+        ]
+      },
+      "coverage": {
+        "numerator": 50,
+        "denominator": 50,
+        "value": 1.0
+      },
+      "abstain_rate": {
+        "numerator": 0,
+        "denominator": 50,
+        "value": 0.0
+      },
+      "recall_supported": {
+        "numerator": 12,
+        "denominator": 30,
+        "value": 0.4
+      },
+      "recall_refuted": {
+        "numerator": 8,
+        "denominator": 14,
+        "value": 0.571429
+      },
+      "recall_nee": {
+        "numerator": 6,
+        "denominator": 6,
+        "value": 1.0
+      },
+      "refuted_altered": {
+        "numerator": 3,
+        "denominator": 8,
+        "value": 0.375
+      },
+      "refuted_real": {
+        "numerator": 5,
+        "denominator": 6,
+        "value": 0.833333
+      },
+      "grounded_auto": {
+        "numerator": 6,
+        "denominator": 50,
+        "value": 0.12
+      },
+      "cites_reference": 0,
+      "episodes_with_unread_citations": 0,
+      "verdicts": {
+        "not_enough_evidence": 29,
+        "supported": 13,
+        "refuted": 8
+      },
+      "mean_tool_calls": 0.0,
+      "tavily_searches": 0,
+      "mean_turns": 3.12,
+      "cost_usd_total": 2.5463,
+      "prompt_tokens_total": 0,
+      "completion_tokens_total": 0,
+      "missions": {
+        "continuous_tracking:ok": 29,
+        "no_op:ok": 17
+      },
+      "accuracy_by_claim_type": {
+        "가격·금액": {
+          "numerator": 6,
+          "denominator": 10,
+          "value": 0.6
+        },
+        "날짜·시각·시간대": {
+          "numerator": 7,
+          "denominator": 11,
+          "value": 0.636364
+        },
+        "비율·배수·차이 계산": {
+          "numerator": 7,
+          "denominator": 13,
+          "value": 0.538462
+        },
+        "수량·측정값·단위": {
+          "numerator": 4,
+          "denominator": 8,
+          "value": 0.5
+        },
+        "제품 사양": {
+          "numerator": 2,
+          "denominator": 4,
+          "value": 0.5
+        },
+        "조건·상태": {
+          "numerator": 0,
+          "denominator": 4,
+          "value": 0.0
+        }
+      },
+      "confusion": {
+        "supported->not_enough_evidence": 18,
+        "refuted->not_enough_evidence": 5,
+        "not_enough_evidence->not_enough_evidence": 6,
+        "supported->supported": 12,
+        "refuted->refuted": 8,
+        "refuted->supported": 1
+      }
+    },
+    {
+      "arm": "C1",
+      "episodes": 50,
+      "execution_status": {
+        "ok": 50
+      },
+      "accuracy": {
+        "numerator": 49,
+        "denominator": 50,
+        "value": 0.98
+      },
+      "macro_f1": {
+        "macro_f1": 0.968709,
+        "per_class": {
+          "supported": {
+            "precision": 1.0,
+            "recall": 0.966667,
+            "f1": 0.983051,
+            "support": 30
+          },
+          "refuted": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 14
+          },
+          "not_enough_evidence": {
+            "precision": 0.857143,
+            "recall": 1.0,
+            "f1": 0.923077,
+            "support": 6
+          }
+        },
+        "graded": 50,
+        "labels_included": [
+          "supported",
+          "refuted",
+          "not_enough_evidence"
+        ]
+      },
+      "coverage": {
+        "numerator": 50,
+        "denominator": 50,
+        "value": 1.0
+      },
+      "abstain_rate": {
+        "numerator": 0,
+        "denominator": 50,
+        "value": 0.0
+      },
+      "recall_supported": {
+        "numerator": 29,
+        "denominator": 30,
+        "value": 0.966667
+      },
+      "recall_refuted": {
+        "numerator": 14,
+        "denominator": 14,
+        "value": 1.0
+      },
+      "recall_nee": {
+        "numerator": 6,
+        "denominator": 6,
+        "value": 1.0
+      },
+      "refuted_altered": {
+        "numerator": 8,
+        "denominator": 8,
+        "value": 1.0
+      },
+      "refuted_real": {
+        "numerator": 6,
+        "denominator": 6,
+        "value": 1.0
+      },
+      "grounded_auto": {
+        "numerator": 49,
+        "denominator": 50,
+        "value": 0.98
+      },
+      "cites_reference": 50,
+      "episodes_with_unread_citations": 0,
+      "verdicts": {
+        "supported": 29,
+        "refuted": 14,
+        "not_enough_evidence": 7
+      },
+      "mean_tool_calls": 4.22,
+      "tavily_searches": 0,
+      "mean_turns": 7.22,
+      "cost_usd_total": 4.9684,
+      "prompt_tokens_total": 0,
+      "completion_tokens_total": 0,
+      "missions": {
+        "news_to_artifact:ok": 15,
+        "event_manager:ok": 1,
+        "continuous_tracking:ok": 7,
+        "no_op:ok": 24,
+        "app_safe_trial:ok": 2
+      },
+      "accuracy_by_claim_type": {
+        "가격·금액": {
+          "numerator": 10,
+          "denominator": 10,
+          "value": 1.0
+        },
+        "날짜·시각·시간대": {
+          "numerator": 11,
+          "denominator": 11,
+          "value": 1.0
+        },
+        "비율·배수·차이 계산": {
+          "numerator": 12,
+          "denominator": 13,
+          "value": 0.923077
+        },
+        "수량·측정값·단위": {
+          "numerator": 8,
+          "denominator": 8,
+          "value": 1.0
+        },
+        "제품 사양": {
+          "numerator": 4,
+          "denominator": 4,
+          "value": 1.0
+        },
+        "조건·상태": {
+          "numerator": 4,
+          "denominator": 4,
+          "value": 1.0
+        }
+      },
+      "confusion": {
+        "supported->supported": 29,
+        "refuted->refuted": 14,
+        "not_enough_evidence->not_enough_evidence": 6,
+        "supported->not_enough_evidence": 1
+      }
+    },
+    {
+      "arm": "C2",
+      "episodes": 48,
+      "execution_status": {
+        "ok": 48
+      },
+      "accuracy": {
+        "numerator": 47,
+        "denominator": 48,
+        "value": 0.979167
+      },
+      "macro_f1": {
+        "macro_f1": 0.968298,
+        "per_class": {
+          "supported": {
+            "precision": 1.0,
+            "recall": 0.964286,
+            "f1": 0.981818,
+            "support": 28
+          },
+          "refuted": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 14
+          },
+          "not_enough_evidence": {
+            "precision": 0.857143,
+            "recall": 1.0,
+            "f1": 0.923077,
+            "support": 6
+          }
+        },
+        "graded": 48,
+        "labels_included": [
+          "supported",
+          "refuted",
+          "not_enough_evidence"
+        ]
+      },
+      "coverage": {
+        "numerator": 48,
+        "denominator": 48,
+        "value": 1.0
+      },
+      "abstain_rate": {
+        "numerator": 0,
+        "denominator": 48,
+        "value": 0.0
+      },
+      "recall_supported": {
+        "numerator": 27,
+        "denominator": 28,
+        "value": 0.964286
+      },
+      "recall_refuted": {
+        "numerator": 14,
+        "denominator": 14,
+        "value": 1.0
+      },
+      "recall_nee": {
+        "numerator": 6,
+        "denominator": 6,
+        "value": 1.0
+      },
+      "refuted_altered": {
+        "numerator": 8,
+        "denominator": 8,
+        "value": 1.0
+      },
+      "refuted_real": {
+        "numerator": 6,
+        "denominator": 6,
+        "value": 1.0
+      },
+      "grounded_auto": {
+        "numerator": 44,
+        "denominator": 48,
+        "value": 0.9167
+      },
+      "cites_reference": 44,
+      "episodes_with_unread_citations": 0,
+      "verdicts": {
+        "supported": 27,
+        "refuted": 14,
+        "not_enough_evidence": 7
+      },
+      "mean_tool_calls": 4.19,
+      "tavily_searches": 15,
+      "mean_turns": 7.21,
+      "cost_usd_total": 4.8002,
+      "prompt_tokens_total": 0,
+      "completion_tokens_total": 0,
+      "missions": {
+        "news_to_artifact:ok": 11,
+        "event_manager:ok": 2,
+        "continuous_tracking:ok": 8,
+        "no_op:ok": 25,
+        "app_safe_trial:ok": 2
+      },
+      "accuracy_by_claim_type": {
+        "가격·금액": {
+          "numerator": 10,
+          "denominator": 10,
+          "value": 1.0
+        },
+        "날짜·시각·시간대": {
+          "numerator": 11,
+          "denominator": 11,
+          "value": 1.0
+        },
+        "비율·배수·차이 계산": {
+          "numerator": 10,
+          "denominator": 11,
+          "value": 0.909091
+        },
+        "수량·측정값·단위": {
+          "numerator": 8,
+          "denominator": 8,
+          "value": 1.0
+        },
+        "제품 사양": {
+          "numerator": 4,
+          "denominator": 4,
+          "value": 1.0
+        },
+        "조건·상태": {
+          "numerator": 4,
+          "denominator": 4,
+          "value": 1.0
+        }
+      },
+      "confusion": {
+        "supported->supported": 27,
+        "refuted->refuted": 14,
+        "not_enough_evidence->not_enough_evidence": 6,
+        "supported->not_enough_evidence": 1
+      }
+    }
+  ],
+  "transitions": {
+    "C0->C1": {
+      "basis": "v",
+      "pairs": 50,
+      "claims_in_both_arms": 50,
+      "unpaired_dropped": 0,
+      "recovery": {
+        "numerator": 24,
+        "denominator": 24,
+        "value": 1.0
+      },
+      "harm": {
+        "numerator": 1,
+        "denominator": 26,
+        "value": 0.038462
+      },
+      "net_accuracy_change": 0.46,
+      "recovered_claim_ids": [
+        "FC001",
+        "FC002",
+        "FC004",
+        "FC005",
+        "FC007",
+        "FC011",
+        "FC013",
+        "FC014",
+        "FC027",
+        "FC028",
+        "FC030",
+        "FC031",
+        "FC032",
+        "FC033",
+        "FC036",
+        "FC037",
+        "FC039",
+        "FC040",
+        "FC042",
+        "FC043",
+        "FC045",
+        "FC046",
+        "FC047",
+        "FC050"
+      ],
+      "harmed_claim_ids": [
+        "FC034"
+      ],
+      "extra_cost_usd": 0.0,
+      "cost_per_recovery": 0.0
+    },
+    "C1->C2": {
+      "basis": "v",
+      "pairs": 48,
+      "claims_in_both_arms": 48,
+      "unpaired_dropped": 0,
+      "recovery": {
+        "numerator": 0,
+        "denominator": 1,
+        "value": 0.0
+      },
+      "harm": {
+        "numerator": 0,
+        "denominator": 47,
+        "value": 0.0
+      },
+      "net_accuracy_change": 0.0,
+      "recovered_claim_ids": [],
+      "harmed_claim_ids": [],
+      "extra_cost_usd": 0.0,
+      "cost_per_recovery": null
+    },
+    "C0->C2": {
+      "basis": "v",
+      "pairs": 48,
+      "claims_in_both_arms": 48,
+      "unpaired_dropped": 0,
+      "recovery": {
+        "numerator": 23,
+        "denominator": 23,
+        "value": 1.0
+      },
+      "harm": {
+        "numerator": 1,
+        "denominator": 25,
+        "value": 0.04
+      },
+      "net_accuracy_change": 0.458333,
+      "recovered_claim_ids": [
+        "FC001",
+        "FC002",
+        "FC004",
+        "FC005",
+        "FC007",
+        "FC011",
+        "FC013",
+        "FC014",
+        "FC027",
+        "FC028",
+        "FC030",
+        "FC031",
+        "FC032",
+        "FC033",
+        "FC036",
+        "FC037",
+        "FC039",
+        "FC040",
+        "FC042",
+        "FC043",
+        "FC045",
+        "FC046",
+        "FC047"
+      ],
+      "harmed_claim_ids": [
+        "FC034"
+      ],
+      "extra_cost_usd": 0.0,
+      "cost_per_recovery": 0.0
+    }
+  }
+}
