@@ -1,0 +1,166 @@
+{
+  "exp_id": "exp-011-webonly-noself-b25",
+  "scored_at": "2026-11-26T07:21:27+00:00",
+  "data_version": "claims-2026-11-25",
+  "gold_distribution": {
+    "supported": 30,
+    "refuted": 14,
+    "not_enough_evidence": 6
+  },
+  "always_supported_accuracy": 0.6,
+  "notes": {
+    "accuracy": "분모는 시도한 에피소드 전체다. 실행 실패와 보류는 오답으로 센다.",
+    "grounded_auto": "자동 근사치. 지지·반박은 판정이 맞고 인용 근거에 참조 근거(코퍼스 문서 또는 같은 URL)가 있어야 하고, 근거 부족은 판정만 본다. 시점·범위(T)는 사람이 채점해야 한다.",
+    "refuted_altered": "변형 주장 8개(재가공 게시물)와 실제 반박 사례 6개를 나눈 정확도."
+  },
+  "table": [
+    {
+      "arm": "C2W",
+      "episodes": 50,
+      "execution_status": {
+        "ok": 50
+      },
+      "accuracy": {
+        "numerator": 45,
+        "denominator": 50,
+        "value": 0.9
+      },
+      "macro_f1": {
+        "macro_f1": 0.843678,
+        "per_class": {
+          "supported": {
+            "precision": 0.964286,
+            "recall": 0.9,
+            "f1": 0.931034,
+            "support": 30
+          },
+          "refuted": {
+            "precision": 0.875,
+            "recall": 1.0,
+            "f1": 0.933333,
+            "support": 14
+          },
+          "not_enough_evidence": {
+            "precision": 0.666667,
+            "recall": 0.666667,
+            "f1": 0.666667,
+            "support": 6
+          }
+        },
+        "graded": 50,
+        "labels_included": [
+          "supported",
+          "refuted",
+          "not_enough_evidence"
+        ]
+      },
+      "coverage": {
+        "numerator": 50,
+        "denominator": 50,
+        "value": 1.0
+      },
+      "abstain_rate": {
+        "numerator": 0,
+        "denominator": 50,
+        "value": 0.0
+      },
+      "recall_supported": {
+        "numerator": 27,
+        "denominator": 30,
+        "value": 0.9
+      },
+      "recall_refuted": {
+        "numerator": 14,
+        "denominator": 14,
+        "value": 1.0
+      },
+      "recall_nee": {
+        "numerator": 4,
+        "denominator": 6,
+        "value": 0.666667
+      },
+      "refuted_altered": {
+        "numerator": 8,
+        "denominator": 8,
+        "value": 1.0
+      },
+      "refuted_real": {
+        "numerator": 6,
+        "denominator": 6,
+        "value": 1.0
+      },
+      "grounded_auto": {
+        "numerator": 16,
+        "denominator": 50,
+        "value": 0.32
+      },
+      "cites_reference": 12,
+      "correct_with_independent_source": {
+        "numerator": 45,
+        "denominator": 50,
+        "value": 0.9
+      },
+      "episodes_citing_only_own_post": 0,
+      "episodes_with_unread_citations": 0,
+      "verdicts": {
+        "supported": 28,
+        "not_enough_evidence": 6,
+        "refuted": 16
+      },
+      "mean_tool_calls": 13.1,
+      "tavily_searches": 341,
+      "mean_turns": 14.16,
+      "cost_usd_total": 2.626,
+      "prompt_tokens_total": 8339974,
+      "completion_tokens_total": 103347,
+      "missions": {
+        "news_to_artifact:ok": 35,
+        "event_manager:ok": 4,
+        "continuous_tracking:ok": 8,
+        "no_op:ok": 3
+      },
+      "accuracy_by_claim_type": {
+        "가격·금액": {
+          "numerator": 9,
+          "denominator": 10,
+          "value": 0.9
+        },
+        "날짜·시각·시간대": {
+          "numerator": 10,
+          "denominator": 11,
+          "value": 0.909091
+        },
+        "비율·배수·차이 계산": {
+          "numerator": 11,
+          "denominator": 13,
+          "value": 0.846154
+        },
+        "수량·측정값·단위": {
+          "numerator": 8,
+          "denominator": 8,
+          "value": 1.0
+        },
+        "제품 사양": {
+          "numerator": 4,
+          "denominator": 4,
+          "value": 1.0
+        },
+        "조건·상태": {
+          "numerator": 3,
+          "denominator": 4,
+          "value": 0.75
+        }
+      },
+      "confusion": {
+        "supported->supported": 27,
+        "not_enough_evidence->supported": 1,
+        "not_enough_evidence->not_enough_evidence": 4,
+        "refuted->refuted": 14,
+        "supported->not_enough_evidence": 2,
+        "not_enough_evidence->refuted": 1,
+        "supported->refuted": 1
+      }
+    }
+  ],
+  "transitions": {}
+}

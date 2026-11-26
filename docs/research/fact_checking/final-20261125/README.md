@@ -1,6 +1,6 @@
 # Task A 기말 실험: baseline → 오류 분석 → 하네스 개선 → 재실행
 
-2026-11-25~26 · 실험 [exp-005-baseline](../../../../results/exp-005-baseline/summary.md), [exp-006-improved](../../../../results/exp-006-improved/summary.md), [exp-006-repeat](../../../../results/exp-006-repeat/summary.md), [exp-007-claude-haiku](../../../../results/exp-007-claude-haiku/summary.md), [exp-007-claude-sonnet](../../../../results/exp-007-claude-sonnet/summary.md), [exp-008-webonly](../../../../results/exp-008-webonly/summary.md), [exp-009-plainweb](../../../../results/exp-009-plainweb/summary.md) · 평가데이터 [data/task_a/evaluation_cases.md](../../../../data/task_a/evaluation_cases.md)
+2026-11-25~26 · 실험 [exp-005-baseline](../../../../results/exp-005-baseline/summary.md), [exp-006-improved](../../../../results/exp-006-improved/summary.md), [exp-006-repeat](../../../../results/exp-006-repeat/summary.md), [exp-007-claude-haiku](../../../../results/exp-007-claude-haiku/summary.md), [exp-007-claude-sonnet](../../../../results/exp-007-claude-sonnet/summary.md), [exp-008-webonly](../../../../results/exp-008-webonly/summary.md), [exp-009-plainweb](../../../../results/exp-009-plainweb/summary.md), [exp-010](../../../../results/exp-010-webonly-noself/summary.md), [exp-011](../../../../results/exp-011-webonly-noself-b25/summary.md) · 평가데이터 [data/task_a/evaluation_cases.md](../../../../data/task_a/evaluation_cases.md)
 
 ## 1. 한 사례로 보는 실험
 
@@ -147,6 +147,27 @@ C1·C2의 코퍼스는 평가데이터에 적은 근거 URL을 모은 것이라 
 - **하네스가 손해 본 사례도 하나 있어요.** FC040은 하네스 없이 맞혔지만, 하네스에서는 긴 README를 4,000자씩 이어 읽다 도구 예산을 다 써 근거 부족이 됐어요. 기본 에이전트는 앞 12,000자를 한 번에 받았어요.
 - **비용:** 하네스 쪽이 장부 기준 약 2배($1.10 대 $0.53)예요. Skill 지시문이 길고 도구 호출이 더 많아서예요.
 
+## 8.7 원래 글을 근거로 쓰지 못하게 하면 (exp-010·011, 2026-11-26)
+
+웹 전용(C2W)에서 정답 47개 중 7개가 **주장이 나온 원래 글만** 인용했어요. 그중 5개는 "지지"였어요. 검증 대상으로 검증 대상을 증명한 순환 검증이에요. 그래서 다음 두 가지를 넣었어요.
+- 서버 규칙(`--block-self-citation`): 원래 글을 인용한 판정 제출을 거부해요. 원래 글을 읽는 것은 허용해요.
+- Skill 규칙: 원래 글은 맥락용으로만 읽고, 독립 출처로 확인해요.
+
+채점에는 **독립 출처로 맞힘**을 추가했어요. 원래 글이 아닌 출처를 하나 이상 인용한 정답만 세고, 근거 부족 정답은 판정만 봐요.
+
+| 조건 (DeepSeek, 웹만) | 외부 호출 한도 | 정확도 | **독립 출처로 맞힘** | 원래 글만 인용 | 평균 도구 호출 | Tavily | 비용(장부) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| C2P 하네스 없음 (exp-009) | 8 | 84% | 76% | 5 | 5.3 | 165 | $0.53 |
+| C2W 하네스 (exp-008) | 8 | 94% | 82% | 7 | 6.7 | 155 | $1.10 |
+| C2W + 자기 인용 금지 (exp-010) | 8 | 82% | 82% | 0 | 7.8 | 213 | $1.30 |
+| C2W + 자기 인용 금지 (exp-011) | 25 | **90%** | **90%** | 0 | 13.1 | 341 | $2.63 |
+
+- **94%에는 순환 검증이 섞여 있었어요.** 독립 출처만 인정하면 같은 실행이 82%예요.
+- **규칙을 넣자 순환 검증은 0이 됐어요.** 한도 8에서는 독립 출처를 찾다 예산이 떨어져, 6개가 정직하게 "근거 부족"으로 바뀌었어요(정확도 82%).
+- **예산을 25로 늘리자 독립 출처로 맞힌 비율이 90%가 됐어요.** 하네스 없음(76%)보다 14%p 높아요. 대신 도구 호출은 약 2배, 비용은 약 2.4배예요. **근거 기준을 엄격하게 할수록 비용이 드는 트레이드오프**예요.
+- **예산이 늘자 예측 주장 오류가 일부 돌아왔어요.** FC017(지지)과 FC026(반박)은 검색을 더 하면서 전망 보도를 더 많이 찾고, 그 보도에 기대 단정했어요. 나머지 오답은 FC007(반박), FC034, FC040(근거 부족)이에요.
+- FC025는 첫 실행에서 Tavily 크레딧 소진(HTTP 432)으로 검색 2회가 실패해 기록에서 빼고 다시 돌렸어요(보관: `results/raw/exp-011-webonly-noself-b25/C2W/_tavily_432_2026-11-26/`).
+
 ## 9. 비용과 효율
 
 | 실행 | 에피소드 | 모델 비용(장부 추정) | Tavily 검색 |
@@ -157,7 +178,9 @@ C1·C2의 코퍼스는 평가데이터에 적은 근거 URL을 모은 것이라 
 | 반복 확인(exp-006-repeat) | 16 | $0.35 | 3 |
 | 웹 전용(exp-008) | 50 | $1.10 | 155 |
 | 하네스 없는 웹 에이전트(exp-009) | 50 | $0.53 | 165 |
-| **DeepSeek 합계** | **425** | **$5.43** | **342** |
+| 자기 인용 금지, 한도 8(exp-010) | 50 | $1.30 | 213 |
+| 자기 인용 금지, 한도 25(exp-011, 재실행 포함) | 51 | $2.63 | 341 |
+| **DeepSeek 합계** | **526** | **$9.36** | **896** |
 | Claude Haiku·Sonnet(exp-007) | 298 | $13.32(Claude Code 정가 기준) | 17 |
 
 - 모델 비용은 Mistral 가격표(입력 $0.3, 출력 $1.2 / 100만 토큰)로 계산한 추정이고 캐시 할인을 넣지 않았어요. exp-005~006까지 **Mistral 콘솔의 실제 사용액은 $0.92**였어요(2026-11-25 확인). 장부는 실제보다 약 4배 크게 잡은 보수적 추정이에요.
