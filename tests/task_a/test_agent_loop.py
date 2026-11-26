@@ -267,3 +267,12 @@ def test_plain_episode_has_no_harness_but_keeps_the_protocol(tmp_path):
     assert row["result"]["cited_evidence_ids"] == ["https://www.bok.or.kr/x"]
     assert [e["tool"] for e in row["result"]["events"]] == ["search_web", "fetch_url"]
     assert len(PLAIN_TOOLS) == 3
+
+
+def test_no_skill_prompt_keeps_only_the_plain_instructions():
+    from task_a.agent_loop import HARNESS_NOTE, system_prompt
+    from task_a.skill import skill_body
+    bare = system_prompt(no_skill=True)
+    assert bare.endswith(HARNESS_NOTE) and "not_enough_evidence" in bare
+    assert "Step 1.5" not in bare and skill_body()[:200] not in bare
+    assert "Step 1.5" in system_prompt()

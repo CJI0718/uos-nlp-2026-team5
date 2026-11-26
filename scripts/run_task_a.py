@@ -222,7 +222,7 @@ def run_openai(args, arm: str, claim_ids: list[str], budget: Budget, tavily: Tav
     client = OpenAICompatClient(args.base_url, args.model, args.api_key_env, timeout_s=args.timeout,
                                 max_tokens=args.max_tokens, temperature=args.temperature)
     price = Price(args.price_input, args.price_output, args.price_cached)
-    system = system_prompt(args.skill)
+    system = system_prompt(args.skill, no_skill=args.no_skill)
     web_arm = arm in ("C2", "C2W", "C2P")
     web = CountingWeb(LiveWebProvider(provider="tavily"), tavily) if web_arm else None
     shared_cache = (LockedCache(ToolCache(arm_dir(args.exp_id, arm) / "tool_cache.jsonl"))
@@ -675,6 +675,8 @@ def parse_args(argv=None):
     p.add_argument("--harness-v3", action="store_true",
                    help="exp-011 분석으로 넣은 개선: find_in_page, 반복 검색·열람 재사용, "
                         "인용문 대조·예측 주장 게이트(C2P에는 적용하지 않음)")
+    p.add_argument("--no-skill", action="store_true",
+                   help="ablation: Skill 대신 C2P와 같은 최소 안내만 준다(도구·게이트는 그대로, openai 백엔드만)")
     p.add_argument("--dry-run", action="store_true")
     return p.parse_args(argv)
 
@@ -685,6 +687,8 @@ def main(argv=None) -> int:
         print(json.dumps({"ledger": str(args.ledger), **ledger_totals(args.ledger),
                           "tavily_searches_all_ledgers": tavily_used_all()}, ensure_ascii=False, indent=2))
         return 0
+    if args.no_skill and args.backend != "openai":
+        raise SystemExit("--no-skill은 openai 백엔드에서만 씁니다(claude 백엔드는 Skill을 따로 붙임).")
     if args.action == "score":
         summary = score(args.exp_id)
         print(render_md(summary))

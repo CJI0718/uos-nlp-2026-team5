@@ -138,7 +138,21 @@ def openai_tools(env) -> list[dict]:
     return out
 
 
-def system_prompt(skill_path: str | Path | None = None) -> str:
+#: Ablation without the Skill: only what the plain baseline is told (the three
+#: labels and the cutoff), so the gap to the full harness is the Skill's.
+NO_SKILL_BODY = """# 사실 검증
+
+주어진 주장을 도구로 검증하고 판정을 제출합니다. 판정은 셋 중 하나입니다.
+- supported: 신뢰할 수 있는 근거가 주장을 지지한다
+- refuted: 근거가 주장의 일부라도 틀렸음을 보여 준다 (수치·날짜·시간대·주체·범위 포함)
+- not_enough_evidence: 판정할 근거가 부족하다
+
+evidence_cutoff 이후에 나온 정보는 판정 근거로 쓰지 마세요."""
+
+
+def system_prompt(skill_path: str | Path | None = None, *, no_skill: bool = False) -> str:
+    if no_skill:
+        return NO_SKILL_BODY + HARNESS_NOTE
     body = skill_body(skill_path) if skill_path else skill_body()
     return body + HARNESS_NOTE
 
