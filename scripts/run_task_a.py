@@ -56,6 +56,7 @@ from task_a.mcp_server import AgentEnvironment, current_commit  # noqa: E402
 from task_a.schema import Verdict, read_jsonl  # noqa: E402
 from task_a.score_run import load_gold, to_graded  # noqa: E402
 from task_a.scorer import abstain_rate, accuracy, coverage, macro_f1, transitions  # noqa: E402
+from task_a.tools import same_page  # noqa: E402
 from task_a.web import LiveWebProvider, load_env_file  # noqa: E402
 
 ARMS = ("C0", "C1", "C2", "C2W", "C2P")
@@ -205,7 +206,8 @@ def make_env(args, arm: str, worker: int, web, shared_cache) -> AgentEnvironment
         web_provider=web if web_arm else None, web_only=arm in ("C2W", "C2P"),
         max_tool_calls=args.max_tool_calls, max_external_calls=args.max_external_calls,
         code_commit=current_commit(ROOT), prompt_version=args.prompt_version,
-        gate=args.gate, data_version=args.data_version)
+        gate=args.gate, data_version=args.data_version,
+        block_self_citation=args.block_self_citation and arm != "C2P")
     if web_arm and shared_cache is not None:
         env.backend.cache = shared_cache
     return env
@@ -311,6 +313,7 @@ def claude_command(args, arm: str, claim_id: str, base: Path, cli_version: str) 
         "--model-id", f"claude-code-{cli_version}+{args.model}",
         "--prompt-version", args.prompt_version, "--data-version", args.data_version,
         "--gate", args.gate,
+        *(["--block-self-citation"] if args.block_self_citation else []),
         "--out", str(base / "server" / f"{claim_id}.run.jsonl"),
         "--missions-dir", str(base / "missions" / claim_id),
         "--max-tool-calls", str(args.max_tool_calls),
@@ -475,6 +478,7 @@ def score(exp_id: str) -> dict:
     gold_rows = {r["claim_id"]: r for r in read_jsonl(GOLD)}
     refs = reference_sources()
     altered = {cid for cid, g in gold_rows.items() if g.get("altered_input")}
+    claims_src = {c["claim_id"]: c.get("source_url") for c in read_jsonl(CLAIMS)}
     types = json.loads(CLAIM_TYPES.read_text(encoding="utf-8"))["types"] if CLAIM_TYPES.exists() else {}
     out_dir = ROOT / "results" / exp_id
     arms_rows: dict[str, list[dict]] = {}
@@ -502,6 +506,9 @@ def score(exp_id: str) -> dict:
             cid = res["claim_id"]
             label = gold.get(cid)
             e = cites_reference(res, refs.get(cid, {"docs": set(), "urls": set()}))
+            own = claims_src.get(cid)
+            independent = any(not same_page(c, own) for c in res.get("cited_evidence_ids") or [])
+            self_only = bool(own) and bool(res.get("cited_evidence_ids")) and not independent
             if label == Verdict.NOT_ENOUGH_EVIDENCE:
                 ve = g.v
             else:
@@ -513,6 +520,8 @@ def score(exp_id: str) -> dict:
                 "arm": arm, "claim_id": cid, "gold": label.value if label else None,
                 "verdict": res.get("verdict"), "correct": g.v, "cites_reference": e,
                 "grounded_auto": ve, "altered_input": cid in altered, "claim_type": types.get(cid),
+                "cites_independent": independent, "cites_only_own_post": self_only,
+                "correct_independent": g.v and (independent or label == Verdict.NOT_ENOUGH_EVIDENCE),
                 "execution_status": res.get("execution_status"),
                 "distortion_type": res.get("distortion_type"),
                 "cited_evidence_ids": res.get("cited_evidence_ids"),
@@ -545,6 +554,10 @@ def score(exp_id: str) -> dict:
             "grounded_auto": {"numerator": sum(grounded), "denominator": len(grounded),
                               "value": round(sum(grounded) / len(grounded), 4) if grounded else None},
             "cites_reference": sum(1 for e in arm_eps if e["cites_reference"]),
+            "correct_with_independent_source": {
+                "numerator": sum(1 for e in arm_eps if e["correct_independent"]), "denominator": len(arm_eps),
+                "value": round(sum(1 for e in arm_eps if e["correct_independent"]) / len(arm_eps), 4) if arm_eps else None},
+            "episodes_citing_only_own_post": sum(1 for e in arm_eps if e["cites_only_own_post"]),
             "episodes_with_unread_citations": sum(1 for e in arm_eps if e["unread_citations"]),
             "verdicts": dict(Counter(e["verdict"] for e in arm_eps)),
             "mean_tool_calls": _mean(e["tool_calls"] for e in arm_eps),
@@ -655,6 +668,8 @@ def parse_args(argv=None):
     p.add_argument("--prompt-version", default="skill-v2")
     p.add_argument("--data-version", default=DATA_VERSION)
     p.add_argument("--work-root", default=str(Path.home() / "agent-runs"))
+    p.add_argument("--block-self-citation", action="store_true",
+                   help="하네스 조건에서 주장이 나온 글을 근거로 인용하지 못하게 함(C2P에는 적용하지 않음)")
     p.add_argument("--dry-run", action="store_true")
     return p.parse_args(argv)
 

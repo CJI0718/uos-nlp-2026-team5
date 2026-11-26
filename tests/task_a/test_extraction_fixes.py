@@ -96,3 +96,32 @@ def test_search_results_from_the_repository_are_dropped(tmp_path):
     assert blocked["status"] == "blocked"
     names = {t["name"] for t in env.mcp_tools()}
     assert "search_evidence" not in names and {"search_web", "fetch_url", "read_evidence"} <= names
+
+
+def test_the_post_a_claim_came_from_cannot_be_its_proof(tmp_path):
+    from task_a.tools import same_page
+
+    class Web:
+        def search(self, query, top_k=5, end_date=None, start_date=None):
+            return []
+
+        def fetch(self, url):
+            return {"text": "기사 본문 " * 50, "fetched_url": url}
+
+    src = "https://www.news.example/view/1"
+    claims = tmp_path / "claims.jsonl"
+    write_jsonl(claims, [Claim(claim_id="FC903", text="t", source_url=src).to_dict()])
+    env = AgentEnvironment(claims_path=claims, out_path=tmp_path / "run.jsonl", arm="C2",
+                           web_provider=Web(), web_only=True, tokenizer="bigram",
+                           block_self_citation=True)
+    env.start_episode("FC903")
+    assert env.call_tool("fetch_url", {"url": src})["status"] == "ok"   # reading it is fine
+    finish = {"verdict": "supported", "justification": "기사에 그렇게 나옴",
+              "cited_evidence_ids": ["http://news.example/view/1/"]}
+    try:
+        env.call_tool("finish_verification", finish)
+        raised = False
+    except ValueError as exc:
+        raised = "인용할 수 없습니다" in str(exc)
+    assert raised and env.active is not None
+    assert same_page("https://m.news.example/view/1", src)

@@ -11,6 +11,7 @@ description: Evidence-grounded fact verification, distortion localization, and v
 
 - 문제 조회, 근거 검색·열람, 계산, 최종 제출은 제공된 MCP 도구(`factcheck-mission` 서버)로만 합니다.
 - 근거로 인용할 수 있는 것은 이번 에피소드에서 `read_evidence`(코퍼스) 또는 `fetch_url`(C2 웹)로 **본문을 직접 읽은** 문서뿐입니다. 검색 결과 스니펫만 본 문서는 인용하지 않습니다.
+- **주장이 나온 글(`source_url`)은 검증 대상이지 근거가 아닙니다.** 맥락을 확인하려고 읽을 수는 있지만 `cited_evidence_ids`에 넣지 않습니다. 같은 사실을 다른 독립 출처(제조사·기관 발표 등 1차 자료)에서 확인하고, 찾지 못하면 `not_enough_evidence`로 판정합니다.
 - 도구 호출 예산은 `start_episode` 응답의 `budget`에 있습니다. 예산을 다 쓰면 확보한 근거로 `finish_verification`을 호출합니다.
 
 ## 2. 4단계 수행 프로토콜

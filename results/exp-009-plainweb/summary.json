@@ -1,6 +1,6 @@
 {
   "exp_id": "exp-009-plainweb",
-  "scored_at": "2026-11-26T04:38:47+00:00",
+  "scored_at": "2026-11-26T04:59:46+00:00",
   "data_version": "claims-2026-11-25",
   "gold_distribution": {
     "supported": 30,
@@ -95,6 +95,12 @@
         "value": 0.14
       },
       "cites_reference": 7,
+      "correct_with_independent_source": {
+        "numerator": 38,
+        "denominator": 50,
+        "value": 0.76
+      },
+      "episodes_citing_only_own_post": 5,
       "episodes_with_unread_citations": 32,
       "verdicts": {
         "supported": 32,

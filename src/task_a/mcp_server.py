@@ -48,7 +48,7 @@ from task_a.schema import (
 from task_a.provenance import containment, group_documents, is_derivative, shingles
 from task_a.provenance import THRESHOLD as PROVENANCE_THRESHOLD
 from task_a.toollog import CachingBackend, RunConfig, RunLog, ToolCache
-from task_a.tools import FINISH_SCHEMA, FINISH_TOOL, ToolRegistry
+from task_a.tools import same_page, FINISH_SCHEMA, FINISH_TOOL, ToolRegistry
 
 
 @dataclass
@@ -170,6 +170,7 @@ class AgentEnvironment:
         provenance_mode: str = "labeled",
         web_only: bool = False,
         allow_user_claims: bool = False,
+        block_self_citation: bool = False,
     ) -> None:
         """`gate` selects how missions are controlled:
         verdict    the default gate (final verdict, read citations, correction)
@@ -211,6 +212,9 @@ class AgentEnvironment:
             r["claim_id"]: Claim.from_dict(r) for r in read_jsonl(claims_path)
         } if claims_path is not None else {}
         self.allow_user_claims = allow_user_claims
+        # The post a claim came from may be read for context but not cited as its
+        # proof: in exp-008 five 'supported' verdicts cited only that post.
+        self.block_self_citation = block_self_citation
         self.arm = arm
         self.condition = condition
         self.config = RunConfig(
@@ -224,7 +228,8 @@ class AgentEnvironment:
             code_commit=code_commit,
             extra={"gate": gate, "show_provenance": show_provenance,
                    "provenance_mode": provenance_mode, "web_only": web_only,
-                   "allow_user_claims": allow_user_claims},
+                   "allow_user_claims": allow_user_claims,
+                   "block_self_citation": block_self_citation},
         )
         self.gate = gate
         self.log = RunLog(out_path)
@@ -426,6 +431,11 @@ class AgentEnvironment:
         justification = str(args.get("justification") or "").strip()
         if verdict is None or not justification:
             raise ValueError("verdict와 justification은 필수입니다.")
+        own = ep.claim.source_url
+        if self.block_self_citation and any(same_page(c, own) for c in cited):
+            raise ValueError(
+                "주장이 나온 글은 그 주장의 근거로 인용할 수 없습니다(검증 대상이기 때문). "
+                "다른 독립 출처를 찾아 인용하거나, 찾지 못하면 not_enough_evidence로 판정하세요.")
 
         elapsed = int((time.monotonic() - ep.started_at) * 1000)
         usage = Usage(

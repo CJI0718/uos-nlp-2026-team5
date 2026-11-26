@@ -1,6 +1,6 @@
 {
   "exp_id": "exp-008-webonly",
-  "scored_at": "2026-11-26T04:38:48+00:00",
+  "scored_at": "2026-11-26T04:59:46+00:00",
   "data_version": "claims-2026-11-25",
   "gold_distribution": {
     "supported": 30,
@@ -95,6 +95,12 @@
         "value": 0.24
       },
       "cites_reference": 6,
+      "correct_with_independent_source": {
+        "numerator": 41,
+        "denominator": 50,
+        "value": 0.82
+      },
+      "episodes_citing_only_own_post": 7,
       "episodes_with_unread_citations": 1,
       "verdicts": {
         "supported": 27,

@@ -279,6 +279,15 @@ def _is_non_public_host(host: str) -> bool:
 LEAK_URL_PATTERNS = ("cji0718/uos-nlp-2026-team5",)
 
 
+def same_page(a: str | None, b: str | None) -> bool:
+    """Two URLs for the same page: scheme, www./m. host prefix and trailing slash ignored."""
+    def norm(u: str) -> str:
+        parts = urlsplit(u.strip())
+        host = (parts.hostname or "").lower().removeprefix("www.").removeprefix("m.")
+        return host + parts.path.rstrip("/") + (f"?{parts.query}" if parts.query else "")
+    return bool(a and b and a.startswith(("http://", "https://")) and norm(a) == norm(b))
+
+
 def is_leak_url(url: str | None) -> bool:
     low = (url or "").lower()
     return any(p in low for p in LEAK_URL_PATTERNS)

@@ -59,6 +59,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--max-tool-calls", type=int, default=12)
     parser.add_argument("--max-external-calls", type=int, default=4,
                         help="search_web·fetch_url 호출 상한 (Tavily 크레딧 상한이기도 함)")
+    parser.add_argument("--block-self-citation", action="store_true",
+                        help="주장이 나온 글(source_url)을 그 주장의 근거로 인용하지 못하게 한다")
     parser.add_argument("--allow-user-claims", action="store_true",
                         help="submit_claim 도구를 켠다: 미리 등록하지 않은 주장 텍스트를 바로 검증")
     parser.add_argument("--no-preset-claims", action="store_true",
@@ -94,6 +96,7 @@ def main(argv: list[str] | None = None) -> int:
         max_tool_calls=args.max_tool_calls,
         max_external_calls=args.max_external_calls,
         allow_user_claims=args.allow_user_claims,
+        block_self_citation=args.block_self_citation,
     )
     MCPStdioServer(env).serve_forever()
     return 0

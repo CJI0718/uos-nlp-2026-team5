@@ -1,6 +1,6 @@
 {
   "exp_id": "exp-007-claude-haiku",
-  "scored_at": "2026-11-26T04:27:12+00:00",
+  "scored_at": "2026-11-26T04:59:46+00:00",
   "data_version": "claims-2026-11-25",
   "gold_distribution": {
     "supported": 30,
@@ -95,6 +95,12 @@
         "value": 0.12
       },
       "cites_reference": 0,
+      "correct_with_independent_source": {
+        "numerator": 6,
+        "denominator": 50,
+        "value": 0.12
+      },
+      "episodes_citing_only_own_post": 0,
       "episodes_with_unread_citations": 0,
       "verdicts": {
         "not_enough_evidence": 49,
@@ -231,6 +237,12 @@
         "value": 0.94
       },
       "cites_reference": 50,
+      "correct_with_independent_source": {
+        "numerator": 47,
+        "denominator": 50,
+        "value": 0.94
+      },
+      "episodes_citing_only_own_post": 0,
       "episodes_with_unread_citations": 0,
       "verdicts": {
         "supported": 27,
@@ -370,6 +382,12 @@
         "value": 0.94
       },
       "cites_reference": 49,
+      "correct_with_independent_source": {
+        "numerator": 47,
+        "denominator": 50,
+        "value": 0.94
+      },
+      "episodes_citing_only_own_post": 1,
       "episodes_with_unread_citations": 0,
       "verdicts": {
         "supported": 27,
